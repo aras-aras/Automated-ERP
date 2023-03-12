@@ -14,8 +14,8 @@ import java.net.InetAddress;
 
             // Set up the UDP socket and packet
             DatagramSocket socket = new DatagramSocket();
-            InetAddress address = InetAddress.getByName("destination.ip.address");
-            int port = 12345; // Choose a suitable port number
+            InetAddress address = InetAddress.getByName("127.0.0.1");
+            int port = 5502; // Choose a suitable port number
             DatagramPacket packet = new DatagramPacket(xmlBytes, xmlBytes.length, address, port);
 
             // Send the packet
