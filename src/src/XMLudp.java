@@ -7,7 +7,7 @@ import java.net.InetAddress;
     public class XMLudp {
         public static void main(String[] args) throws Exception {
             // Load the XML file into a byte array
-            File xmlFile = new File("path/to/xml/file.xml");
+            File xmlFile = new File("C:\\Users\\sarin\\IdeaProjects\\fabrica\\src");
             FileInputStream fis = new FileInputStream(xmlFile);
             byte[] xmlBytes = new byte[(int) xmlFile.length()];
             fis.read(xmlBytes);
@@ -15,7 +15,7 @@ import java.net.InetAddress;
             // Set up the UDP socket and packet
             DatagramSocket socket = new DatagramSocket();
             InetAddress address = InetAddress.getByName("127.0.0.1");
-            int port = 5502; // Choose a suitable port number
+            int port = 9999; // Choose a suitable port number
             DatagramPacket packet = new DatagramPacket(xmlBytes, xmlBytes.length, address, port);
 
             // Send the packet
