@@ -1,25 +1,37 @@
-import java.io.FileOutputStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
+import java.io.*;
+import java.net.*;
 
-    public class XMLudp2 {
-        public static void main(String[] args) throws Exception {
-            // Set up the UDP socket and packet
-            DatagramSocket socket = new DatagramSocket(12345); // Use the same port number as the sender
-            byte[] buffer = new byte[1024]; // Choose an appropriate buffer size
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+public class XMLudp2 {
+    public File xmlFile;
+    public FileOutputStream fos;
+    public byte[] xmlBytes;
+    public DatagramSocket socket;
+    public int port = 9999; // Choose a suitable port number
+    public DatagramPacket packet;
+    public InetAddress address;
 
-            // Receive the packet
-            socket.receive(packet);
+    public XMLudp2() throws SocketException, UnknownHostException
+    {
+           // Set up the UDP socket and packet
+           socket = new DatagramSocket();
+           address = InetAddress.getLocalHost();
 
-            // Write the contents of the packet to a file
-            FileOutputStream fos = new FileOutputStream("received_file.xml");
-            fos.write(packet.getData(), 0, packet.getLength());
+    }
+    public void receive() throws IOException
+    {
+        // Receive the packet
+        socket.receive(packet);
+    }
+    public void unload() throws IOException {
 
-            // Clean up
+        // Write the contents of the packet to a file
+        fos = new FileOutputStream("received_file.xml");
+        fos.write(packet.getData(), 0, packet.getLength());
+    }
+    public void adios() throws IOException {
             fos.close();
             socket.close();
-        }
+    }
     }
 
 
