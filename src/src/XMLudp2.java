@@ -21,15 +21,17 @@ public class XMLudp2 {
     public void receive() throws IOException
     {
         // Receive the packet
-        xmlBytes = new byte[1024];
+        xmlBytes = new byte[2043];
         packet = new DatagramPacket(xmlBytes, xmlBytes.length);
         socket.receive(packet);
+
     }
     public void unload() throws IOException {
 
         // Write the contents of the packet to a file
         fos = new FileOutputStream("received_file.xml");
         fos.write(packet.getData(), 0, packet.getLength());
+
     }
     public void adios() throws IOException {
             fos.close();
