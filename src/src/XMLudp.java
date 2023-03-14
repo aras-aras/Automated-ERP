@@ -21,8 +21,9 @@ public class XMLudp {
 
         }
             // Load the XML file into a byte array
-        public void load() throws IOException {
+        public void load(String file) throws IOException {
 
+            xmlFile = new File(file);
             FileInputStream fis = new FileInputStream(xmlFile);
             xmlBytes = new byte[(int) xmlFile.length()];
             fis.read(xmlBytes);

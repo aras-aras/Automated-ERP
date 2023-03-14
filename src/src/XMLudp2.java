@@ -13,13 +13,16 @@ public class XMLudp2 {
     public XMLudp2() throws SocketException, UnknownHostException
     {
            // Set up the UDP socket and packet
-           socket = new DatagramSocket();
+           socket = new DatagramSocket(port);
            address = InetAddress.getLocalHost();
+
 
     }
     public void receive() throws IOException
     {
         // Receive the packet
+        xmlBytes = new byte[1024];
+        packet = new DatagramPacket(xmlBytes, xmlBytes.length);
         socket.receive(packet);
     }
     public void unload() throws IOException {
