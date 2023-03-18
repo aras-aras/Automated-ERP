@@ -58,7 +58,7 @@ public class File_treatment {
                            ord.DueDate=detailElement.getAttribute("DueDate");
                            ord.Late_Pen=detailElement.getAttribute("LatePen");
                            ord.Early_Pen=detailElement.getAttribute("EarlyPen");
-                           // chamar função de meter as coisas na lista.
+                           // chamar função de meter as coisas na base de dados
                         }
                     }
                 }
