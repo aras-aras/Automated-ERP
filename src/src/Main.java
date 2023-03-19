@@ -1,3 +1,6 @@
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,15 +12,19 @@ import java.util.Scanner;
 
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException {
         XMLudp2 receiver = new XMLudp2();
+        OrderList ord= new OrderList();
 
         while(true) {
 
             receiver.receive();
-            receiver.unload();
-            //tratar oficheiro:
+            String xmlData;
+            xmlData=receiver.unload();//tratar o ficheiro
+
             File_treatment treatment= new File_treatment();
+            treatment.Read_File(xmlData, ord.orders);
+            ord.print_list(ord.orders);
 
             System.out.println("want to end things :( ?(s/n)");
 
@@ -30,8 +37,9 @@ public class Main {
             }
 
         }
-        ModBusTCP server = new ModBusTCP();
-        server.ServerTCP();
+        //ModBusTCP server = new ModBusTCP();
+        //server.ServerTCP();
+
 
 
 

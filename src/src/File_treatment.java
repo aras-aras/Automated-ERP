@@ -1,10 +1,9 @@
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
+import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -12,73 +11,35 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class File_treatment {
-    LinkedList<String> cars = new LinkedList<String>();
-    File fil;
-    public int Read_File()
-    {
 
-        //get the document builder
-
+    public void Read_File(String xmlData, ArrayList list) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        try {
-            DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = factory.newDocumentBuilder().parse(new InputSource(new StringReader(xmlData)));
+        document.getDocumentElement().normalize();
+        NodeList ClientList = document.getElementsByTagName("Client");
+        NodeList orderList = document.getElementsByTagName("Order");
 
-            //get document
 
-            Document document = builder.parse(new File("received_file.xml"));
+        for (int i = 0; i < ClientList.getLength(); i++) {
+            Order ord= new Order();
+            Element clientElement =(Element) ClientList.item(i);
+            Node Client = ClientList.item(i);
+            ord.Client_name=clientElement.getAttribute("NameId");
 
-            //normalize the xml structure
-
-            document.getDocumentElement().normalize();
-
-            //Get all the element by the tag name
-
-            NodeList ClientList =document.getElementsByTagName("Client");
-            for(int i=0;i<ClientList.getLength();i++)
-            {
-                Node Client = ClientList.item(i);
-                if(Client.getNodeType()== Node.ELEMENT_NODE)
-                {
-                    Order ord= new Order();
-                    Element ClientElement = (Element) Client;
-                    ord.Client_name=ClientElement.getAttribute("NameId");
-                    NodeList Clientdetails = Client.getChildNodes();
-                    for(int j=0; j < Clientdetails.getLength(); j++)
-                    {
-                        Node detail= Clientdetails.item(j);
-                        if(detail.getNodeType()== Node.ELEMENT_NODE)
-                        {
-                           Element detailElement = (Element) detail;
-                           ord.Order_num=detailElement.getAttribute("Number");
-                           ord.Work_Piece=detailElement.getAttribute("WorkPiece");
-                           ord.Quantity=detailElement.getAttribute("Quantity");
-                           ord.DueDate=detailElement.getAttribute("DueDate");
-                           ord.Late_Pen=detailElement.getAttribute("LatePen");
-                           ord.Early_Pen=detailElement.getAttribute("EarlyPen");
-                           // chamar função de meter as coisas na base de dados
-                        }
-                    }
-                }
-            }
+            Element orderElement =(Element) orderList.item(i);
+            ord.Order_num=orderElement.getAttribute("Number");
+            ord.Work_Piece=orderElement.getAttribute("WorkPiece");
+            ord.Quantity=orderElement.getAttribute("Quantity");
+            ord.DueDate=orderElement.getAttribute("DueDate");
+            ord.Late_Pen=orderElement.getAttribute("LatePen");
+            ord.Early_Pen=orderElement.getAttribute("EarlyPen");
+            list.add(ord);
         }
-        catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (SAXException e) {
-            throw new RuntimeException(e);
-        }
-        return 1;
-    }
-    public void Create_List()
-    {
 
-    }
-    public void put_in_list()
-    {
 
     }
 }

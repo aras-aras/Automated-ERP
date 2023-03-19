@@ -1,4 +1,3 @@
-
 public class Order {
     String Client_name;
     String Order_num;
@@ -8,7 +7,5 @@ public class Order {
     String Late_Pen;
     String Early_Pen;
     int Last_order_added;
-
-
 
 }
