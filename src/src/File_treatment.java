@@ -21,6 +21,7 @@ public class File_treatment {
         Document document = factory.newDocumentBuilder().parse(new InputSource(new StringReader(xmlData)));
         document.getDocumentElement().normalize();
         NodeList ClientList = document.getElementsByTagName("Client");
+
         NodeList orderList = document.getElementsByTagName("Order");
 
 
