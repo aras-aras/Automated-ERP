@@ -1,10 +1,7 @@
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Scanner;
 
 
@@ -15,28 +12,15 @@ public class Main {
     public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException {
         XMLudp2 receiver = new XMLudp2();
         OrderList ord= new OrderList();
+        File_treatment treatment= new File_treatment(receiver, ord);
 
-        while(true) {
 
-            receiver.receive();
-            String xmlData;
-            xmlData=receiver.unload();//tratar o ficheiro
+            Thread thread1 = new Thread(receiver);
+            thread1.start();
 
-            File_treatment treatment= new File_treatment();
-            treatment.Read_File(xmlData, ord.orders);
-            ord.print_list(ord.orders);
+            Thread thread2 = new Thread(treatment);
+            thread2.start();
 
-            System.out.println("want to end things :( ?(s/n)");
-
-            Scanner scanner = new Scanner(System.in);
-            String inputString = scanner. nextLine();
-            if(inputString.equals("s"))
-            {
-                receiver.adios();
-                break;
-            }
-
-        }
         //ModBusTCP server = new ModBusTCP();
         //server.ServerTCP();
 

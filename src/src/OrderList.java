@@ -13,6 +13,7 @@ public class OrderList {
         for(int i=0;i<orders.size();i++)
         {
             System.out.println(orders.get(i).Client_name);
+            System.out.println(orders.get(i).Order_num);
         }
 
     }

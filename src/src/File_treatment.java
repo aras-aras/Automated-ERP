@@ -2,7 +2,6 @@ import java.io.IOException;
 
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -14,34 +13,65 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class File_treatment {
 
-    public void Read_File(String xmlData, ArrayList list) throws ParserConfigurationException, IOException, SAXException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        Document document = factory.newDocumentBuilder().parse(new InputSource(new StringReader(xmlData)));
-        document.getDocumentElement().normalize();
-        NodeList ClientList = document.getElementsByTagName("Client");
+public class File_treatment implements Runnable {
 
-        NodeList orderList = document.getElementsByTagName("Order");
+    XMLudp2 server;
+    public int signal;
+    OrderList ordens;
 
+    static ArrayList<Order> list;
 
-        for (int i = 0; i < ClientList.getLength(); i++) {
-            Order ord= new Order();
-            Element clientElement =(Element) ClientList.item(i);
-            Node Client = ClientList.item(i);
-            ord.Client_name=clientElement.getAttribute("NameId");
+    public File_treatment(XMLudp2 xmLudp2, OrderList ord) {
+        server = xmLudp2;
+        list = ord.orders;
+        ordens = ord;
+    }
 
-            Element orderElement =(Element) orderList.item(i);
-            ord.Order_num=orderElement.getAttribute("Number");
-            ord.Work_Piece=orderElement.getAttribute("WorkPiece");
-            ord.Quantity=orderElement.getAttribute("Quantity");
-            ord.DueDate=orderElement.getAttribute("DueDate");
-            ord.Late_Pen=orderElement.getAttribute("LatePen");
-            ord.Early_Pen=orderElement.getAttribute("EarlyPen");
-            list.add(ord);
+    public void run() {
+        //isto faz o parser da string;
+        while (true) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            if (server.signal == 1) {
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                Document document = null;
+                try {
+                    document = factory.newDocumentBuilder().parse(new InputSource(new StringReader(server.xmlData)));
+                } catch (ParserConfigurationException e) {
+                    throw new RuntimeException(e);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (SAXException e) {
+                    throw new RuntimeException(e);
+                }
+                document.getDocumentElement().normalize();
+                NodeList ClientList = document.getElementsByTagName("Client");
+                NodeList orderList = document.getElementsByTagName("Order");
+                for (int i = 0; i < ClientList.getLength(); i++) {
+                    Element clientElement = (Element) ClientList.item(i);
+                    Node Client = ClientList.item(i);
+                    for (int j = 0; j < orderList.getLength(); j++) {
+                        Order ord = new Order();
+                        ord.Client_name = clientElement.getAttribute("NameId");
+                        Element orderElement = (Element) orderList.item(j);
+                        ord.Order_num = orderElement.getAttribute("Number");
+                        ord.Work_Piece = orderElement.getAttribute("WorkPiece");
+                        ord.Quantity = orderElement.getAttribute("Quantity");
+                        ord.DueDate = orderElement.getAttribute("DueDate");
+                        ord.Late_Pen = orderElement.getAttribute("LatePen");
+                        ord.Early_Pen = orderElement.getAttribute("EarlyPen");
+                        list.add(ord);
+                    }
+                }
+                System.out.println("--------------------------------------");
+                ordens.print_list(list);
+                server.signal = 0;
+            }
         }
-
-
     }
 }
 
