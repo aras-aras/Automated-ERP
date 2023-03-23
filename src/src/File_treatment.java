@@ -1,6 +1,8 @@
 import java.io.IOException;
 
 import java.io.StringReader;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -65,6 +67,14 @@ public class File_treatment implements Runnable {
                         ord.Late_Pen = orderElement.getAttribute("LatePen");
                         ord.Early_Pen = orderElement.getAttribute("EarlyPen");
                         list.add(ord);
+                        DataBase data=new DataBase();
+                        Connection lig=data.create_connection();
+                        try {
+                            data.new_order(lig, ord.Client_name, ord.Order_num, ord.Work_Piece, ord.Quantity, ord.DueDate, ord.Late_Pen, ord.Early_Pen);
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                        list.clear();
                     }
                 }
                 System.out.println("--------------------------------------");

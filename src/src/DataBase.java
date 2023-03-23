@@ -1,5 +1,36 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 public class DataBase {
-    String ifjdfudhfu;
+        public Connection create_connection(){
+            try {
+                Connection con = null;
+                Class.forName("org.postgresql.Driver");
+                con = DriverManager.getConnection("jdbc:postgresql://db.fe.up.pt:5432/up201905243","up201905243", "mestres_em_infi23");
+                if(con!=null){
+                    return con;
+                }
+                else{
+                    System.out.println("Connection failed");
+                }
+            }
+            catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+            return null;
+        }
+    public void pieces_available(Connection con, int pi, int number) throws SQLException {
+        Statement stmt=con.createStatement();
+        String sql="update infi.warehouse set existing='"+number+"' where pi='"+pi+"'";
+        stmt.executeUpdate(sql);
+    }
+    public void new_order(Connection con, String client_name, String order_num, String work_piece, String quantity, String duedate, String late_pen, String early_pen) throws SQLException{
+            Statement stmt=con.createStatement();
+            String sql="insert into infi.order(order_number, client_name, nr_pieces, type_piece, duedate, late_penalty, early_penalty) values ('"+order_num+"', '"+client_name+"', '"+quantity+"', '"+work_piece+"', '"+duedate+"', '"+late_pen+"', '"+early_pen+"')";
+            stmt.executeUpdate(sql);
+    }
 
     //////////////////////////////////////////////////////////////////armazem///////
     //numero de peças p1
@@ -9,6 +40,7 @@ public class DataBase {
     // numero de peças p1 reservadas
     //...
     //numero de peças p9 reservadas;
+    //done
 
 
 
