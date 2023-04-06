@@ -25,14 +25,16 @@ public class XMLudp2 implements Runnable {
 
 
     }
-    public void run() {
+    public void run() { //Thread 1 - não tem delay porque faz logo unload
         // Receive the packet
         while(true) {
             xmlBytes = new byte[2043];
             packet = new DatagramPacket(xmlBytes, xmlBytes.length);
             System.out.println("?");
             try {
+                System.out.println("Waiting packet (th1)");
                 socket.receive(packet);
+                System.out.println("Packet received (th1)");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

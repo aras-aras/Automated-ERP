@@ -5,14 +5,16 @@ import java.io.IOException;
 import java.util.Scanner;
 
 
+
 //This is ERP
 
 
 public class Main {
     public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException {
-        XMLudp2 receiver = new XMLudp2();
+        /*XMLudp2 receiver = new XMLudp2();
         OrderList ord= new OrderList();
         File_treatment treatment= new File_treatment(receiver, ord);
+        ModBusTCP server = new ModBusTCP();
 
 
             Thread thread1 = new Thread(receiver);
@@ -21,7 +23,25 @@ public class Main {
             Thread thread2 = new Thread(treatment);
             thread2.start();
 
-        //ModBusTCP server = new ModBusTCP();
-        //server.ServerTCP();
+            Thread thread3 = new Thread(server);
+            thread3.start();*/
+        //Versao 2
+
+        XMLudp2 receiver = new XMLudp2();
+        OrderList ord= new OrderList();
+        File_treatment treatment= new File_treatment(receiver, ord);
+        ModBusTCP server = new ModBusTCP();
+
+
+        Thread thread1 = new Thread(receiver);
+        thread1.start();
+
+        Thread thread2 = new Thread(treatment);
+        thread2.start();
+
+        Thread thread3 = new Thread(server);
+        thread3.start();
+
+        //server.ServerTCP(); não usar
     }
 }
