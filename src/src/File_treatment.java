@@ -34,9 +34,7 @@ public class File_treatment implements Runnable {
         //isto faz o parser da string;
         while (true) {
             try {
-                System.out.println("test1 (th2)");
                 Thread.sleep(500);
-                System.out.println("test2 (th2)");
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

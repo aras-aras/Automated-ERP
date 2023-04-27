@@ -8,14 +8,21 @@ public class ModBusTCP implements Runnable{ //Server - this part is meant to rec
     public Socket clientSocket;
     public ModBusTCP() throws IOException {
         // Set up the UDP socket and packet
+        ServerSocket serverSocket;
+        Socket clientSocket;
         serverSocket = new ServerSocket(12345); // set up the server socket
-        System.out.println("Waiting client");
+        //System.out.println("Waiting client");
         clientSocket = serverSocket.accept(); // wait for a client to connect
-        System.out.println("Client connected");
+        //System.out.println("Client connected");
 
     }
     public void run() { //antes tinha o nome de public static void ServerTCP()
         while (true) {
+            try {
+                Thread.sleep(800);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             try {
 
                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);

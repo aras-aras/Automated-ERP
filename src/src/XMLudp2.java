@@ -6,8 +6,6 @@ import java.net.*;
 import java.nio.charset.StandardCharsets;
 
 public class XMLudp2 implements Runnable {
-    public File xmlFile;
-    public FileOutputStream fos;
     public byte[] xmlBytes;
     public DatagramSocket socket;
     public int port = 9999; // Choose a suitable port number
@@ -31,13 +29,13 @@ public class XMLudp2 implements Runnable {
             xmlBytes = new byte[2043];
             packet = new DatagramPacket(xmlBytes, xmlBytes.length);
             System.out.println("?");
+
             try {
-                System.out.println("Waiting packet (th1)");
                 socket.receive(packet);
-                System.out.println("Packet received (th1)");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+            System.out.println("Packet received (th1)");
             try {
                 unload();
             } catch (IOException e) {

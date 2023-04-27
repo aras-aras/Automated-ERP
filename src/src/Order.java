@@ -6,6 +6,5 @@ public class Order {
     String DueDate;
     String Late_Pen;
     String Early_Pen;
-    int Last_order_added;
 
 }

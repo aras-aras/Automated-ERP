@@ -11,7 +11,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://D:/MEEC/1ano/2o_sem/INFI/postgresql-42.6.0.jar!/" />
+          <root url="jar://$USER_HOME$/Documents/4-2/infi/postgresql-42.6.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

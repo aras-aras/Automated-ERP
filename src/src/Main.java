@@ -33,14 +33,14 @@ public class Main {
         ModBusTCP server = new ModBusTCP();
 
 
-        Thread thread1 = new Thread(receiver);
-        thread1.start();
+            Thread thread1 = new Thread(receiver);
+            thread1.start();
 
-        Thread thread2 = new Thread(treatment);
-        thread2.start();
+            Thread thread2 = new Thread(treatment);
+            thread2.start();
 
-        Thread thread3 = new Thread(server);
-        thread3.start();
+            Thread thread3 = new Thread(server);
+            thread3.start();
 
         //server.ServerTCP(); não usar
     }
