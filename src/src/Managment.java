@@ -1,3 +1,6 @@
+import java.sql.Connection;
+import java.sql.SQLException;
+
 public class Managment {
     public int N;// numero de peças a fazer
     public int Na;// numero de peças já feitas no armazem do tipo que nos queremos
@@ -19,16 +22,19 @@ public class Managment {
 
     public int[] work_days; // vetor de dias em que estamos a cozinhar a peça
     public int deliver_day; // dia em que a peça esta a ser transportada para a plataforma
-    public void check()
-    {
-        //vai buscar a primeira peça que ainda nao está processada da tabela order
+    public void check() throws SQLException {
+
+        DataBase data=new DataBase();
+        Connection con=data.create_connection();
+        int order_number= data.order_not_processed(con); //vai buscar a primeira encomenda que ainda nao está processada da tabela order
+
         ord= new Order();
         N=Integer.parseInt(ord.Quantity);
         duedate=Integer.parseInt(ord.DueDate);
         calculus(Nd,N,Nc, Ne,duedate);
         if(Ne==0)
         {
-            // mudar o estado desta ordem para processada
+            data.processed_status(con, order_number); // mudar o estado desta ordem para processada
             return;
         }
         if(verify_pieces(ord.Work_Piece)==1)
@@ -38,6 +44,8 @@ public class Managment {
             if(N<=0)
             {
                 //reservar no armazem(deixam de estar livres)
+                int quantity=Integer.parseInt(ord.Quantity);
+
             }
             else
             {

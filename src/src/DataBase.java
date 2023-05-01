@@ -1,7 +1,4 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class DataBase {
         public Connection create_connection(){
@@ -30,6 +27,24 @@ public class DataBase {
             Statement stmt=con.createStatement();
             String sql="insert into infi.order(order_number, client_name, nr_pieces, type_piece, duedate, late_penalty, early_penalty) values ('"+order_num+"', '"+client_name+"', '"+quantity+"', '"+work_piece+"', '"+duedate+"', '"+late_pen+"', '"+early_pen+"')";
             stmt.executeUpdate(sql);
+    }
+    public int order_not_processed(Connection con) throws SQLException{
+            Statement stmt=con.createStatement();
+            String sql="select order_number from infi.order where processed='"+0+"'";
+            ResultSet re=stmt.executeQuery(sql);
+            while(re.next()){
+                return re.getInt("order_number");
+            }
+            return -1;
+    }
+    public void processed_status(Connection con, int order_num) throws SQLException{
+        Statement stmt=con.createStatement();
+        String sql="update infi.order set processed='"+1+"' where order_number='"+order_num+"'";
+        stmt.executeUpdate(sql);
+    }
+    public void book_pieces(Connection con, int quantity, int type) throws SQLException{
+            Statement stmt=con.createStatement();
+            String sql="update infi.warehouse "
     }
 
     //////////////////////////////////////////////////////////////////armazem///////
