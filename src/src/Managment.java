@@ -36,6 +36,11 @@ public class Managment {
         * todos os seus atributos.
         * */
         ord= new Order();
+        int[] atr=new int[7];
+        atr=data.order_not_processed();
+        o
+        int o= data.order_not_processed(con);
+        //acabar atributos// tavares
         N=Integer.parseInt(ord.Quantity);
         duedate=Integer.parseInt(ord.DueDate);
         /*Aqui calculamos quantos dias vamos levar para fazer a encomenda e em que
@@ -56,7 +61,7 @@ public class Managment {
             data.cancelling_order(con, order_number);
             return;
         }
-        if(verify_how_many(ord.Work_Piece, Ne)>0)
+        if(verify_how_many(ord.Work_Piece, (duedate-1))>0)
         {
             data.processed_status(con, order_number);
             /* A segunda coisa a fazer é verificar se já há peças feitas
@@ -68,13 +73,22 @@ public class Managment {
             N=N-Na;
             if(N<=0)
             {
-                //reservar no armazem(deixam de estar livres)
+                /*Este caso acontece quando há peças suficientes em
+                * armazem para completar a ordem. Dito isto é apenas necessario
+                * chamar funçao que te diz quais tranformçoes a fazer,
+                * tools, os dias em que estao a fazer as coisas e
+                * mandar para a base de dados organizada. Also, reservar na tabela
+                *  do armazem Na peças para aquele dia.
+                * */
+                //inacabado
                 int quantity=Integer.parseInt(ord.Quantity);
 
             }
             else
             {
                material=verify_raw(ord.Work_Piece);
+               /* Verifica qual é o melhor material para fazer cada peça e verifica
+               * se este está disponivel no armazem naquele dia*/
                Nb=verify_material(material,Ne);
                N=N-Nb;
                if(N<=0)
@@ -83,20 +97,34 @@ public class Managment {
                    {
                        work_days[Nd-n]=Ne-1-n;
                    }
-                   //marcar na base de dados que neste dia temos de fazer a encomenda os dias estao no vetor work_days
+                   /*chamar funçao que te diz quais tranformçoes a fazer,
+                   * tools, os dias em que estao a fazer as coisas e
+                   * mandar para a base de dados organizada.
+                   * */
+                    //inacabado
+                   return;
+
                }
+               /*Nesta secção vai ser avaliado qual é o supplier que deverá ser
+               * escolhido conforme o numero de dias que nos sobra para encomendar.
+               * */
                if(Ne==1)
                {
-                   //Supplier C
+                   /*Caso apenas nos reste 1 dia para fazer a encomenda, apenas podemos encomendar
+                   * do supplier C e o minimo de peças a encomendar é 4 e por isso podem sobrar e
+                   * é necessario dizer na base de dados que naquele dia vao chegar 4 peças e que
+                   * NF peças estao livres.
+                   * */
                    if(N<4)
                    {
-                       Nf=4-Nf;
-                       // sobram Nf peças do tipo material, é preciso acrescentar essas peças
-                       //à base de dados no dia em q chegam, neste caso, chegam daui a um dia.
+                       Nf=4-N;
+                       /*encomendar 4*/
+                       /* tavares, pfv acrescentar estas Nf peças do tipo X ao dia atual+1*/
                    }
                }
                else if(Ne==2 || Ne==3)
                {
+                   /*Caso sobrem 2 ou 3 dias, há a possibilidade de encomendar do supplier B ou C*/
                    if(N<=4)
                    {
                        if(Ng>Nh)
@@ -150,6 +178,10 @@ public class Managment {
         // verificar se ha material para essa peça naquele dia
 
         return n;
+    }
+    public void days()
+    {
+
     }
 
 }

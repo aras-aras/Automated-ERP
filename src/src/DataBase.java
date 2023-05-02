@@ -49,7 +49,7 @@ public class DataBase {
     /////////////////////////////////                 WAREHOUSE                   //////////////////////////////////////
     public void book_pieces(Connection con, int quantity, int type) throws SQLException{
             Statement stmt=con.createStatement();
-            String sql="update infi.warehouse "
+            String sql="update infi.warehouse ";
     }
     public int check_pieces(Connection con, String p, int day) throws SQLException{
             Statement stmt=con.createStatement();
