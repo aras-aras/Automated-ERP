@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -9,17 +10,17 @@ public class Managment {
     public int Nd;// numero de dias que tens para fazer a peça
     public int Ne;// numero que dias que tens no maximo para encomendar peças
     public int Nf; // número de peças not sure?
-    public int Dpcost; // depreciation cost
-    public int Ng;// depreciation cost + N* Custo do supplier C
-    public int Nh;// N* Custo do supplier B
-    public int Ni;// depreciation cost + N* Custo do supplier B
-    public int Nj;// N* Custo do supplier A
+    public int Ng;
+    public int Nh;
+
+    public int Ni;
     public Order ord; // a ordem a ser processada
     public int duedate; // duedate da ordem
     public String material; // raw material da peça
     public int[] work_days; // vetor de dias em que estamos a cozinhar a peça
     public int deliver_day; // dia em que a peça esta a ser transportada para a plataforma
-    public void check() throws SQLException {
+
+    public void check() throws SQLException, IOException {
 
         /* A primeira coisa a ser feita é verificar a lista das ordens.
         * Essa lista contem colunas com todas as caracteristicas das ordens
@@ -54,7 +55,7 @@ public class Managment {
         * ESSES DILEMAS.(dentro da função calculus), basicamente
         * problemas para depois
         * */
-        calculus(Nd,N,Nc, Ne,duedate);
+        calculus(Nd,N,Nc, Ne,duedate, time.today);
         if(Ne==0)
         {
             /* Aqui verificamos se temos 0 dias para mandar vir o raw
@@ -102,16 +103,16 @@ public class Managment {
                    {
                        work_days[Nd-n]=Ne-1-n;
                    }
-                   /*chamar funçao que te diz quais tranformçoes a fazer,
+                   /*Chamar funçao que lhe diz quais tranformçoes a fazer,
                    * tools, os dias em que estao a fazer as coisas e
                    * mandar para a base de dados organizada.
                    * */
-                    //inacabado
+                    //Inacabado
                    return;
 
                }
                /*Nesta secção vai ser avaliado qual é o supplier que deverá ser
-               * escolhido conforme o numero de dias que nos sobra para encomendar.
+               * escolhido conforme o número de dias que nos sobra para encomendar.
                * */
                if(Ne==1)
                {
@@ -120,16 +121,17 @@ public class Managment {
                    * é necessario dizer na base de dados que naquele dia vao chegar 4 peças e que
                    * NF peças estao livres.
                    * */
-                   if(N<4)
-                   {
-                       Nf=4-N;
-                       /*encomendar 4*/
-                       /* tavares, pfv acrescentar estas Nf peças do tipo X ao dia atual+1*/
-                   }
+                   SupplierC(N,Ne);
+
                }
-               else if(Ne==2 || Ne==3)
+               else if(Ne==2)
                {
-                   /*Caso sobrem 2 ou 3 dias, há a possibilidade de encomendar do supplier B ou C*/
+                   /*Caso sobrem 2 dias, há a possibilidade de encomendar do supplier B ou C.
+                   * Dito isto é necessário avaliar qual será mais rentável.
+                   *  A primeira opçao é pedir do C e levar uma penalidade a outra é mandar
+                   * vir do B*/
+                  Ng=acc.costSup(N, "C",material) + acc.Depre("C", material, Integer.parseInt(ord.DueDate), Ne);
+                  Nh=acc.costSup(N, "B",material);
                    if(N<=4)
                    {
                        if(Ng>Nh)
@@ -146,15 +148,135 @@ public class Managment {
                        // sobram Nf peças do tipo material, é preciso acrescentar essas peças
                        //à base de dados no dia em q chegam, neste caso, chegam daui a um dia.
                    }
+                   else
+                   {
+                       // mandar vir N peças do supplier B
+                       Nf=8-Nf;
+                   }
                }
+               else if(Ne==3)
+               {
+                   /*Caso sobrem 3 dias, há a possibilidade de encomendar do supplier B ou C.
+                    * Dito isto é necessário avaliar qual será mais rentável.
+                    * A primeira opçao é pedir do C e levar uma penalidade a outra é mandar
+                    * vir do B e tambem levar uma penalidade*/
+
+                   Ng=acc.costSup(N, "C",material) + acc.Depre("C", material, Integer.parseInt(ord.DueDate), Ne);
+                   Nh=acc.costSup(N, "B",material) +acc.Depre("B", material, Integer.parseInt(ord.DueDate), Ne);
+                   if(N<=4)
+                   {
+                       if(Ng>Nh)
+                       {
+                           // mandar vir N peças do supplier B
+                           Nf=8-Nf;
+                       }
+                       else
+                       {
+                           //mandar vir do supplier C
+                           Nf=4-Nf;
+                       }
+
+                       // sobram Nf peças do tipo material, é preciso acrescentar essas peças
+                       //à base de dados no dia em q chegam, neste caso, chegam daui a um dia.
+                   }
+                   else
+                   {
+                       // mandar vir N peças do supplier B
+                       Nf=8-Nf;
+                   }
+               }
+               else if(N==4)
+               {
+                   /*Caso sobrem 4 dias, há a possibilidade de encomendar do supplier B ou C.
+                    * Dito isto é necessário avaliar qual será mais rentável.
+                    * A primeira opçao é pedir do C e levar uma penalidade a outra é mandar
+                    * vir do B e tambem levar uma penalidade e a ultima e do A*/
+
+                   Ng=acc.costSup(N, "C",material) + acc.Depre("C", material, Integer.parseInt(ord.DueDate), Ne);
+                   Nh=acc.costSup(N, "B",material) + acc.Depre("B", material, Integer.parseInt(ord.DueDate), Ne);
+                   Ni=acc.costSup(N, "A",material);
+                   if(N<=4)
+                   {
+                       if(Ng>Nh)
+                       {
+                           // mandar vir N peças do supplier B
+                           Nf=8-Nf;
+                       }
+                       else
+                       {
+                           //mandar vir do supplier C
+                           Nf=4-Nf;
+                       }
+
+                       // sobram Nf peças do tipo material, é preciso acrescentar essas peças
+                       //à base de dados no dia em q chegam, neste caso, chegam daui a um dia.
+                   }
+                   else if(N>4 && N>=8)
+                   {
+                       if(Ni>Nh)
+                       {
+                           // mandar vir N peças do supplier B
+                           Nf=8-Nf;
+                       }
+                       else
+                       {
+                           //mandar vir do supplier A
+                           Nf=16-Nf;
+                       }
+
+                   }
+
+               }
+               else
+               {
+                   /*Caso sobrem 4 dias, há a possibilidade de encomendar do supplier B ou C.
+                    * Dito isto é necessário avaliar qual será mais rentável.
+                    * A primeira opçao é pedir do C e levar uma penalidade a outra é mandar
+                    * vir do B e tambem levar uma penalidade e a ultima e do A
+                    * */
+                   Ng=acc.costSup(N, "C",material) + acc.Depre("C", material, Integer.parseInt(ord.DueDate), Ne);
+                Nh=acc.costSup(N, "B",material) + acc.Depre("B", material, Integer.parseInt(ord.DueDate), Ne);
+                Ni=acc.costSup(N, "A",material) + acc.Depre("A", material, Integer.parseInt(ord.DueDate), Ne);
+                if(N<=4)
+                {
+                    if(Ng>Nh)
+                    {
+                        // mandar vir N peças do supplier B
+                        Nf=8-Nf;
+                    }
+                    else
+                    {
+                        //mandar vir do supplier C
+                        Nf=4-Nf;
+                    }
+
+                    // sobram Nf peças do tipo material, é preciso acrescentar essas peças
+                    //à base de dados no dia em q chegam, neste caso, chegam daui a um dia.
+                }
+                else if(N>4 && N>=8)
+                {
+                    if(Ni>Nh)
+                    {
+                        // mandar vir N peças do supplier B
+                        Nf=8-Nf;
+                    }
+                    else
+                    {
+                        //mandar vir do supplier A
+                        Nf=16-Nf;
+                    }
+
+                }
+
+            }
             }
         }
         data.processed_status(con, ord.Order_num); // mudar o estado desta ordem para processada
     }
-    public void calculus(int num, int num1,int num2, int num3, int duedate)
+    public void calculus(int num, int num1,int num2, int num3, int duedate,int today)
     {
         num= (int)(num1/num2 + 0.5);
-        num3 = duedate-num-1;
+        num3 = duedate-today-num-1;
     }
     public int verify_pieces(String X)
     {
@@ -187,6 +309,20 @@ public class Managment {
     {
 
     }
+    public void SupplierC(int N,int Ne)
+    {
+        if(N<4)
+        {
+            Nf=4-N;
+            /*encomendar 4*/
+            /* tavares, pfv acrescentar estas Nf peças do tipo X ao dia atual+1*/
+        }
+        else
+        {
+            /*encomendar N*/
+        }
+    }
+
 
 }
 

@@ -4,6 +4,7 @@ import java.util.concurrent.ExecutionException;
 
 public class ModBusTCP implements Runnable{ //Server - this part is meant to receive txt from mes
 
+    public int today;
     public ServerSocket serverSocket;
     public Socket clientSocket;
     public ModBusTCP() throws IOException {
@@ -17,6 +18,7 @@ public class ModBusTCP implements Runnable{ //Server - this part is meant to rec
 
     }
     public void run() { //antes tinha o nome de public static void ServerTCP()
+        today++;
         while (true) {
             try {
                 Thread.sleep(800);
