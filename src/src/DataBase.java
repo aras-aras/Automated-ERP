@@ -37,6 +37,16 @@ public class DataBase {
         String sql="update infi.order set processed='"+1+"' where order_number='"+order_num+"'";
         stmt.executeUpdate(sql);
     }
+
+    public void cancelling_order(Connection con, int order_num) throws  SQLException{
+            Statement stmt=con.createStatement();
+            String sql="update infi.order set canceled='"+1+"' where order_number='"+order_num+"'";
+            stmt.executeUpdate(sql);
+    }
+
+
+
+    /////////////////////////////////                 WAREHOUSE                   //////////////////////////////////////
     public void book_pieces(Connection con, int quantity, int type) throws SQLException{
             Statement stmt=con.createStatement();
             String sql="update infi.warehouse "

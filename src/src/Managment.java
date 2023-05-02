@@ -6,7 +6,6 @@ public class Managment {
     public int Na;// numero de peças já feitas no armazem do tipo que nos queremos
     public int Nb;// numero de peças de raw material que ha naquele dia
     public int Nc;// numero de peças a fazer por dia
-
     public int Nd;// numero de dias que tens para fazer a peça
     public int Ne;// numero que dias que tens no maximo para encomendar peças
     public int Nf; // número de peças not sure?
@@ -15,11 +14,9 @@ public class Managment {
     public int Nh;// N* Custo do supplier B
     public int Ni;// depreciation cost + N* Custo do supplier B
     public int Nj;// N* Custo do supplier A
-
     public Order ord; // a ordem a ser processada
     public int duedate; // duedate da ordem
     public String material; // raw material da peça
-
     public int[] work_days; // vetor de dias em que estamos a cozinhar a peça
     public int deliver_day; // dia em que a peça esta a ser transportada para a plataforma
     public void check() throws SQLException {
@@ -54,13 +51,14 @@ public class Managment {
             * Neste caso verificamos se só temos 0 dias, nesse caso
             * cancelamos a encomenda
             * FALTA APAGAR A ENCOMENDA DA DATABASE OU INDICAR DE ALGUMA FORMA
-            * QUE ELA FOI CANCELADA
+            * QUE ELA FOI CANCELADA (ordens canceladas têm a coluna canceled a 1)
             * */
-            data.processed_status(con, order_number);
+            data.cancelling_order(con, order_number);
             return;
         }
-        if(verify_pieces(ord.Work_Piece)==1)
+        if(verify_how_many(ord.Work_Piece, Ne)>0)
         {
+            data.processed_status(con, order_number);
             /* A segunda coisa a fazer é verificar se já há peças feitas
             * do tipo que nos queremos no armazém, o mais provével é que
             * esta situação nunca aconteça.
