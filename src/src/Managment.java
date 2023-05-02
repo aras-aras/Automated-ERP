@@ -29,17 +29,22 @@ public class Managment {
         * */
         DataBase data=new DataBase();
         Connection con=data.create_connection();
-        int order_number= data.order_not_processed(con);
-
         /* Com isto, verificamos a primeira ordem que está na lista de
         * ordens que se encontra num estado não processado e atribuimos-lhe
         * todos os seus atributos.
         * */
         ord= new Order();
-        int[] atr=new int[7];
-        atr=data.order_not_processed();
-        o
-        int o= data.order_not_processed(con);
+        Account acc = new Account();
+        ModBusTCP time= new ModBusTCP();
+        String[] atr=new String[7];
+        atr=data.order_not_processed(con);
+        ord.Order_num= atr[0];
+        ord.Client_name= atr[1];
+        ord.Quantity=atr[2];
+        ord.Work_Piece=atr[3];
+        ord.DueDate=atr[4];
+        ord.Late_Pen=atr[5];
+        ord.Early_Pen=atr[6];
         //acabar atributos// tavares
         N=Integer.parseInt(ord.Quantity);
         duedate=Integer.parseInt(ord.DueDate);
@@ -58,18 +63,18 @@ public class Managment {
             * FALTA APAGAR A ENCOMENDA DA DATABASE OU INDICAR DE ALGUMA FORMA
             * QUE ELA FOI CANCELADA (ordens canceladas têm a coluna canceled a 1)
             * */
-            data.cancelling_order(con, order_number);
+            data.cancelling_order(con, ord.Order_num);
             return;
         }
         if(verify_how_many(ord.Work_Piece, (duedate-1))>0)
         {
-            data.processed_status(con, order_number);
+            data.processed_status(con, ord.Order_num);
             /* A segunda coisa a fazer é verificar se já há peças feitas
             * do tipo que nos queremos no armazém, o mais provével é que
             * esta situação nunca aconteça.
             * Usamos esta função para verificar quantas há e depois
             * subtraimos a N(o numero total de peças para saber quantas faltam fazer */
-            Na=verify_how_many(ord.Work_Piece,Ne);
+            Na=verify_how_many(ord.Work_Piece,(duedate-1));
             N=N-Na;
             if(N<=0)
             {
@@ -84,7 +89,7 @@ public class Managment {
                 int quantity=Integer.parseInt(ord.Quantity);
 
             }
-            else
+            else//caso nao haja peças já prontas (ja transformadas) verificar raw material
             {
                material=verify_raw(ord.Work_Piece);
                /* Verifica qual é o melhor material para fazer cada peça e verifica
@@ -131,7 +136,6 @@ public class Managment {
                        {
                            // mandar vir N peças do supplier B
                            Nf=8-Nf;
-
                        }
                        else
                        {
@@ -145,7 +149,7 @@ public class Managment {
                }
             }
         }
-        data.processed_status(con, order_number); // mudar o estado desta ordem para processada
+        data.processed_status(con, ord.Order_num); // mudar o estado desta ordem para processada
     }
     public void calculus(int num, int num1,int num2, int num3, int duedate)
     {

@@ -23,22 +23,30 @@ public class DataBase {
             String sql="insert into infi.order(order_number, client_name, nr_pieces, type_piece, duedate, late_penalty, early_penalty) values ('"+order_num+"', '"+client_name+"', '"+quantity+"', '"+work_piece+"', '"+duedate+"', '"+late_pen+"', '"+early_pen+"')";
             stmt.executeUpdate(sql);
     }
-    public int order_not_processed(Connection con) throws SQLException{
+    public String[] order_not_processed(Connection con) throws SQLException{
             Statement stmt=con.createStatement();
-            String sql="select order_number from infi.order where processed='"+0+"'";
+            String sql="select order_number, client_name, nr_pieces, type_piece, duedate, late_penalty, early_penalty from infi.order where processed='"+0+"'";
             ResultSet re=stmt.executeQuery(sql);
             while(re.next()){
-                return re.getInt("order_number");
+                String[] atr= new String[7];
+                atr[0]=re.getString("order_number");
+                atr[1]=re.getString("client_name");
+                atr[2]=re.getString("nr_pieces");
+                atr[3]=re.getString("type_piece");
+                atr[4]=re.getString("duedate");
+                atr[5]=re.getString("late_penalty");
+                atr[6]=re.getString("early_penalty");
+                    return atr;
             }
-            return -1;
+            return null;
     }
-    public void processed_status(Connection con, int order_num) throws SQLException{
+    public void processed_status(Connection con, String order_num) throws SQLException{
         Statement stmt=con.createStatement();
         String sql="update infi.order set processed='"+1+"' where order_number='"+order_num+"'";
         stmt.executeUpdate(sql);
     }
 
-    public void cancelling_order(Connection con, int order_num) throws  SQLException{
+    public void cancelling_order(Connection con, String order_num) throws  SQLException{
             Statement stmt=con.createStatement();
             String sql="update infi.order set canceled='"+1+"' where order_number='"+order_num+"'";
             stmt.executeUpdate(sql);
@@ -47,7 +55,7 @@ public class DataBase {
 
 
     /////////////////////////////////                 WAREHOUSE                   //////////////////////////////////////
-    public void book_pieces(Connection con, int quantity, int type) throws SQLException{
+    public void book_pieces(Connection con, String quantity, String type) throws SQLException{
             Statement stmt=con.createStatement();
             String sql="update infi.warehouse ";
     }
