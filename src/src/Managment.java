@@ -24,21 +24,48 @@ public class Managment {
     public int deliver_day; // dia em que a peça esta a ser transportada para a plataforma
     public void check() throws SQLException {
 
+        /* A primeira coisa a ser feita é verificar a lista das ordens.
+        * Essa lista contem colunas com todas as caracteristicas das ordens
+        * incluindo uma coluna que indica se esta ordem ján foi processada ou não.
+        * Uma ordem ser processada significa que já foi metida no calendario das
+        * coisas a fazer aka cozinhar e ser transportada etc
+        * */
         DataBase data=new DataBase();
         Connection con=data.create_connection();
-        int order_number= data.order_not_processed(con); //vai buscar a primeira encomenda que ainda nao está processada da tabela order
+        int order_number= data.order_not_processed(con);
 
+        /* Com isto, verificamos a primeira ordem que está na lista de
+        * ordens que se encontra num estado não processado e atribuimos-lhe
+        * todos os seus atributos.
+        * */
         ord= new Order();
         N=Integer.parseInt(ord.Quantity);
         duedate=Integer.parseInt(ord.DueDate);
+        /*Aqui calculamos quantos dias vamos levar para fazer a encomenda e em que
+        * dia temos de encomendar as peças.
+        * FALTA VERIFICAR SE OS DIAS ESTÃO OCUPADOS E AS SOLUÇOES PARA
+        * ESSES DILEMAS.(dentro da função calculus), basicamente
+        * problemas para depois
+        * */
         calculus(Nd,N,Nc, Ne,duedate);
         if(Ne==0)
         {
-            data.processed_status(con, order_number); // mudar o estado desta ordem para processada
+            /* Aqui verificamos se temos 0 dias para mandar vir o raw
+            * Neste caso verificamos se só temos 0 dias, nesse caso
+            * cancelamos a encomenda
+            * FALTA APAGAR A ENCOMENDA DA DATABASE OU INDICAR DE ALGUMA FORMA
+            * QUE ELA FOI CANCELADA
+            * */
+            data.processed_status(con, order_number);
             return;
         }
         if(verify_pieces(ord.Work_Piece)==1)
         {
+            /* A segunda coisa a fazer é verificar se já há peças feitas
+            * do tipo que nos queremos no armazém, o mais provével é que
+            * esta situação nunca aconteça.
+            * Usamos esta função para verificar quantas há e depois
+            * subtraimos a N(o numero total de peças para saber quantas faltam fazer */
             Na=verify_how_many(ord.Work_Piece,Ne);
             N=N-Na;
             if(N<=0)
@@ -107,7 +134,6 @@ public class Managment {
     }
     public int verify_how_many(String X, int Ne) throws SQLException {
         //verificar quantas peças livres X há dia Ne
-
         DataBase data=new DataBase();
         Connection con=data.create_connection();
         int n=data.check_pieces(con, X, Ne);
