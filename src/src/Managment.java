@@ -92,7 +92,7 @@ public class Managment {
                }
             }
         }
-        // mudar o estado desta ordem para processada
+        data.processed_status(con, order_number); // mudar o estado desta ordem para processada
     }
     public void calculus(int num, int num1,int num2, int num3, int duedate)
     {
@@ -105,10 +105,12 @@ public class Managment {
 
         return 1;
     }
-    public int verify_how_many(String X, int Ne)
-    {   int n=0;
+    public int verify_how_many(String X, int Ne) throws SQLException {
         //verificar quantas peças livres X há dia Ne
 
+        DataBase data=new DataBase();
+        Connection con=data.create_connection();
+        int n=data.check_pieces(con, X, Ne);
         return n;
     }
     public String verify_raw( String piece)

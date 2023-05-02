@@ -18,11 +18,6 @@ public class DataBase {
             }
             return null;
         }
-    public void pieces_available(Connection con, int pi, int number) throws SQLException {
-        Statement stmt=con.createStatement();
-        String sql="update infi.warehouse set existing='"+number+"' where pi='"+pi+"'";
-        stmt.executeUpdate(sql);
-    }
     public void new_order(Connection con, String client_name, String order_num, String work_piece, String quantity, String duedate, String late_pen, String early_pen) throws SQLException{
             Statement stmt=con.createStatement();
             String sql="insert into infi.order(order_number, client_name, nr_pieces, type_piece, duedate, late_penalty, early_penalty) values ('"+order_num+"', '"+client_name+"', '"+quantity+"', '"+work_piece+"', '"+duedate+"', '"+late_pen+"', '"+early_pen+"')";
@@ -45,6 +40,17 @@ public class DataBase {
     public void book_pieces(Connection con, int quantity, int type) throws SQLException{
             Statement stmt=con.createStatement();
             String sql="update infi.warehouse "
+    }
+    public int check_pieces(Connection con, String p, int day) throws SQLException{
+            Statement stmt=con.createStatement();
+            String sql="select '"+p+"'_existing, '"+p+"'_reserved from infi.warehouse where day='"+day+"'";
+            ResultSet re=stmt.executeQuery(sql);
+            while(re.next()){
+                int exis=re.getInt("'"+p+"'_existing");
+                int reserv=re.getInt("'"+p+"'_reserved");
+                return exis-reserv;
+            }
+            return -1;
     }
 
     //////////////////////////////////////////////////////////////////armazem///////
