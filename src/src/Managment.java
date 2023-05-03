@@ -87,7 +87,19 @@ public class Managment {
                 *  do armazem Na peças para aquele dia.
                 * */
                 //inacabado
-                int quantity=Integer.parseInt(ord.Quantity);
+                int quantity=Integer.parseInt(ord.Quantity);//nr de peças q queremos
+                int[] arr;
+                arr=data.check_pieces(con,ord.Work_Piece, Ne);
+                int existing=arr[0];//nr de peças existentes
+                int reserved=arr[1];//nr de peças que estao reservadas
+                int new_reserved=reserved+quantity; /*isto vai atualizar a tabela da warehouse e atualizar a coluna das peças reserdas*/
+                data.reserving_pieces(con, ord.Work_Piece, Ne, new_reserved);//ja reservou adicionei as N peças necessarias para acabar a encomenda
+                /* agora chamar a funçao que vai indicar qual a transformaçao a realizar*/
+                String raw=verify_raw(ord.Work_Piece);
+                String[] str=new String[2];
+                str=data.transformation(con, raw, ord.Work_Piece);
+                /* retorna num array as
+                * transformaçoes e as tools necessarias para enviar pro mes*/
 
             }
             else//caso nao haja peças já prontas (ja transformadas) verificar raw material
@@ -288,7 +300,11 @@ public class Managment {
         //verificar quantas peças livres X há dia Ne
         DataBase data=new DataBase();
         Connection con=data.create_connection();
-        int n=data.check_pieces(con, X, Ne);
+        int[] arr;
+        arr=data.check_pieces(con,X, Ne);
+        int existing=arr[0];
+        int reserved=arr[1];
+        int n=existing-reserved;
         return n;
     }
     public String verify_raw( String piece)

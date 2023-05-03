@@ -59,32 +59,41 @@ public class DataBase {
             Statement stmt=con.createStatement();
             String sql="update infi.warehouse ";
     }
-    public int check_pieces(Connection con, String p, int day) throws SQLException{
+    public int[] check_pieces(Connection con, String p, int day) throws SQLException{
             Statement stmt=con.createStatement();
             String sql="select '"+p+"'_existing, '"+p+"'_reserved from infi.warehouse where day='"+day+"'";
             ResultSet re=stmt.executeQuery(sql);
             while(re.next()){
-                int exis=re.getInt("'"+p+"'_existing");
-                int reserv=re.getInt("'"+p+"'_reserved");
-                return exis-reserv;
+                int[] arr=new int[2];
+                arr[0]=re.getInt("'"+p+"'_existing");
+                arr[1]=re.getInt("'"+p+"'_reserved");
+                return arr;
             }
-            return -1;
+            return null;
+    }
+    public void reserving_pieces(Connection con, String p, int day, int new_reserved) throws SQLException{
+            Statement stmt=con.createStatement();
+            String sql="update infi.warehouse set '"+p+"'_existing='"+new_reserved+"' where day='"+day+"'";
+        stmt.executeUpdate(sql);
     }
 
-    //////////////////////////////////////////////////////////////////armazem///////
-    //numero de peças p1
-    //numero de peças p2
-    //...
-    //numero de peças p9
-    // numero de peças p1 reservadas
-    //...
-    //numero de peças p9 reservadas;
-    //done
 
 
 
-    //////////////////////////////////////////////////////////////////pedido///////
+    //////////////////////////////                  TRANSFORMATIONS                      ////////////////////////////////////////////////////////
 
+    public String[] transformation(Connection con, String pi, String pf) throws SQLException{
+            Statement stmt=con.createStatement();
+            String sql="select time, tool from infi.transformations where p_initial='"+pi+"' and p_final='"+pf+"'";
+            ResultSet re=stmt.executeQuery(sql);
+            while(re.next()){
+                String[] str= new String[2];
+                str[0]=re.getString("time");
+                str[1]=re.getString("tool");
+                return str;
+            }
+            return null;
+    }
 
 
     ////////////////////////////////////////////////////////catalogo///////////////
