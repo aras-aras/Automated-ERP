@@ -67,7 +67,7 @@ public class Managment {
             data.cancelling_order(con, ord.Order_num);
             return;
         }
-        if(verify_how_many(ord.Work_Piece, (duedate-1))>0)
+        if(verify_how_many(ord.Work_Piece, (duedate-1))>0) //verifica se ha já peças prontas (transformadas)
         {
             data.processed_status(con, ord.Order_num);
             /* A segunda coisa a fazer é verificar se já há peças feitas
@@ -87,17 +87,21 @@ public class Managment {
                 *  do armazem Na peças para aquele dia.
                 * */
                 //inacabado
-                int quantity=Integer.parseInt(ord.Quantity);//nr de peças q queremos
+                int quantity=Integer.parseInt(ord.Quantity);//nr de peças já prontas q queremos
                 int[] arr;
                 arr=data.check_pieces(con,ord.Work_Piece, Ne);
                 int existing=arr[0];//nr de peças existentes
                 int reserved=arr[1];//nr de peças que estao reservadas
                 int new_reserved=reserved+quantity; /*isto vai atualizar a tabela da warehouse e atualizar a coluna das peças reserdas*/
                 data.reserving_pieces(con, ord.Work_Piece, Ne, new_reserved);//ja reservou adicionei as N peças necessarias para acabar a encomenda
+
+                ////////////////////////////////////
+
+
                 /* agora chamar a funçao que vai indicar qual a transformaçao a realizar*/
-                String raw=verify_raw(ord.Work_Piece);
-                String[] str=new String[2];
-                str=data.transformation(con, raw, ord.Work_Piece);
+                //String raw=verify_raw(ord.Work_Piece);
+                //String[] str=new String[2];
+                //str=data.transformation(con, raw, ord.Work_Piece);
                 /* retorna num array as
                 * transformaçoes e as tools necessarias para enviar pro mes*/
 
@@ -107,7 +111,7 @@ public class Managment {
                material=verify_raw(ord.Work_Piece);
                /* Verifica qual é o melhor material para fazer cada peça e verifica
                * se este está disponivel no armazem naquele dia*/
-               Nb=verify_material(material,Ne);
+               Nb=verify_material(material,Ne); //verificar se há raw material no dia Ne
                N=N-Nb;
                if(N<=0)
                {
@@ -119,6 +123,9 @@ public class Managment {
                    * tools, os dias em que estao a fazer as coisas e
                    * mandar para a base de dados organizada.
                    * */
+
+
+
                     //Inacabado
                    return;
 
@@ -315,10 +322,15 @@ public class Managment {
         }
         else return "P2";
     }
-    public int verify_material(String X, int Ne) {
-        int n=0;
-        // verificar se ha material para essa peça naquele dia
-
+    public int verify_material(String X, int Ne) throws SQLException {
+        // verificar se ha raw material para essa peça naquele dia
+        DataBase data=new DataBase();
+        Connection con=data.create_connection();
+        int[] arr;
+        arr=data.check_pieces(con,X, Ne);
+        int existing=arr[0];
+        int reserved=arr[1];
+        int n=existing-reserved;
         return n;
     }
     public void days()
