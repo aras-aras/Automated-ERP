@@ -77,6 +77,12 @@ public class DataBase {
         stmt.executeUpdate(sql);
     }
 
+    public void arriving_new_pieces(Connection con, String piece, int day, int quantity) throws SQLException{
+            Statement stmt=con.createStatement();
+            String sql="update infi.warehouse set '"+piece+"'_existing='"+quantity+"' where day='"+day+"'";
+            stmt.executeUpdate(sql);
+    }
+
 
 
 

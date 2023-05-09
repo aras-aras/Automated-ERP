@@ -72,7 +72,7 @@ public class Managment {
             /* Aqui verificamos se temos 0 dias para mandar vir o raw
             * Neste caso verificamos se só temos 0 dias, nesse caso
             * cancelamos a encomenda
-            * FALTA APAGAR A ENCOMENDA DA DATABASE OU INDICAR DE ALGUMA FORMA
+            * apaga-se A ENCOMENDA DA DATABASE OU INDICAR DE ALGUMA FORMA
             * QUE ELA FOI CANCELADA (ordens canceladas têm a coluna canceled a 1)
             * */
             data.cancelling_order(con, ord.Order_num);
@@ -152,7 +152,7 @@ public class Managment {
                    * é necessario dizer na base de dados que naquele dia vao chegar 4 peças e que
                    * NF peças estao livres.
                    * */
-                   SupplierC(N,Ne);
+                   SupplierC(N,Ne, material);
 
                }
                else if(Ne==2)
@@ -386,20 +386,28 @@ public class Managment {
     {
 
     }
-    public void SupplierC(int N,int Ne)
+    public void SupplierC(int N, String raw_material)//int Ne, antes tinha isto mas apaguei pq acho q n é necessario
     {
         if(N<4)
         {
             Nf=4-N;
-            /*encomendar 4*/
-            /* tavares, pfv acrescentar estas Nf peças do tipo X ao dia atual+1*/
+            /*encomendar 4 peças do tipo raw_material */
+            // ??
+
+            /* tavares, pfv acrescentar estas Nf peças do tipo X ao dia atual+1 ( ao armazem(?) )*/
+            DataBase data=new DataBase();
+            Connection con= data.create_connection();
+            int[] arr;
+            arr=data.check_pieces(con, );
+            int actual_existing=arr[0];
+            actual_existing=actual_existing+Nf;
+            data.arriving_new_pieces(con, raw_material, ,actual_existing);
+            //aqui o dia atual vai depender de como está o contador, VER ISTO
         }
         else
         {
             /*encomendar N*/
         }
     }
-
-
 }
 
