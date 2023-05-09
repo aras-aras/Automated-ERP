@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 public class XMLudp2 implements Runnable {
     public byte[] xmlBytes;
     public DatagramSocket socket;
-    public int port = 9999; // Choose a suitable port number
+    public int port = 12345; // Choose a suitable port number
     public DatagramPacket packet;
     public InetAddress address;
 

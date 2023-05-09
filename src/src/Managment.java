@@ -55,7 +55,18 @@ public class Managment {
         * ESSES DILEMAS.(dentro da função calculus), basicamente
         * problemas para depois
         * */
-        calculus(Nd,N,Nc, Ne,duedate, time.today);
+        calculus(Nd,N,Nc, Ne,duedate, time.today, ord.Work_Piece);
+        /*Basicamente aqui tens de verificar se os dias que estao programados para fazer
+        peças estao reservados, caso estejam começa a distribuir pelos dias livres
+        * o Ne diz te o dia em que vais começar a cozinhar e prolonga se ate à duedate-1*/
+
+        /*Also, acho que vamos cagar no caso de conseguir várias encomendas
+         *ao mesmo tempo por isso mete so uma por dia para ja
+        * */
+
+        /*Depois disto, verificas se está a ocorrer algum transporte nesse dia, se sim adias a duedate ate
+        teres um dia livre, podes fazer um while em que dentro verificas e fazes duedate++;
+        * */
         if(Ne==0)
         {
             /* Aqui verificamos se temos 0 dias para mandar vir o raw
@@ -74,7 +85,8 @@ public class Managment {
             * do tipo que nos queremos no armazém, o mais provével é que
             * esta situação nunca aconteça.
             * Usamos esta função para verificar quantas há e depois
-            * subtraimos a N(o numero total de peças para saber quantas faltam fazer */
+            * subtraimos a N(o numero total de peças para saber quantas faltam fazer
+            * */
             Na=verify_how_many(ord.Work_Piece,(duedate-1));
             N=N-Na;
             if(N<=0)
@@ -292,10 +304,47 @@ public class Managment {
         }
         data.processed_status(con, ord.Order_num); // mudar o estado desta ordem para processada
     }
-    public void calculus(int num, int num1,int num2, int num3, int duedate,int today)
+    public void calculus(int num, int num1,int num2, int num3, int duedate,int today, String Workpiece)
     {
-        num= (int)(num1/num2 + 0.5);
-        num3 = duedate-today-num-1;
+        if((Workpiece.equals("P3") && (num1==1 || num1==2 || num1==3)) ||
+                (Workpiece.equals("P4") && (num1==1 || num1==2  || num1==3))||
+                    (Workpiece.equals("P6") && (num1==1)) ||
+                         (Workpiece.equals("P7") && (num1==1 || num1==2)))
+        {
+            num=1;
+        }
+        else if((Workpiece.equals("P3") && (num1==4 || num1==5 || num1==6 || num1==7 || num1==8)) ||
+                    (Workpiece.equals("P4") && (num1==4 || num1==5 || num1==6 || num1==7 || num1==8))||
+                        (Workpiece.equals("P5") && (num1==1 || num1==2 || num1==3)) ||
+                            (Workpiece.equals("P6") && (num1==4 || num1==2 || num1==3)) ||
+                                (Workpiece.equals("P7") && ( num1==3 ||num1==4 || num1==5 || num1==6 || num1==7 || num1==8)) ||
+                                    (Workpiece.equals("P8") && (num1==1)) ||
+                                        (Workpiece.equals("P9") && (num1==4 ||num1==1 || num1==2 || num1==3)))
+        {
+            num=2;
+        }
+        else if ((Workpiece.equals("P5") && (num1==4 || num1==5 || num1==6 || num1==7 || num1==8)) ||
+                    (Workpiece.equals("P6") && ( num1==5 || num1==6 || num1==7))||
+                        (Workpiece.equals("P8") && (num1==4 || num1==2 || num1==3)) ||
+                            (Workpiece.equals("P9") && ( num1==5 || num1==6 || num1==7 || num1==8)))
+        {
+            num=3;
+        }
+        else if((Workpiece.equals("P6") && (num1==8)) ||
+                    (Workpiece.equals("P8") && ( num1==5 || num1==6 || num1==7)))
+        {
+            num=4;
+        }
+        else
+        {
+            num=5;
+        }
+
+        num3 = duedate - today - num - 1;
+        while(num3>duedate)
+        {
+            duedate++;
+        }
     }
     public int verify_pieces(String X)
     {

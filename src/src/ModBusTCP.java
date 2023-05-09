@@ -18,13 +18,14 @@ public class ModBusTCP implements Runnable{ //Server - this part is meant to rec
 
     }
     public void run() { //antes tinha o nome de public static void ServerTCP()
-        today++;
         while (true) {
+
             try {
-                Thread.sleep(800);
+                Thread.sleep(60000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+            //aqui
             try {
 
                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -44,6 +45,7 @@ public class ModBusTCP implements Runnable{ //Server - this part is meant to rec
             } catch (IOException e) {
                 System.err.println("Error: " + e.getMessage());
             }
+            today++;
     }
     /*public void adios() throws IOException {
         //out.close();
@@ -53,5 +55,6 @@ public class ModBusTCP implements Runnable{ //Server - this part is meant to rec
     }*/
 
     }
+
 
 }
