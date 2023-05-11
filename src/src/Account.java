@@ -109,8 +109,8 @@ public class Account {
         * e o AD é o dia em que a peça chega a maquina*/
         int  number=0, unit_cost=0;
         int RC=0;//custo do raw material de cada supplier
-                /* Ok basicamente tambem vou precisas de uma coluna em que guardes qual o supplier que cada
-                * ordem usou, vais ter de gaurad no management ou assim e depois aqui vais buscar
+                /* Ok basicamente tambem vou precisas de uma coluna em que guardes qual o supplier e o preço que cada
+                * ordem usou, vais ter de guardar no management ou assim e depois aqui vais buscar
                 * porque precisamos de saber isso para o custo total*/
         int DC= RC*(DD-AD)/100;
         unit_cost=RC+PC+DC;

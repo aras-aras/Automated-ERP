@@ -19,6 +19,8 @@ public class Managment {
     public String material; // raw material da peça
     public int[] work_days; // vetor de dias em que estamos a cozinhar a peça
     public int deliver_day; // dia em que a peça esta a ser transportada para a plataforma
+    public ModBusTCP server;
+
 
     public void check() throws SQLException, IOException {
 
@@ -35,8 +37,8 @@ public class Managment {
         * todos os seus atributos.
         * */
         ord= new Order();
+
         Account acc = new Account();
-        ModBusTCP time= new ModBusTCP();
         String[] atr=new String[7];
         atr=data.order_not_processed(con);
         ord.Order_num= atr[0];
@@ -55,7 +57,7 @@ public class Managment {
         * ESSES DILEMAS.(dentro da função calculus), basicamente
         * problemas para depois
         * */
-        calculus(Nd,N,Nc, Ne,duedate, time.today, ord.Work_Piece);
+        calculus(Nd,N,Nc, Ne,duedate, server.today, ord.Work_Piece);
         /*Basicamente aqui tens de verificar se os dias que estao programados para fazer
         peças estao reservados, caso estejam começa a distribuir pelos dias livres
         * o Ne diz te o dia em que vais começar a cozinhar e prolonga se ate à duedate-1*/
@@ -152,7 +154,31 @@ public class Managment {
                    * é necessario dizer na base de dados que naquele dia vao chegar 4 peças e que
                    * NF peças estao livres.
                    * */
-                   SupplierC(N,Ne, material);
+                   if(N<4)
+                   {
+                       Nf=4-N; //encomendas 4
+                       // teu armazem naquele dia vai ficar com Nf livres e N ocupadas
+
+                   }
+                   else
+                   {
+                       Nf=0; //endomendas N
+                       // o teu armazem naquele dia vai ficar com N ocupadas
+                   }
+                   /*encomendar 4 peças do tipo raw_material */
+                   // ??
+
+                   /* tavares, pfv acrescentar estas Nf peças do tipo X ao dia atual+1 ( ao armazem(?) )*/
+                   // eliminei a funçao supplier c porque achei q n fazia sentido agr é so fazer o mesmo em todos
+                   data = new DataBase();
+                   con = data.create_connection();
+                   int[] arr;
+                   arr=data.check_pieces(con,material,server.today);//???
+                   int actual_existing=arr[0];
+                   actual_existing=actual_existing+Nf;
+                   data.arriving_new_pieces(con, material, server.today, actual_existing);
+                   //aqui o dia atual vai depender de como está o contador, VER ISTO
+
 
                }
                else if(Ne==2)
@@ -273,11 +299,13 @@ public class Managment {
                     if(Ng>Nh)
                     {
                         // mandar vir N peças do supplier B
+                        //custo do supplier = acc.costSup(N, "B",material)/N
                         Nf=8-Nf;
                     }
                     else
                     {
                         //mandar vir do supplier C
+                        //custo do supplier
                         Nf=4-Nf;
                     }
 
@@ -303,6 +331,8 @@ public class Managment {
             }
         }
         data.processed_status(con, ord.Order_num); // mudar o estado desta ordem para processada
+        /* Criar uma coluna na ordem que é uma data
+        prevista de duedate que é o valor que esta neste momento na duedate*/
     }
     public void calculus(int num, int num1,int num2, int num3, int duedate,int today, String Workpiece)
     {
@@ -345,6 +375,7 @@ public class Managment {
         {
             duedate++;
         }
+
     }
     public int verify_pieces(String X)
     {
@@ -386,28 +417,6 @@ public class Managment {
     {
 
     }
-    public void SupplierC(int N, String raw_material)//int Ne, antes tinha isto mas apaguei pq acho q n é necessario
-    {
-        if(N<4)
-        {
-            Nf=4-N;
-            /*encomendar 4 peças do tipo raw_material */
-            // ??
 
-            /* tavares, pfv acrescentar estas Nf peças do tipo X ao dia atual+1 ( ao armazem(?) )*/
-            DataBase data=new DataBase();
-            Connection con= data.create_connection();
-            int[] arr;
-            arr=data.check_pieces(con, );
-            int actual_existing=arr[0];
-            actual_existing=actual_existing+Nf;
-            data.arriving_new_pieces(con, raw_material, ,actual_existing);
-            //aqui o dia atual vai depender de como está o contador, VER ISTO
-        }
-        else
-        {
-            /*encomendar N*/
-        }
-    }
 }
 

@@ -31,6 +31,7 @@ public class Main {
         OrderList ord= new OrderList();
         File_treatment treatment= new File_treatment(receiver, ord);
         ModBusTCP server = new ModBusTCP();
+        int today= server.today;
 
 
             Thread thread1 = new Thread(receiver);

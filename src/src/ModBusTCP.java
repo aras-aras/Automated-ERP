@@ -10,6 +10,7 @@ public class ModBusTCP implements Runnable{ //Server - this part is meant to rec
     public ModBusTCP() throws IOException {
         // Set up the UDP socket and packet
         ServerSocket serverSocket;
+        today=0;
         Socket clientSocket;
         serverSocket = new ServerSocket(12345); // set up the server socket
         //System.out.println("Waiting client");
@@ -21,11 +22,11 @@ public class ModBusTCP implements Runnable{ //Server - this part is meant to rec
         while (true) {
 
             try {
-                Thread.sleep(60000);
+                Thread.sleep(600);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            //aqui
+            //meter esta classe sempre a correr e de 60 em 60 segundos executar as seguintes linhas de codigo
             try {
 
                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -46,7 +47,7 @@ public class ModBusTCP implements Runnable{ //Server - this part is meant to rec
                 System.err.println("Error: " + e.getMessage());
             }
             today++;
-    }
+        }
     /*public void adios() throws IOException {
         //out.close();
         //in.close();
