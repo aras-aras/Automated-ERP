@@ -27,7 +27,7 @@ public class Managment {
         while(true){
         /* A primeira coisa a ser feita é verificar a lista das ordens.
         * Essa lista contem colunas com todas as caracteristicas das ordens
-        * incluindo uma coluna que indica se esta ordem ján foi processada ou não.
+        * incluindo uma coluna que indica se esta ordem já foi processada ou não.
         * Uma ordem ser processada significa que já foi metida no calendario das
         * coisas a fazer aka cozinhar e ser transportada etc
         * */
@@ -67,6 +67,7 @@ public class Managment {
          *ao mesmo tempo por isso mete so uma por dia para ja
         * */
 
+
         /*Depois disto, verificas se está a ocorrer algum transporte nesse dia, se sim adias a duedate ate
         teres um dia livre, podes fazer um while em que dentro verificas e fazes duedate++;
         * */
@@ -83,8 +84,11 @@ public class Managment {
         }
         //if(verify_how_many(ord.Work_Piece, (duedate-1))>0) //verifica se ha já peças prontas (transformadas)
        // {
-            //aqui criar as linhas com as peças
+
             data.processed_status(con, ord.Order_num);
+            //aqui criar as linhas com as peças
+
+
             /* A segunda coisa a fazer é verificar se já há peças feitas
             * do tipo que nos queremos no armazém, o mais provével é que
             * esta situação nunca aconteça.
@@ -95,27 +99,18 @@ public class Managment {
             int num=N;
             N=N-Na;
 
-            if(N<=0)
-            {
+            if(N<=0) { // CASO JÁ HAJA TODAS AS PEÇAS PRETENDIDAS JÁ TRANSFORMADAS E PRONTAS
                 /*Also, reservar na tabela
-                *  do armazem Na peças para aquele dia.
-                * */
-                /* ----TABELA PIECES--------
-                *
-                * Neste caso, num peças tem as colunas a  zero menos,
-                * a ordem, o tipo1 e o deliver na tabela pieces
-                * */
-                //inacabado
-                int quantity=Integer.parseInt(ord.Quantity);//nr de peças já prontas q queremos
+                 *  do armazem Na peças para aquele dia.
+                 * */
+
+                int quantity = Integer.parseInt(ord.Quantity);//nr de peças já prontas q queremos
                 int[] arr;
-                arr=data.check_pieces(con,ord.Work_Piece, Ne);
-                int existing=arr[0];//nr de peças existentes
-                int reserved=arr[1];//nr de peças que estao reservadas
-                int new_reserved=reserved+quantity; /*isto vai atualizar a tabela da warehouse e atualizar a coluna das peças reserdas*/
+                arr = data.check_pieces(con, ord.Work_Piece, Ne);
+                int existing = arr[0];//nr de peças existentes
+                int reserved = arr[1];//nr de peças que estao reservadas
+                int new_reserved = reserved + quantity; /*isto vai atualizar a tabela da warehouse e atualizar a coluna das peças reserdas*/
                 data.reserving_pieces(con, ord.Work_Piece, Ne, new_reserved);//ja reservou adicionei as N peças necessarias para acabar a encomenda
-                ///////////////////////////////////
-                /* retorna num array as
-                * transformaçoes e as tools necessarias para enviar pro mes*/
 
             }
             else//caso nao haja peças já prontas suficientes (ja transformadas) verificar raw material
@@ -128,20 +123,21 @@ public class Managment {
                   int reserved = arr[1];//nr de peças que estao reservadas
                   int new_reserved = reserved + Na; /*isto vai atualizar a tabela da warehouse e atualizar a coluna das peças reservadas*/
                   data.reserving_pieces(con, ord.Work_Piece, Ne, new_reserved);//ja reservou adicionei as N peças necessarias para acabar a encomenda
-                    /* ----TABELA PIECES--------
-                     *
-                     * Neste caso, Na peças tem as colunas a  zero menos,
-                     * a ordem, o tipo1 e o deliver na tabela pieces
-                     * */
                 }
 
                   material = verify_raw(ord.Work_Piece);
+
                 /* ----TABELA PIECES--------
                  *
                  * Neste caso, Na peças tem type_1=material
                  * */
-                  /* Verifica qual é o melhor material para fazer cada peça e verifica
+                for (int i = 0; i < N; i++){
+                    data.piece(con, atr[0], material, Integer.toString(Integer.parseInt(atr[4])-1));
+                }
+
+                /* Verifica qual é o melhor material para fazer cada peça e verifica
                    * se este está disponivel no armazem naquele dia*/
+
                   Nb = verify_material(material, Ne); //verificar se há raw material no dia Ne
                   N = N - Nb;
               }
@@ -161,6 +157,10 @@ public class Managment {
                    str=data.transformation(con, raw, ord.Work_Piece); //work_piece é a peça final
                    String time=str[0];//tempo de transformaçao
                    String tool=str[1];//tool da transformaçao
+
+                    /*
+                    * */
+
 
                     //Inacabado-falta formar a string para mandar ao mes,
                    return;
