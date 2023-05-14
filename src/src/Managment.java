@@ -113,9 +113,13 @@ public class Managment {
 
 
                 /* agora chamar a funçao que vai indicar qual a transformaçao a realizar*/
-                //String raw=verify_raw(ord.Work_Piece);
-                //String[] str=new String[2];
-                //str=data.transformation(con, raw, ord.Work_Piece);
+                String raw=verify_raw(ord.Work_Piece); //peça origem
+                String[] str=new String[2];
+                str=data.transformation(con, raw, ord.Work_Piece); //work_piece é a peça final
+                String time=str[0];//tempo de transformaçao
+                String tool=str[1];//tool da transformaçao
+
+
                 /* retorna num array as
                 * transformaçoes e as tools necessarias para enviar pro mes*/
 
@@ -138,7 +142,11 @@ public class Managment {
                    * mandar para a base de dados organizada.
                    * */
 
-
+                   String raw=verify_raw(ord.Work_Piece); //peça origem
+                   String[] str=new String[2];
+                   str=data.transformation(con, raw, ord.Work_Piece); //work_piece é a peça final
+                   String time=str[0];//tempo de transformaçao
+                   String tool=str[1];//tool da transformaçao
 
                     //Inacabado
                    return;
