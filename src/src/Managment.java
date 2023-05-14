@@ -81,8 +81,9 @@ public class Managment {
             data.cancelling_order(con, ord.Order_num);
             return;
         }
-        if(verify_how_many(ord.Work_Piece, (duedate-1))>0) //verifica se ha já peças prontas (transformadas)
-        {
+        //if(verify_how_many(ord.Work_Piece, (duedate-1))>0) //verifica se ha já peças prontas (transformadas)
+       // {
+            //aqui criar as linhas com as peças
             data.processed_status(con, ord.Order_num);
             /* A segunda coisa a fazer é verificar se já há peças feitas
             * do tipo que nos queremos no armazém, o mais provével é que
@@ -96,11 +97,7 @@ public class Managment {
 
             if(N<=0)
             {
-                /*Este caso acontece quando há peças suficientes em
-                * armazem para completar a ordem. Dito isto é apenas necessario
-                * chamar funçao que te diz quais tranformçoes a fazer,
-                * tools, os dias em que estao a fazer as coisas e
-                * mandar para a base de dados organizada. Also, reservar na tabela
+                /*Also, reservar na tabela
                 *  do armazem Na peças para aquele dia.
                 * */
                 /* ----TABELA PIECES--------
@@ -116,18 +113,7 @@ public class Managment {
                 int reserved=arr[1];//nr de peças que estao reservadas
                 int new_reserved=reserved+quantity; /*isto vai atualizar a tabela da warehouse e atualizar a coluna das peças reserdas*/
                 data.reserving_pieces(con, ord.Work_Piece, Ne, new_reserved);//ja reservou adicionei as N peças necessarias para acabar a encomenda
-
-                ////////////////////////////////////
-
-
-                /* agora chamar a funçao que vai indicar qual a transformaçao a realizar*/
-                String raw=verify_raw(ord.Work_Piece); //peça origem
-                String[] str=new String[2];
-                str=data.transformation(con, raw, ord.Work_Piece); //work_piece é a peça final
-                String time=str[0];//tempo de transformaçao
-                String tool=str[1];//tool da transformaçao
-
-
+                ///////////////////////////////////
                 /* retorna num array as
                 * transformaçoes e as tools necessarias para enviar pro mes*/
 
@@ -176,7 +162,7 @@ public class Managment {
                    String time=str[0];//tempo de transformaçao
                    String tool=str[1];//tool da transformaçao
 
-                    //Inacabado
+                    //Inacabado-falta formar a string para mandar ao mes,
                    return;
 
                }
@@ -364,8 +350,20 @@ public class Managment {
                 }
 
             }
+
+        //}
+        Nc=Nd/N;
+        /* Temos Nd dias para fazer a peça e conseguimos fazer Nc por dia*/
+        for(int i=0; i<Nd; i++)
+        {
+            for(int j=0; i<Nc; j++)
+            {
+                //atribuir Nd+j ao dia da peça
             }
         }
+        /*Sabendo que temos Nd dias para fazer as peças.
+        * */
+
         data.processed_status(con, ord.Order_num); // mudar o estado desta ordem para processada
         /* Criar uma coluna na ordem que é uma data
         prevista de duedate que é o valor que esta neste momento na duedate*/
