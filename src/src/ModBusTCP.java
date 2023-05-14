@@ -22,12 +22,13 @@ public class ModBusTCP implements Runnable{ //Server - this part is meant to rec
         while (true) {
 
             try {
-                Thread.sleep(600);
+                Thread.sleep(800);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
             //meter esta classe sempre a correr e de 60 em 60 segundos executar as seguintes linhas de codigo
             try {
+                //management;
 
                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                 BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -46,6 +47,7 @@ public class ModBusTCP implements Runnable{ //Server - this part is meant to rec
             } catch (IOException e) {
                 System.err.println("Error: " + e.getMessage());
             }
+            //sleep de 60 segundos
             today++;
         }
     /*public void adios() throws IOException {

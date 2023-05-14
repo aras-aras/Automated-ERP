@@ -9,9 +9,10 @@ public class Managment {
     public int Nc;// numero de peças a fazer por dia
     public int Nd;// numero de dias que tens para fazer a peça
     public int Ne;// numero que dias que tens no maximo para encomendar peças
-    public int Nf; // número de peças not sure?
+    public int Nf; // número de peças que sobram
     public int Ng;
     public int Nh;
+    public int Nj; // dia em que a peça começa a ser feita
 
     public int Ni;
     public Order ord; // a ordem a ser processada
@@ -23,7 +24,7 @@ public class Managment {
 
 
     public void check() throws SQLException, IOException {
-
+        while(true){
         /* A primeira coisa a ser feita é verificar a lista das ordens.
         * Essa lista contem colunas com todas as caracteristicas das ordens
         * incluindo uma coluna que indica se esta ordem ján foi processada ou não.
@@ -89,8 +90,10 @@ public class Managment {
             * Usamos esta função para verificar quantas há e depois
             * subtraimos a N(o numero total de peças para saber quantas faltam fazer
             * */
-            Na=verify_how_many(ord.Work_Piece,(duedate-1));
+            Na=verify_how_many(ord.Work_Piece,(duedate-1));//verifica se ha já peças prontas (transformadas)
+            int num=N;
             N=N-Na;
+
             if(N<=0)
             {
                 /*Este caso acontece quando há peças suficientes em
@@ -99,6 +102,11 @@ public class Managment {
                 * tools, os dias em que estao a fazer as coisas e
                 * mandar para a base de dados organizada. Also, reservar na tabela
                 *  do armazem Na peças para aquele dia.
+                * */
+                /* ----TABELA PIECES--------
+                *
+                * Neste caso, num peças tem as colunas a  zero menos,
+                * a ordem, o tipo1 e o deliver na tabela pieces
                 * */
                 //inacabado
                 int quantity=Integer.parseInt(ord.Quantity);//nr de peças já prontas q queremos
@@ -124,13 +132,33 @@ public class Managment {
                 * transformaçoes e as tools necessarias para enviar pro mes*/
 
             }
-            else//caso nao haja peças já prontas (ja transformadas) verificar raw material
+            else//caso nao haja peças já prontas suficientes (ja transformadas) verificar raw material
             {
-               material=verify_raw(ord.Work_Piece);
-               /* Verifica qual é o melhor material para fazer cada peça e verifica
-               * se este está disponivel no armazem naquele dia*/
-               Nb=verify_material(material,Ne); //verificar se há raw material no dia Ne
-               N=N-Nb;
+                if(Na!=0){
+                  //1º reservar as peças transformadas já existentes
+                  int[] arr;
+                  arr = data.check_pieces(con, ord.Work_Piece, Ne);
+                  int existing = arr[0];//nr de peças existentes
+                  int reserved = arr[1];//nr de peças que estao reservadas
+                  int new_reserved = reserved + Na; /*isto vai atualizar a tabela da warehouse e atualizar a coluna das peças reservadas*/
+                  data.reserving_pieces(con, ord.Work_Piece, Ne, new_reserved);//ja reservou adicionei as N peças necessarias para acabar a encomenda
+                    /* ----TABELA PIECES--------
+                     *
+                     * Neste caso, Na peças tem as colunas a  zero menos,
+                     * a ordem, o tipo1 e o deliver na tabela pieces
+                     * */
+                }
+
+                  material = verify_raw(ord.Work_Piece);
+                /* ----TABELA PIECES--------
+                 *
+                 * Neste caso, Na peças tem type_1=material
+                 * */
+                  /* Verifica qual é o melhor material para fazer cada peça e verifica
+                   * se este está disponivel no armazem naquele dia*/
+                  Nb = verify_material(material, Ne); //verificar se há raw material no dia Ne
+                  N = N - Nb;
+              }
                if(N<=0)
                {
                    for(int n=Nd; n>0; n--)
@@ -342,7 +370,8 @@ public class Managment {
         /* Criar uma coluna na ordem que é uma data
         prevista de duedate que é o valor que esta neste momento na duedate*/
     }
-    public void calculus(int num, int num1,int num2, int num3, int duedate,int today, String Workpiece)
+}
+public void calculus(int num, int num1,int num2, int num3, int duedate,int today, String Workpiece)
     {
         if((Workpiece.equals("P3") && (num1==1 || num1==2 || num1==3)) ||
                 (Workpiece.equals("P4") && (num1==1 || num1==2  || num1==3))||

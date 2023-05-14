@@ -80,6 +80,7 @@ public class File_treatment implements Runnable {
                 }
                 System.out.println("--------------------------------------");
                 ordens.print_list(list);
+
                 server.signal = 0;
             }
         }
