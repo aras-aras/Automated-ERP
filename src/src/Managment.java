@@ -194,12 +194,21 @@ public class Managment implements Runnable {
                    * */
 
                    String raw=verify_raw(ord.Work_Piece); //peça origem
+                   /*
                    String[] str=new String[2];
                    str=data.transformation(con, raw, ord.Work_Piece); //work_piece é a peça final
                    String time=str[0];//tempo de transformaçao
-                   String tool=str[1];//tool da transformaçao
+                   String tool=str[1];//tool da transformaçao*/
 
-                    /*
+                   String[] arr=new String[18];
+                   try {
+                       arr=data.info(con, material, ord.Work_Piece);
+                   }
+                   catch (SQLException e) {
+                       throw new RuntimeException(e);
+                   }
+
+                   /*Sabendo que temos Nd dias para fazer as peças.
                     * */
                    try {
                        data.piece_update(con, ord.Order_num, material, arr[1], arr[2], arr[3], arr[4], arr[5], arr[6], arr[7], arr[8], arr[9], arr[10], arr[11], arr[12], arr[13], arr[14], arr[15], arr[16], ord.DueDate, String.valueOf(Ne+server.today));

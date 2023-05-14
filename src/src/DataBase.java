@@ -101,7 +101,6 @@ public class DataBase {
             return null;
     }
 
-
     ///////////////////////////                     PIECES TRANSFORMATIONS              //////////////////////////
 
     public void piece(Connection con, String order, String type1, String deliver) throws SQLException{
@@ -110,5 +109,51 @@ public class DataBase {
             stmt.executeUpdate(sql);
         }
 
-    public void piece_update(Connection con, )
+    public void piece_update(Connection con, String order, String type_t, String machine1, String tool1, String work_time1, String type_out1,
+                             String machine2, String tool2, String work_time2, String type_out2, String machine3, String tool3,
+                             String work_time3, String type_out3, String machine4, String tool4, String work_time4, String type_out4,
+                             String deliver, String day) throws SQLException{
+
+            Statement stmt=con.createStatement();
+            String sql="update infi.pieces_trans set machine1='"+machine1+"', tool1='"+tool1+"', work_time1='"+work_time1+"'," +
+                    " type_out1='"+type_out1+"', machine2='"+machine2+"', tool2='"+tool2+"', " +
+                    "work_time2='"+work_time2+"', type_out2='"+type_out2+"', machine3='"+machine3+"', tool3='"+tool3+"', " +
+                    "work_time3='"+work_time3+"', type_out3='"+type_out3+"', machine4='"+machine4+"', tool4='"+tool4+"'," +
+                    " work_time4='"+work_time4+"', type_out4='"+type_out4+"', deliver='"+deliver+"', day='"+day+"'" +
+                    " where order='"+order+"', type_t='"+type_t+"', deliver='"+deliver+"')";
+
+            stmt.executeUpdate(sql);
+        }
+
+
+//////////////////////////////                      detailed transformations            /////////////////////////
+
+    public String[] info(Connection con, String p_initial, String p_final) throws SQLException{
+            Statement stmt=con.createStatement();
+            String sql="select * from infi.detailed_transf where p_initial='"+p_initial+"' and p_final='"+p_final+"'";
+            ResultSet re=stmt.executeQuery(sql);
+            while(re.next()){
+                String[] str= new String[18];
+                str[0]=re.getString("p_initial");
+                str[1]=re.getString("machine1");
+                str[2]=re.getString("tool1");
+                str[3]=re.getString("work_time1");
+                str[4]=re.getString("type_out1");
+                str[5]=re.getString("machine2");
+                str[6]=re.getString("tool2");
+                str[7]=re.getString("work_time2");
+                str[8]=re.getString("type_out2");
+                str[9]=re.getString("machine3");
+                str[10]=re.getString("tool3");
+                str[11]=re.getString("work_time3");
+                str[12]=re.getString("type_out3");
+                str[13]=re.getString("machine4");
+                str[14]=re.getString("tool4");
+                str[15]=re.getString("work_time4");
+                str[16]=re.getString("type_out4");
+                str[17]=re.getString("p_final");
+                return str;
+            }
+            return null;
+        }
 }
