@@ -28,16 +28,16 @@ public class Main {
         //Versao 2
 
         XMLudp2 receiver = new XMLudp2();
-        OrderList ord= new OrderList();
-        File_treatment treatment= new File_treatment(receiver, ord);
         ModBusTCP server = new ModBusTCP();
+        Managment man = new Managment();
+
         int today= server.today;
 
 
             Thread thread1 = new Thread(receiver);
             thread1.start();
 
-            Thread thread2 = new Thread(treatment);
+            Thread thread2 = new Thread(man);
             thread2.start();
 
             Thread thread3 = new Thread(server);

@@ -2,7 +2,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class Managment {
+public class Managment implements Runnable {
     public int N;// numero de peças a fazer
     public int Na;// numero de peças já feitas no armazem do tipo que nos queremos
     public int Nb;// numero de peças de raw material que ha naquele dia
@@ -23,7 +23,7 @@ public class Managment {
     public ModBusTCP server;
 
 
-    public void check() throws SQLException, IOException {
+    public void run() {
         while(true){
         /* A primeira coisa a ser feita é verificar a lista das ordens.
         * Essa lista contem colunas com todas as caracteristicas das ordens
@@ -41,8 +41,12 @@ public class Managment {
 
         Account acc = new Account();
         String[] atr=new String[7];
-        atr=data.order_not_processed(con);
-        ord.Order_num= atr[0];
+            try {
+                atr=data.order_not_processed(con);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            ord.Order_num= atr[0];
         ord.Client_name= atr[1];
         ord.Quantity=atr[2];
         ord.Work_Piece=atr[3];
@@ -79,13 +83,22 @@ public class Managment {
             * apaga-se A ENCOMENDA DA DATABASE OU INDICAR DE ALGUMA FORMA
             * QUE ELA FOI CANCELADA (ordens canceladas têm a coluna canceled a 1)
             * */
-            data.cancelling_order(con, ord.Order_num);
+            try {
+                data.cancelling_order(con, ord.Order_num);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
             return;
         }
+
         //if(verify_how_many(ord.Work_Piece, (duedate-1))>0) //verifica se ha já peças prontas (transformadas)
        // {
 
-            data.processed_status(con, ord.Order_num);
+            try {
+                data.processed_status(con, ord.Order_num);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
             //aqui criar as linhas com as peças
 
 
@@ -95,7 +108,11 @@ public class Managment {
             * Usamos esta função para verificar quantas há e depois
             * subtraimos a N(o numero total de peças para saber quantas faltam fazer
             * */
-            Na=verify_how_many(ord.Work_Piece,(duedate-1));//verifica se ha já peças prontas (transformadas)
+            try {
+                Na=verify_how_many(ord.Work_Piece,(duedate-1));//verifica se ha já peças prontas (transformadas)
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
             int num=N;
             N=N-Na;
 
@@ -106,11 +123,19 @@ public class Managment {
 
                 int quantity = Integer.parseInt(ord.Quantity);//nr de peças já prontas q queremos
                 int[] arr;
-                arr = data.check_pieces(con, ord.Work_Piece, Ne);
+                try {
+                    arr = data.check_pieces(con, ord.Work_Piece, Ne);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
                 int existing = arr[0];//nr de peças existentes
                 int reserved = arr[1];//nr de peças que estao reservadas
                 int new_reserved = reserved + quantity; /*isto vai atualizar a tabela da warehouse e atualizar a coluna das peças reserdas*/
-                data.reserving_pieces(con, ord.Work_Piece, Ne, new_reserved);//ja reservou adicionei as N peças necessarias para acabar a encomenda
+                try {
+                    data.reserving_pieces(con, ord.Work_Piece, Ne, new_reserved);//ja reservou adicionei as N peças necessarias para acabar a encomenda
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
 
             }
             else//caso nao haja peças já prontas suficientes (ja transformadas) verificar raw material
@@ -118,11 +143,19 @@ public class Managment {
                 if(Na!=0){
                   //1º reservar as peças transformadas já existentes
                   int[] arr;
-                  arr = data.check_pieces(con, ord.Work_Piece, Ne);
-                  int existing = arr[0];//nr de peças existentes
+                    try {
+                        arr = data.check_pieces(con, ord.Work_Piece, Ne);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                    int existing = arr[0];//nr de peças existentes
                   int reserved = arr[1];//nr de peças que estao reservadas
                   int new_reserved = reserved + Na; /*isto vai atualizar a tabela da warehouse e atualizar a coluna das peças reservadas*/
-                  data.reserving_pieces(con, ord.Work_Piece, Ne, new_reserved);//ja reservou adicionei as N peças necessarias para acabar a encomenda
+                    try {
+                        data.reserving_pieces(con, ord.Work_Piece, Ne, new_reserved);//ja reservou adicionei as N peças necessarias para acabar a encomenda
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
 
                   material = verify_raw(ord.Work_Piece);
@@ -132,14 +165,22 @@ public class Managment {
                  * Neste caso, Na peças tem type_1=material
                  * */
                 for (int i = 0; i < N; i++){
-                    data.piece(con, atr[0], material, Integer.toString(Integer.parseInt(atr[4])-1));
+                    try {
+                        data.piece(con, atr[0], material, Integer.toString(Integer.parseInt(atr[4])-1));
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
 
                 /* Verifica qual é o melhor material para fazer cada peça e verifica
                    * se este está disponivel no armazem naquele dia*/
 
-                  Nb = verify_material(material, Ne); //verificar se há raw material no dia Ne
-                  N = N - Nb;
+                try {
+                    Nb = verify_material(material, Ne); //verificar se há raw material no dia Ne
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                N = N - Nb;
               }
                if(N<=0)
                {
@@ -160,10 +201,12 @@ public class Managment {
 
                     /*
                     * */
-
-
-                    //Inacabado-falta formar a string para mandar ao mes,
-                   return;
+                   try {
+                       data.piece_update(con, ord.Order_num, material, arr[1], arr[2], arr[3], arr[4], arr[5], arr[6], arr[7], arr[8], arr[9], arr[10], arr[11], arr[12], arr[13], arr[14], arr[15], arr[16], ord.DueDate, String.valueOf(Ne+server.today));
+                   } catch (SQLException e) {
+                       throw new RuntimeException(e);
+                   }
+                   
 
                }
                /*Nesta secção vai ser avaliado qual é o supplier que deverá ser
@@ -195,10 +238,18 @@ public class Managment {
                    data = new DataBase();
                    con = data.create_connection();
                    int[] arr;
-                   arr=data.check_pieces(con,material,server.today);//???
+                   try {
+                       arr=data.check_pieces(con,material,server.today);//???
+                   } catch (SQLException e) {
+                       throw new RuntimeException(e);
+                   }
                    int actual_existing=arr[0];
                    actual_existing=actual_existing+Nf;
-                   data.arriving_new_pieces(con, material, server.today, actual_existing);
+                   try {
+                       data.arriving_new_pieces(con, material, server.today, actual_existing);
+                   } catch (SQLException e) {
+                       throw new RuntimeException(e);
+                   }
                    //aqui o dia atual vai depender de como está o contador, VER ISTO
 
 
@@ -352,19 +403,13 @@ public class Managment {
             }
 
         //}
-        Nc=Nd/N;
-        /* Temos Nd dias para fazer a peça e conseguimos fazer Nc por dia*/
-        for(int i=0; i<Nd; i++)
-        {
-            for(int j=0; i<Nc; j++)
-            {
-                //atribuir Nd+j ao dia da peça
-            }
-        }
-        /*Sabendo que temos Nd dias para fazer as peças.
-        * */
 
-        data.processed_status(con, ord.Order_num); // mudar o estado desta ordem para processada
+
+            try {
+                data.processed_status(con, ord.Order_num); // mudar o estado desta ordem para processada
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         /* Criar uma coluna na ordem que é uma data
         prevista de duedate que é o valor que esta neste momento na duedate*/
     }

@@ -13,13 +13,13 @@ public class XMLudp2 implements Runnable {
     public InetAddress address;
 
     public String xmlData;
-    public int signal;
-
+    public File_treatment treatment;
     public XMLudp2() throws SocketException, UnknownHostException, FileNotFoundException {
            // Set up the UDP socket and packet
            socket = new DatagramSocket(port);
            address = InetAddress.getLocalHost();
-
+           OrderList ord = new OrderList();
+           File_treatment treatment= new File_treatment(ord);
 
 
     }
@@ -37,7 +37,7 @@ public class XMLudp2 implements Runnable {
             }
             System.out.println("Packet received (th1)");
             try {
-                unload();
+                xmlData=unload();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } catch (ParserConfigurationException e) {
@@ -45,14 +45,15 @@ public class XMLudp2 implements Runnable {
             } catch (SAXException e) {
                 throw new RuntimeException(e);
             }
+            treatment.treat(xmlData);
         }
     }
-    public void unload() throws IOException, ParserConfigurationException, SAXException {
+    public String unload() throws IOException, ParserConfigurationException, SAXException {
 
         // Write the contents of the packet to a string
         System.out.println("???");
         xmlData = new String(packet.getData(), 0, packet.getLength(), StandardCharsets.UTF_8);
-        signal=1;
+        return xmlData;
     }
     public void adios() throws IOException {
             //fos.close();

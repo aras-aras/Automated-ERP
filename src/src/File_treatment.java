@@ -16,21 +16,19 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 
-public class File_treatment implements Runnable {
+public class File_treatment {
 
-    XMLudp2 server;
-    public int signal;
     OrderList ordens;
 
     static ArrayList<Order> list;
 
-    public File_treatment(XMLudp2 xmLudp2, OrderList ord) {
-        server = xmLudp2;
+
+    public File_treatment( OrderList ord){
         list = ord.orders;
         ordens = ord;
     }
 
-    public void run() { //Thread 2
+    public void treat(String serverData) { //Thread 2
         //isto faz o parser da string;
         while (true) {
             try {
@@ -38,12 +36,11 @@ public class File_treatment implements Runnable {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            if (server.signal == 1) {
                 System.out.println("test3 (th2)");
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 Document document = null;
                 try {
-                    document = factory.newDocumentBuilder().parse(new InputSource(new StringReader(server.xmlData)));
+                    document = factory.newDocumentBuilder().parse(new InputSource(new StringReader(serverData)));
                 } catch (ParserConfigurationException e) {
                     throw new RuntimeException(e);
                 } catch (IOException e) {
@@ -76,12 +73,11 @@ public class File_treatment implements Runnable {
                             throw new RuntimeException(e);
                         }
                         list.clear();
-                    }
-                }
+
+}
                 System.out.println("--------------------------------------");
                 ordens.print_list(list);
 
-                server.signal = 0;
             }
         }
     }
