@@ -24,6 +24,8 @@ public class Managment implements Runnable {
 
 
     public void run() {
+
+
         while(true){
             try {
                 Thread.sleep(500);
