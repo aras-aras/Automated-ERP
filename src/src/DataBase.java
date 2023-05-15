@@ -22,6 +22,13 @@ public class DataBase {
             Statement stmt=con.createStatement();
             String sql="insert into infi.order(order_number, client_name, nr_pieces, type_piece, duedate, late_penalty, early_penalty) values ('"+order_num+"', '"+client_name+"', '"+quantity+"', '"+work_piece+"', '"+duedate+"', '"+late_pen+"', '"+early_pen+"')";
             stmt.executeUpdate(sql);
+
+
+        //Statement stmt=con.createStatement();
+        //String sql="create table if not exists testesi.table2(col1 real)";
+        //String sql1="insert into testesi.table2(col1) values (1.1)";
+        //stmt.executeUpdate(sql);
+        //stmt.executeUpdate(sql1);
     }
     public String[] order_not_processed(Connection con) throws SQLException{
             Statement stmt=con.createStatement();

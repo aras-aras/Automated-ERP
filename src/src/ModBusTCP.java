@@ -12,7 +12,7 @@ public class ModBusTCP implements Runnable { //Server - this part is meant to re
 
     public int today;
     public Socket clientSocket;
-    private static final int SERVER_PORT = 8080;
+    private static final int SERVER_PORT = 8181;
     private static final String SERVER_IP = "localhost";
     Socket socket;
 
@@ -20,26 +20,30 @@ public class ModBusTCP implements Runnable { //Server - this part is meant to re
         // Set up the UDP socket and packet
         today = 0;
         socket = new Socket(SERVER_IP, SERVER_PORT);
+        System.out.println("Connected");
+
 
     }
 
     public void run() {
 
         while (true) {
+            System.out.println("test1");
             try {
+                System.out.println("test2");
                 Thread.sleep(800);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
             try {
                 // Connect to the server
-
+                System.out.println("test3");
                 // Create input and output streams
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
                 // Send a message to the server
-                out.println("Hello, server!");
+                out.println("Today variable: " +today);
 
                 // Read the response from the server
                 String response = in.readLine();
@@ -47,16 +51,18 @@ public class ModBusTCP implements Runnable { //Server - this part is meant to re
 
                 // Close the connection
 
-                socket.close();
+                //socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
             //sleep de 60 segundos
             try {
-                Thread.sleep(59200);
+                System.out.println("test4");
+                Thread.sleep(10000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+            System.out.println("test5");
             today++;
 
         }
