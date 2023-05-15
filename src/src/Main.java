@@ -34,15 +34,15 @@ public class Main {
         int today= server.today;
 
 
-            Thread thread1 = new Thread(receiver);
+            /*Thread thread1 = new Thread(receiver);
             thread1.start();
 
             Thread thread2 = new Thread(man);
             thread2.start();
-
+            */
             Thread thread3 = new Thread(server);
             thread3.start();
 
-        //server.ServerTCP(); não usar
+
     }
 }

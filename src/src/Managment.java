@@ -25,6 +25,12 @@ public class Managment implements Runnable {
 
     public void run() {
         while(true){
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
         /* A primeira coisa a ser feita é verificar a lista das ordens.
         * Essa lista contem colunas com todas as caracteristicas das ordens
         * incluindo uma coluna que indica se esta ordem já foi processada ou não.

@@ -31,11 +31,7 @@ public class File_treatment {
     public void treat(String serverData) { //Thread 2
         //isto faz o parser da string;
         while (true) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+
                 System.out.println("test3 (th2)");
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 Document document = null;
