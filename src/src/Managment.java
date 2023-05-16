@@ -171,6 +171,9 @@ public class Managment implements Runnable {
                 /* ----TABELA PIECES--------
                  *
                  * Neste caso, Na peças tem type_1=material
+                 *
+                 * no codigo a seguir, estou a escrever na tabela pieces_trans ja algumas linhas das peças
+                 * que têm que ser transformadas para enviar ao mes
                  * */
                 for (int i = 0; i < N; i++){
                     try {
@@ -184,13 +187,13 @@ public class Managment implements Runnable {
                    * se este está disponivel no armazem naquele dia*/
 
                 try {
-                    Nb = verify_material(material, Ne); //verificar se há raw material no dia Ne
+                    Nb = verify_material(material, Ne); //verificar se há raw material no dia Ne, guarda em Nb o nr de raw material existente
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
                 N = N - Nb;
               }
-               if(N<=0)
+               if(N<=0)// se houver raw material suficiente para cobrir o que falta é so indicar as transformações a fazer
                {
                    for(int n=Nd; n>0; n--)
                    {
@@ -200,15 +203,7 @@ public class Managment implements Runnable {
                    * tools, os dias em que estao a fazer as coisas e
                    * mandar para a base de dados organizada.
                    * */
-
-                   String raw=verify_raw(ord.Work_Piece); //peça origem
-                   /*
-                   String[] str=new String[2];
-                   str=data.transformation(con, raw, ord.Work_Piece); //work_piece é a peça final
-                   String time=str[0];//tempo de transformaçao
-                   String tool=str[1];//tool da transformaçao*/
-
-                   String[] arr=new String[18];
+                   String[] arr;
                    try {
                        arr=data.info(con, material, ord.Work_Piece);
                    }
@@ -223,7 +218,6 @@ public class Managment implements Runnable {
                    } catch (SQLException e) {
                        throw new RuntimeException(e);
                    }
-                   
 
                }
                /*Nesta secção vai ser avaliado qual é o supplier que deverá ser
@@ -238,7 +232,16 @@ public class Managment implements Runnable {
                    * */
                    if(N<4)
                    {
-                       Nf=4-N; //encomendas 4
+                       Nf=4-N; //encomendas 4 peças ao supplier C do tipo raw material X
+                       if(material.equals("P1")){
+                           String aux="p1";
+                            data.sup(con, Integer.toString(), "sc_"+aux, 4);
+                       }
+                       else{
+                           String aux="p2";
+                           data.sup(con, Integer.toString(), "sc_"+aux, 4);
+                       }
+
                        // teu armazem naquele dia vai ficar com Nf livres e N ocupadas
 
                    }
