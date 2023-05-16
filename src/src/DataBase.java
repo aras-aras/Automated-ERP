@@ -1,4 +1,7 @@
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class DataBase {
         public Connection create_connection(){
@@ -18,9 +21,9 @@ public class DataBase {
             }
             return null;
         }
-    public void new_order(Connection con, String client_name, String order_num, String work_piece, String quantity, String duedate, String late_pen, String early_pen) throws SQLException{
+    public void new_order(Connection con, String client_name, String order_num, String work_piece, String quantity, String duedate, String late_pen, String early_pen, String status) throws SQLException{
             Statement stmt=con.createStatement();
-            String sql="insert into infi.order(order_number, client_name, nr_pieces, type_piece, duedate, late_penalty, early_penalty) values ('"+order_num+"', '"+client_name+"', '"+quantity+"', '"+work_piece+"', '"+duedate+"', '"+late_pen+"', '"+early_pen+"')";
+            String sql="insert into infi.order(order_number, client_name, nr_pieces, type_piece, duedate, late_penalty, early_penalty, processed) values ('"+order_num+"', '"+client_name+"', '"+quantity+"', '"+work_piece+"', '"+duedate+"', '"+late_pen+"', '"+early_pen+"', '"+status+"')";
             stmt.executeUpdate(sql);
 
 
@@ -130,6 +133,38 @@ public class DataBase {
             stmt.executeUpdate(sql);
         }
 
+    public List<String[]> information(Connection con, String day) throws SQLException{
+        Statement stmt=con.createStatement();
+        String sql="select * from infi.pieces_trans where day='"+day+"'";
+        ResultSet re=stmt.executeQuery(sql);
+        List<String[]> rows = new ArrayList<>();
+        while(re.next()){
+            String[] str= new String[21];
+            str[0]=re.getString("order");
+            str[1]=re.getString("type_t");
+            str[2]=re.getString("machine1");
+            str[3]=re.getString("tool1");
+            str[4]=re.getString("work_time1");
+            str[5]=re.getString("type_out1");
+            str[6]=re.getString("machine2");
+            str[7]=re.getString("tool2");
+            str[8]=re.getString("work_time2");
+            str[9]=re.getString("type_out2");
+            str[10]=re.getString("machine3");
+            str[11]=re.getString("tool3");
+            str[12]=re.getString("work_time3");
+            str[13]=re.getString("type_out3");
+            str[14]=re.getString("machine4");
+            str[15]=re.getString("tool4");
+            str[16]=re.getString("work_time4");
+            str[17]=re.getString("type_out4");
+            str[18]=re.getString("deliver");
+            str[19]=re.getString("day");
+            str[20]=re.getString("id");
+            rows.add(str);
+        }
+        return rows;
+    }
 
 //////////////////////////////                      detailed transformations            /////////////////////////
 
@@ -161,6 +196,8 @@ public class DataBase {
             }
             return null;
         }
+
+
 
 
 /////////////////////////////////                   SUPPLIERS                       ////////////////////////////////////

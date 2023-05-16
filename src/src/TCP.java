@@ -3,6 +3,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+
 
 public class TCP implements Runnable { //Server - this part is meant to receive txt from mes
 
@@ -29,14 +33,12 @@ public class TCP implements Runnable { //Server - this part is meant to receive 
         while (true) {
 
             try {
-
                 Thread.sleep(800);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
             try {
                 // Connect to the server
-
                 // Create input and output streams
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -49,7 +51,6 @@ public class TCP implements Runnable { //Server - this part is meant to receive 
                 System.out.println("Received from server: " + response);
                 //process_str(response);
                 // Close the connection
-
                 //socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -61,21 +62,16 @@ public class TCP implements Runnable { //Server - this part is meant to receive 
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-
             today++;
-
         }
-
-
     }
+
     public void process_str(String received)
     {
-
          Account acc= new Account();
          acc.perceber_a_string(received);
-
-
     }
+
     public String create_str(int today)
     {
         String message = "";

@@ -20,17 +20,15 @@ public class XMLudp2 implements Runnable {
            socket = new DatagramSocket(port);
            address = InetAddress.getLocalHost();
            OrderList ord = new OrderList();
-           File_treatment treatment= new File_treatment(ord);
-
-
+           treatment= new File_treatment(ord);
     }
+
     public void run() { //Thread 1 - não tem delay porque faz logo unload
         // Receive the packet
         while(true) {
             xmlBytes = new byte[2043];
             packet = new DatagramPacket(xmlBytes, xmlBytes.length);
             System.out.println("?");
-
             try {
                 socket.receive(packet);
             } catch (IOException e) {

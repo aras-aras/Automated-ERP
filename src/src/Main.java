@@ -23,7 +23,7 @@ public class Main {
         TCP server = new TCP();
         System.out.println("maça1");
         Managment man = new Managment();
-
+        System.out.println("maça2");
         int today= server.today;
 
 

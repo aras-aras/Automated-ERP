@@ -64,7 +64,7 @@ public class File_treatment {
                         DataBase data=new DataBase();
                         Connection lig=data.create_connection();
                         try {
-                            data.new_order(lig, ord.Client_name, ord.Order_num, ord.Work_Piece, ord.Quantity, ord.DueDate, ord.Late_Pen, ord.Early_Pen);
+                            data.new_order(lig, ord.Client_name, ord.Order_num, ord.Work_Piece, ord.Quantity, ord.DueDate, ord.Late_Pen, ord.Early_Pen, String.valueOf(0));
                         } catch (SQLException e) {
                             throw new RuntimeException(e);
                         }

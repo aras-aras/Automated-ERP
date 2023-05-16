@@ -99,7 +99,6 @@ public class Account {
              * necessarias para o calculo por ordem,assumindo que cada tres posiçoes sao o PC, O DD E O AD*/
             n=n+3;
         }
-
     }
 
     public int unit_cost(int ord_num, int PC, int DD, int AD)
@@ -115,6 +114,5 @@ public class Account {
         int DC= RC*(DD-AD)/100;
         unit_cost=RC+PC+DC;
         return unit_cost;
-
     }
 }
