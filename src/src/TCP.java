@@ -1,14 +1,10 @@
-import java.net.*;
-import java.io.*;
-import java.util.concurrent.ExecutionException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 
-public class ModBusTCP implements Runnable { //Server - this part is meant to receive txt from mes
+public class TCP implements Runnable { //Server - this part is meant to receive txt from mes
 
     public int today;
     public Socket clientSocket;
@@ -16,13 +12,16 @@ public class ModBusTCP implements Runnable { //Server - this part is meant to re
     private static final String SERVER_IP = "localhost";
     Socket socket;
 
-    public ModBusTCP() throws IOException {
+    public TCP() throws IOException {
         // Set up the UDP socket and packet
         today = 0;
         socket = new Socket(SERVER_IP, SERVER_PORT);
         System.out.println("Connected");
 
-
+ //ola olha, n consigo compilar pq ele n esta a conseguir ligar ao tcp pq eu n tenho o mes a correr,
+        //por isso vou cagar para o tcp para ja
+        // mal acabemos isto vamos, tenho ideias
+        //temos de ajudar o gabi, ele está completamente perdido no mes, okok
     }
 
     public void run() {
@@ -41,13 +40,14 @@ public class ModBusTCP implements Runnable { //Server - this part is meant to re
                 // Create input and output streams
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-
+                String message= create_str(today);
                 // Send a message to the server
-                out.println("Today variable: " +today);
+                out.println("Today variable: " + message);
 
                 // Read the response from the server
                 String response = in.readLine();
                 System.out.println("Received from server: " + response);
+                process_str(response);
 
                 // Close the connection
 
@@ -69,6 +69,22 @@ public class ModBusTCP implements Runnable { //Server - this part is meant to re
 
 
     }
+    public void process_str(String received)
+    {
+
+         Account acc= new Account();
+         acc.perceber_a_string(received);
+
+
+    }
+    public String create_str(int today)
+    {
+        String message="macaco";
+        /* procuras quais linhas é que tem o dia igual a today
+        * Ajuda necessaria e urgente do francisco*/
+        return message;
+    }
+
 }
 
 

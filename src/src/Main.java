@@ -1,4 +1,6 @@
 import javafx.application.Application;
+import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.xml.sax.SAXException;
 
@@ -31,7 +33,7 @@ public class Main extends Application {
         //Versao 2
 
         XMLudp2 receiver = new XMLudp2();
-        ModBusTCP server = new ModBusTCP();
+        TCP server = new TCP();
         Managment man = new Managment();
 
         int today= server.today;
@@ -51,6 +53,10 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception{
-
+        //Stage stage = new Stage();
+        Group root =new Group();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
     }
 }

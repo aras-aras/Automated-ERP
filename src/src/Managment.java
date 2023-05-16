@@ -20,7 +20,7 @@ public class Managment implements Runnable {
     public String material; // raw material da peça
     public int[] work_days; // vetor de dias em que estamos a cozinhar a peça
     public int deliver_day; // dia em que a peça esta a ser transportada para a plataforma
-    public ModBusTCP server;
+    public TCP server;
 
 
     public void run() {
@@ -235,7 +235,11 @@ public class Managment implements Runnable {
                        Nf=4-N; //encomendas 4 peças ao supplier C do tipo raw material X
                        if(material.equals("P1")){
                            String aux="p1";
-                            data.sup(con, Integer.toString(), "sc_"+aux, 4);
+                           try {
+                               data.sup(con, String.valueOf(Ne+server.today), "sc_"+aux, String.valueOf(4));
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
                        }
                        else{
                            String aux="p2";
