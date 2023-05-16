@@ -72,20 +72,24 @@ public class TCP implements Runnable { //Server - this part is meant to receive 
          acc.perceber_a_string(received);
     }
 
-    public String create_str(int today)
-    {
+    public String create_str(int today) {
         String message = "";
-        DataBase data=new DataBase();
-        Connection con=data.create_connection();
+        DataBase data = new DataBase();
+        Connection con = data.create_connection();
+        List<String[]> rows;
         try {
-            List<String[]> rows = data.information(con, String.valueOf(today));
+            rows = data.information(con, String.valueOf(today));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-
-            /* procuras quais linhas é que tem o dia igual a today
-             * Ajuda necessaria e urgente do francisco*/
+        StringBuilder result = new StringBuilder();
+        for (String[] array : rows) {
+            StringBuilder concatenated = new StringBuilder();
+            for (String element : array) {
+                concatenated.append(element);
+            }
+            result.append(concatenated);
+        }
 
         return message;
     }
