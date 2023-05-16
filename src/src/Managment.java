@@ -243,22 +243,115 @@ public class Managment implements Runnable {
                        }
                        else{
                            String aux="p2";
-                           data.sup(con, Integer.toString(), "sc_"+aux, 4);
+                           try {
+                               data.sup(con, String.valueOf(Ne+ server.today), "sc_"+aux, String.valueOf(4));
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
                        }
 
                        // teu armazem naquele dia vai ficar com Nf livres e N ocupadas
+                       int[] aux;
+                       if(material.equals("P1")) {
+                           try {
+                               aux = data.check_pieces(con, "p1", Ne+ server.today);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                           int exit=aux[0];
+                           int res=aux[1];
+                           try {
+                               data.reserving_pieces(con, "p1", Ne+ server.today, res+N);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                           try {
+                               data.arriving_new_pieces(con, "p1", Ne+ server.today, Nf+exit+N);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                       }
+                       else{
+                           try {
+                               aux = data.check_pieces(con, "p2", Ne+ server.today);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                           int exit=aux[0];
+                           int res=aux[1];
+                           try {
+                               data.reserving_pieces(con, "p2", Ne+ server.today, res+N);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                           try {
+                               data.arriving_new_pieces(con, "p2", Ne+ server.today, Nf+exit+N);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                       }
 
                    }
                    else
                    {
                        Nf=0; //endomendas N
+                       if(material.equals("P1")){
+                           String aux="p1";
+                           try {
+                               data.sup(con, String.valueOf(Ne+server.today), "sc_"+aux, String.valueOf(N));
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                       }
+                       else{
+                           String aux="p2";
+                           try {
+                               data.sup(con, String.valueOf(Ne+ server.today), "sc_"+aux, String.valueOf(N));
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                       }
                        // o teu armazem naquele dia vai ficar com N ocupadas
+                       int[] aux;
+                       if(material.equals("P1")) {
+                           try {
+                               aux = data.check_pieces(con, "p1", Ne+ server.today);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                           int exit=aux[0];
+                           int res=aux[1];
+                           try {
+                               data.reserving_pieces(con, "p1", Ne+ server.today, res+N);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                           try {
+                               data.arriving_new_pieces(con, "p1", Ne+ server.today, N+exit);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                       }
+                       else{
+                           try {
+                               aux = data.check_pieces(con, "p2", Ne+ server.today);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                           int exit=aux[0];
+                           int res=aux[1];
+                           try {
+                               data.reserving_pieces(con, "p2", Ne+ server.today, res+N);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                           try {
+                               data.arriving_new_pieces(con, "p2", Ne+ server.today, N+exit);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                       }
                    }
-                   /*encomendar 4 peças do tipo raw_material */
-                   // ??
-
-                   /* tavares, pfv acrescentar estas Nf peças do tipo X ao dia atual+1 ( ao armazem(?) )*/
-                   // eliminei a funçao supplier c porque achei q n fazia sentido agr é so fazer o mesmo em todos
                    data = new DataBase();
                    con = data.create_connection();
                    int[] arr;
@@ -274,9 +367,6 @@ public class Managment implements Runnable {
                    } catch (SQLException e) {
                        throw new RuntimeException(e);
                    }
-                   //aqui o dia atual vai depender de como está o contador, VER ISTO
-
-
                }
                else if(Ne==2)
                {
@@ -438,55 +528,38 @@ public class Managment implements Runnable {
         prevista de duedate que é o valor que esta neste momento na duedate*/
     }
 }
-public void calculus(int num, int num1,int num2, int num3, int duedate,int today, String Workpiece)
-    {
-        if((Workpiece.equals("P3") && (num1==1 || num1==2 || num1==3)) ||
-                (Workpiece.equals("P4") && (num1==1 || num1==2  || num1==3))||
-                    (Workpiece.equals("P6") && (num1==1)) ||
-                         (Workpiece.equals("P7") && (num1==1 || num1==2)))
-        {
-            num=1;
-        }
-        else if((Workpiece.equals("P3") && (num1==4 || num1==5 || num1==6 || num1==7 || num1==8)) ||
-                    (Workpiece.equals("P4") && (num1==4 || num1==5 || num1==6 || num1==7 || num1==8))||
-                        (Workpiece.equals("P5") && (num1==1 || num1==2 || num1==3)) ||
-                            (Workpiece.equals("P6") && (num1==4 || num1==2 || num1==3)) ||
-                                (Workpiece.equals("P7") && ( num1==3 ||num1==4 || num1==5 || num1==6 || num1==7 || num1==8)) ||
-                                    (Workpiece.equals("P8") && (num1==1)) ||
-                                        (Workpiece.equals("P9") && (num1==4 ||num1==1 || num1==2 || num1==3)))
-        {
-            num=2;
-        }
-        else if ((Workpiece.equals("P5") && (num1==4 || num1==5 || num1==6 || num1==7 || num1==8)) ||
-                    (Workpiece.equals("P6") && ( num1==5 || num1==6 || num1==7))||
-                        (Workpiece.equals("P8") && (num1==4 || num1==2 || num1==3)) ||
-                            (Workpiece.equals("P9") && ( num1==5 || num1==6 || num1==7 || num1==8)))
-        {
-            num=3;
-        }
-        else if((Workpiece.equals("P6") && (num1==8)) ||
-                    (Workpiece.equals("P8") && ( num1==5 || num1==6 || num1==7)))
-        {
-            num=4;
-        }
-        else
-        {
-            num=5;
-        }
-
-        num3 = duedate - today - num - 1;
-        while(num3>duedate)
-        {
-            duedate++;
-        }
-
+public void calculus(int num, int num1,int num2, int num3, int duedate,int today, String Workpiece) {
+    if ((Workpiece.equals("P3") && (num1 == 1 || num1 == 2 || num1 == 3)) ||
+            (Workpiece.equals("P4") && (num1 == 1 || num1 == 2 || num1 == 3)) ||
+            (Workpiece.equals("P6") && (num1 == 1)) ||
+            (Workpiece.equals("P7") && (num1 == 1 || num1 == 2))) {
+        num = 1;
+    } else if ((Workpiece.equals("P3") && (num1 == 4 || num1 == 5 || num1 == 6 || num1 == 7 || num1 == 8)) ||
+            (Workpiece.equals("P4") && (num1 == 4 || num1 == 5 || num1 == 6 || num1 == 7 || num1 == 8)) ||
+            (Workpiece.equals("P5") && (num1 == 1 || num1 == 2 || num1 == 3)) ||
+            (Workpiece.equals("P6") && (num1 == 4 || num1 == 2 || num1 == 3)) ||
+            (Workpiece.equals("P7") && (num1 == 3 || num1 == 4 || num1 == 5 || num1 == 6 || num1 == 7 || num1 == 8)) ||
+            (Workpiece.equals("P8") && (num1 == 1)) ||
+            (Workpiece.equals("P9") && (num1 == 4 || num1 == 1 || num1 == 2 || num1 == 3))) {
+        num = 2;
+    } else if ((Workpiece.equals("P5") && (num1 == 4 || num1 == 5 || num1 == 6 || num1 == 7 || num1 == 8)) ||
+            (Workpiece.equals("P6") && (num1 == 5 || num1 == 6 || num1 == 7)) ||
+            (Workpiece.equals("P8") && (num1 == 4 || num1 == 2 || num1 == 3)) ||
+            (Workpiece.equals("P9") && (num1 == 5 || num1 == 6 || num1 == 7 || num1 == 8))) {
+        num = 3;
+    } else if ((Workpiece.equals("P6") && (num1 == 8)) ||
+            (Workpiece.equals("P8") && (num1 == 5 || num1 == 6 || num1 == 7))) {
+        num = 4;
+    } else {
+        num = 5;
     }
-    public int verify_pieces(String X)
-    {
-        //verificar se ha peças do tipo X, se há retorna 1, senao retorna 0;
 
-        return 1;
+    num3 = duedate - today - num - 1;
+    while (num3 > duedate) {
+        duedate++;
     }
+
+}
     public int verify_how_many(String X, int Ne) throws SQLException {
         //verificar quantas peças livres X há dia Ne
         DataBase data=new DataBase();
