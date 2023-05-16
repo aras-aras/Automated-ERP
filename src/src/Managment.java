@@ -382,20 +382,107 @@ public class Managment implements Runnable {
                        {
                            // mandar vir N peças do supplier B
                            Nf=8-Nf;
+                           if(material.equals("P1")){
+                               String aux="p1";
+                               try {
+                                   data.sup(con, String.valueOf(Ne+server.today), "sb_"+aux, String.valueOf(N));
+                               } catch (SQLException e) {
+                                   throw new RuntimeException(e);
+                               }
+                           }
+                           else{
+                               String aux="p2";
+                               try {
+                                   data.sup(con, String.valueOf(Ne+ server.today), "sb_"+aux, String.valueOf(N));
+                               } catch (SQLException e) {
+                                   throw new RuntimeException(e);
+                               }
+                           }
                        }
                        else
                        {
                            //mandar vir do supplier C
                            Nf=4-Nf;
+                           if(material.equals("P1")){
+                               String aux="p1";
+                               try {
+                                   data.sup(con, String.valueOf(Ne+server.today), "sc_"+aux, String.valueOf(4));
+                               } catch (SQLException e) {
+                                   throw new RuntimeException(e);
+                               }
+                           }
+                           else{
+                               String aux="p2";
+                               try {
+                                   data.sup(con, String.valueOf(Ne+ server.today), "sc_"+aux, String.valueOf(4));
+                               } catch (SQLException e) {
+                                   throw new RuntimeException(e);
+                               }
+                           }
                        }
 
                        // sobram Nf peças do tipo material, é preciso acrescentar essas peças
                        //à base de dados no dia em q chegam, neste caso, chegam daui a um dia.
+                       int[] aux;
+                       if(material.equals("P1")) {
+                           try {
+                               aux = data.check_pieces(con, "p1", server.today+1);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                           int exit=aux[0];
+                           int res=aux[1];
+                           try {
+                               data.reserving_pieces(con, "p1", 1+ server.today, res+N);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                           try {
+                               data.arriving_new_pieces(con, "p1", 1+ server.today, Nf+exit+N);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                       }
+                       else{
+                           try {
+                               aux = data.check_pieces(con, "p2", 1+ server.today);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                           int exit=aux[0];
+                           int res=aux[1];
+                           try {
+                               data.reserving_pieces(con, "p2", 1+ server.today, res+N);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                           try {
+                               data.arriving_new_pieces(con, "p2", 1+ server.today, Nf+exit+N);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                       }
                    }
                    else
                    {
                        // mandar vir N peças do supplier B
                        Nf=8-Nf;
+                       if(material.equals("P1")){
+                           String aux="p1";
+                           try {
+                               data.sup(con, String.valueOf(Ne+server.today), "sb_"+aux, String.valueOf(N));
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                       }
+                       else{
+                           String aux="p2";
+                           try {
+                               data.sup(con, String.valueOf(Ne+ server.today), "sb_"+aux, String.valueOf(N));
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                       }
                    }
                }
                else if(Ne==3)
@@ -413,20 +500,108 @@ public class Managment implements Runnable {
                        {
                            // mandar vir N peças do supplier B
                            Nf=8-Nf;
+                           if(material.equals("P1")){
+                               String aux="p1";
+                               try {
+                                   data.sup(con, String.valueOf(Ne+server.today), "sb_"+aux, String.valueOf(N));
+                               } catch (SQLException e) {
+                                   throw new RuntimeException(e);
+                               }
+                           }
+                           else{
+                               String aux="p2";
+                               try {
+                                   data.sup(con, String.valueOf(Ne+ server.today), "sb_"+aux, String.valueOf(N));
+                               } catch (SQLException e) {
+                                   throw new RuntimeException(e);
+                               }
+                           }
                        }
                        else
                        {
                            //mandar vir do supplier C
                            Nf=4-Nf;
+                           if(material.equals("P1")){
+                               String aux="p1";
+                               try {
+                                   data.sup(con, String.valueOf(Ne+server.today), "sc_"+aux, String.valueOf(4));
+                               } catch (SQLException e) {
+                                   throw new RuntimeException(e);
+                               }
+                           }
+                           else{
+                               String aux="p2";
+                               try {
+                                   data.sup(con, String.valueOf(Ne+ server.today), "sc_"+aux, String.valueOf(4));
+                               } catch (SQLException e) {
+                                   throw new RuntimeException(e);
+                               }
+                           }
                        }
 
                        // sobram Nf peças do tipo material, é preciso acrescentar essas peças
                        //à base de dados no dia em q chegam, neste caso, chegam daui a um dia.
+
+                       int[] aux;
+                       if(material.equals("P1")) {
+                           try {
+                               aux = data.check_pieces(con, "p1", server.today+1);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                           int exit=aux[0];
+                           int res=aux[1];
+                           try {
+                               data.reserving_pieces(con, "p1", 1+ server.today, res+N);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                           try {
+                               data.arriving_new_pieces(con, "p1", 1+ server.today, Nf+exit+N);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                       }
+                       else{
+                           try {
+                               aux = data.check_pieces(con, "p2", 1+ server.today);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                           int exit=aux[0];
+                           int res=aux[1];
+                           try {
+                               data.reserving_pieces(con, "p2", 1+ server.today, res+N);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                           try {
+                               data.arriving_new_pieces(con, "p2", 1+ server.today, Nf+exit+N);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                       }
                    }
                    else
                    {
                        // mandar vir N peças do supplier B
                        Nf=8-Nf;
+                       if(material.equals("P1")){
+                           String aux="p1";
+                           try {
+                               data.sup(con, String.valueOf(Ne+server.today), "sb_"+aux, String.valueOf(N));
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                       }
+                       else{
+                           String aux="p2";
+                           try {
+                               data.sup(con, String.valueOf(Ne+ server.today), "sb_"+aux, String.valueOf(N));
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                       }
                    }
                }
                else if(N==4)
@@ -445,15 +620,86 @@ public class Managment implements Runnable {
                        {
                            // mandar vir N peças do supplier B
                            Nf=8-Nf;
+                           if(material.equals("P1")){
+                               String aux="p1";
+                               try {
+                                   data.sup(con, String.valueOf(Ne+server.today), "sb_"+aux, String.valueOf(N));
+                               } catch (SQLException e) {
+                                   throw new RuntimeException(e);
+                               }
+                           }
+                           else{
+                               String aux="p2";
+                               try {
+                                   data.sup(con, String.valueOf(Ne+ server.today), "sb_"+aux, String.valueOf(N));
+                               } catch (SQLException e) {
+                                   throw new RuntimeException(e);
+                               }
+                           }
                        }
                        else
                        {
                            //mandar vir do supplier C
                            Nf=4-Nf;
+                           if(material.equals("P1")){
+                               String aux="p1";
+                               try {
+                                   data.sup(con, String.valueOf(Ne+server.today), "sc_"+aux, String.valueOf(4));
+                               } catch (SQLException e) {
+                                   throw new RuntimeException(e);
+                               }
+                           }
+                           else{
+                               String aux="p2";
+                               try {
+                                   data.sup(con, String.valueOf(Ne+ server.today), "sc_"+aux, String.valueOf(4));
+                               } catch (SQLException e) {
+                                   throw new RuntimeException(e);
+                               }
+                           }
                        }
 
                        // sobram Nf peças do tipo material, é preciso acrescentar essas peças
                        //à base de dados no dia em q chegam, neste caso, chegam daui a um dia.
+                       int[] aux;
+                       if(material.equals("P1")) {
+                           try {
+                               aux = data.check_pieces(con, "p1", server.today+1);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                           int exit=aux[0];
+                           int res=aux[1];
+                           try {
+                               data.reserving_pieces(con, "p1", 1+ server.today, res+N);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                           try {
+                               data.arriving_new_pieces(con, "p1", 1+ server.today, Nf+exit+N);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                       }
+                       else{
+                           try {
+                               aux = data.check_pieces(con, "p2", 1+ server.today);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                           int exit=aux[0];
+                           int res=aux[1];
+                           try {
+                               data.reserving_pieces(con, "p2", 1+ server.today, res+N);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                           try {
+                               data.arriving_new_pieces(con, "p2", 1+ server.today, Nf+exit+N);
+                           } catch (SQLException e) {
+                               throw new RuntimeException(e);
+                           }
+                       }
                    }
                    else if(N>4 && N>=8)
                    {
@@ -461,11 +707,43 @@ public class Managment implements Runnable {
                        {
                            // mandar vir N peças do supplier B
                            Nf=8-Nf;
+                           if(material.equals("P1")){
+                               String aux="p1";
+                               try {
+                                   data.sup(con, String.valueOf(Ne+server.today), "sb_"+aux, String.valueOf(N));
+                               } catch (SQLException e) {
+                                   throw new RuntimeException(e);
+                               }
+                           }
+                           else{
+                               String aux="p2";
+                               try {
+                                   data.sup(con, String.valueOf(Ne+ server.today), "sb_"+aux, String.valueOf(N));
+                               } catch (SQLException e) {
+                                   throw new RuntimeException(e);
+                               }
+                           }
                        }
                        else
                        {
                            //mandar vir do supplier A
                            Nf=16-Nf;
+                           if(material.equals("P1")){
+                               String aux="p1";
+                               try {
+                                   data.sup(con, String.valueOf(Ne+server.today), "sa_"+aux, String.valueOf(N));
+                               } catch (SQLException e) {
+                                   throw new RuntimeException(e);
+                               }
+                           }
+                           else{
+                               String aux="p2";
+                               try {
+                                   data.sup(con, String.valueOf(Ne+ server.today), "sa_"+aux, String.valueOf(N));
+                               } catch (SQLException e) {
+                                   throw new RuntimeException(e);
+                               }
+                           }
                        }
 
                    }
@@ -486,12 +764,44 @@ public class Managment implements Runnable {
                     if(Ng>Nh)
                     {
                         // mandar vir N peças do supplier B
+                        if(material.equals("P1")){
+                            String aux="p1";
+                            try {
+                                data.sup(con, String.valueOf(Ne+server.today), "sa_"+aux, String.valueOf(N));
+                            } catch (SQLException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        else{
+                            String aux="p2";
+                            try {
+                                data.sup(con, String.valueOf(Ne+ server.today), "sa_"+aux, String.valueOf(N));
+                            } catch (SQLException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
                         //custo do supplier = acc.costSup(N, "B",material)/N
                         Nf=8-Nf;
                     }
                     else
                     {
                         //mandar vir do supplier C
+                        if(material.equals("P1")){
+                            String aux="p1";
+                            try {
+                                data.sup(con, String.valueOf(Ne+server.today), "sc_"+aux, String.valueOf(4));
+                            } catch (SQLException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        else{
+                            String aux="p2";
+                            try {
+                                data.sup(con, String.valueOf(Ne+ server.today), "sc_"+aux, String.valueOf(4));
+                            } catch (SQLException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
                         //custo do supplier
                         Nf=4-Nf;
                     }
@@ -505,11 +815,43 @@ public class Managment implements Runnable {
                     {
                         // mandar vir N peças do supplier B
                         Nf=8-Nf;
+                        if(material.equals("P1")){
+                            String aux="p1";
+                            try {
+                                data.sup(con, String.valueOf(Ne+server.today), "sb_"+aux, String.valueOf(N));
+                            } catch (SQLException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        else{
+                            String aux="p2";
+                            try {
+                                data.sup(con, String.valueOf(Ne+ server.today), "sb_"+aux, String.valueOf(N));
+                            } catch (SQLException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
                     }
                     else
                     {
                         //mandar vir do supplier A
                         Nf=16-Nf;
+                        if(material.equals("P1")){
+                            String aux="p1";
+                            try {
+                                data.sup(con, String.valueOf(Ne+server.today), "sa_"+aux, String.valueOf(N));
+                            } catch (SQLException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        else{
+                            String aux="p2";
+                            try {
+                                data.sup(con, String.valueOf(Ne+ server.today), "sa_"+aux, String.valueOf(N));
+                            } catch (SQLException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
                     }
 
                 }
