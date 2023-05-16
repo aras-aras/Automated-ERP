@@ -1,3 +1,5 @@
+import javafx.application.Application;
+import javafx.stage.Stage;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -6,10 +8,11 @@ import java.util.Scanner;
 
 
 
+
 //This is ERP
 
 
-public class Main {
+public class Main extends Application {
     public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException {
         /*XMLudp2 receiver = new XMLudp2();
         OrderList ord= new OrderList();
@@ -43,6 +46,11 @@ public class Main {
             Thread thread3 = new Thread(server);
             thread3.start();
 
+
+    }
+
+    @Override
+    public void start(Stage stage) throws Exception{
 
     }
 }

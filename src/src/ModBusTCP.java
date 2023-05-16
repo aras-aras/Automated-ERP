@@ -28,16 +28,16 @@ public class ModBusTCP implements Runnable { //Server - this part is meant to re
     public void run() {
 
         while (true) {
-            System.out.println("test1");
+
             try {
-                System.out.println("test2");
+
                 Thread.sleep(800);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
             try {
                 // Connect to the server
-                System.out.println("test3");
+
                 // Create input and output streams
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -58,11 +58,11 @@ public class ModBusTCP implements Runnable { //Server - this part is meant to re
             //sleep de 60 segundos
             try {
                 System.out.println("test4");
-                Thread.sleep(10000);
+                Thread.sleep(59200);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            System.out.println("test5");
+
             today++;
 
         }
