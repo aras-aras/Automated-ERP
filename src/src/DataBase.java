@@ -62,6 +62,8 @@ public class DataBase {
             stmt.executeUpdate(sql);
     }
 
+    //public void updating_price(Connection con, String price)
+
 
 
     /////////////////////////////////                 WAREHOUSE                   //////////////////////////////////////
