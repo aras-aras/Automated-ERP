@@ -14,49 +14,28 @@ import java.util.Scanner;
 //This is ERP
 
 
-public class Main extends Application {
+public class Main {
     public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException {
-        /*XMLudp2 receiver = new XMLudp2();
-        OrderList ord= new OrderList();
-        File_treatment treatment= new File_treatment(receiver, ord);
-        ModBusTCP server = new ModBusTCP();
 
-
-            Thread thread1 = new Thread(receiver);
-            thread1.start();
-
-            Thread thread2 = new Thread(treatment);
-            thread2.start();
-
-            Thread thread3 = new Thread(server);
-            thread3.start();*/
-        //Versao 2
 
         XMLudp2 receiver = new XMLudp2();
+        System.out.println("maça");
         TCP server = new TCP();
+        System.out.println("maça1");
         Managment man = new Managment();
 
         int today= server.today;
 
 
-            /*Thread thread1 = new Thread(receiver);
+            Thread thread1 = new Thread(receiver);
             thread1.start();
 
             Thread thread2 = new Thread(man);
             thread2.start();
-            */
+
             Thread thread3 = new Thread(server);
             thread3.start();
-
-
     }
 
-    @Override
-    public void start(Stage stage) throws Exception{
-        //Stage stage = new Stage();
-        Group root =new Group();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
-    }
+
 }

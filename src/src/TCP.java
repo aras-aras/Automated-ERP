@@ -47,8 +47,7 @@ public class TCP implements Runnable { //Server - this part is meant to receive 
                 // Read the response from the server
                 String response = in.readLine();
                 System.out.println("Received from server: " + response);
-                process_str(response);
-
+                //process_str(response);
                 // Close the connection
 
                 //socket.close();
@@ -79,9 +78,19 @@ public class TCP implements Runnable { //Server - this part is meant to receive 
     }
     public String create_str(int today)
     {
-        String message="macaco";
-        /* procuras quais linhas é que tem o dia igual a today
-        * Ajuda necessaria e urgente do francisco*/
+        String message = "";
+        DataBase data=new DataBase();
+        Connection con=data.create_connection();
+        try {
+            List<String[]> rows = data.information(con, String.valueOf(today));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
+            /* procuras quais linhas é que tem o dia igual a today
+             * Ajuda necessaria e urgente do francisco*/
+
         return message;
     }
 

@@ -30,7 +30,7 @@ public class File_treatment {
 
     public void treat(String serverData) { //Thread 2
         //isto faz o parser da string;
-        while (true) {
+
 
                 System.out.println("test3 (th2)");
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -68,13 +68,15 @@ public class File_treatment {
                         } catch (SQLException e) {
                             throw new RuntimeException(e);
                         }
-                        list.clear();
+
 
 }
                 System.out.println("--------------------------------------");
                 ordens.print_list(list);
+                list.clear();
+                //System.out.println("banana");
 
-            }
+
         }
     }
 }

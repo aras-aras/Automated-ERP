@@ -16,6 +16,7 @@ public class XMLudp2 implements Runnable {
     public File_treatment treatment;
     public XMLudp2() throws SocketException, UnknownHostException, FileNotFoundException {
            // Set up the UDP socket and packet
+
            socket = new DatagramSocket(port);
            address = InetAddress.getLocalHost();
            OrderList ord = new OrderList();

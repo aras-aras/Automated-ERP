@@ -95,8 +95,8 @@ public class Account {
              * por isso tens de criar uma coluna na tabela das ordens e
              *  meter la este preço no final do while, da lhe este nome basicamente
              *
-             * Eu aqui estou a assumir que a string nas posiçoes seguintes traz as informaçoes
-             * necessarias para o calculo por ordem, assumindo que cada tres posiçoes sao o PC, O DD E O AD*/
+             * Eu aqui estou a assumir que a string  nas posiçoes seguintes traz as informaçoes
+             * necessarias para o calculo por ordem,assumindo que cada tres posiçoes sao o PC, O DD E O AD*/
             n=n+3;
         }
 
