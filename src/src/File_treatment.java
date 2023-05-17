@@ -28,7 +28,7 @@ public class File_treatment {
         ordens = ord;
     }
 
-    public void treat(String serverData) { //Thread 2
+    public void treat(String serverData) throws SQLException { //Thread 2
         //isto faz o parser da string;
 
 
@@ -60,15 +60,21 @@ public class File_treatment {
                         ord.DueDate = orderElement.getAttribute("DueDate");
                         ord.Late_Pen = orderElement.getAttribute("LatePen");
                         ord.Early_Pen = orderElement.getAttribute("EarlyPen");
-                        list.add(ord);
+
                         DataBase data=new DataBase();
                         Connection lig=data.create_connection();
-                        try {
-                            data.new_order(lig, ord.Client_name, ord.Order_num, ord.Work_Piece, ord.Quantity, ord.DueDate, ord.Late_Pen, ord.Early_Pen, String.valueOf(0));
-                        } catch (SQLException e) {
-                            throw new RuntimeException(e);
+                        if(data.already_exists(lig, ord.Order_num)==0) {
+                            list.add(ord);
+                            try {
+                                data.new_order(lig, ord.Client_name, ord.Order_num, ord.Work_Piece, ord.Quantity, ord.DueDate, ord.Late_Pen, ord.Early_Pen, String.valueOf(0));
+                            } catch (SQLException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
-
+                        else
+                        {
+                            System.out.println(("Order was already sent"));
+                        }
 
 }
                 System.out.println("--------------------------------------");

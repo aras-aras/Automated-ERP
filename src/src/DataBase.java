@@ -63,8 +63,21 @@ public class DataBase {
     }
 
     //public void updating_price(Connection con, String price)
+    public int already_exists(Connection con,String id) throws SQLException {
+        Statement stmt=con.createStatement();
+        String sql="se  lect today from infi.today where id='"+id+"'";
+        ResultSet re=stmt.executeQuery(sql);
+        while(re.next()){
+            String[] str= new String[1];
+            str[0]=re.getString("order_number");
 
-
+            if(str[0].equals(id)==true)
+            {
+                return 1;
+            }
+        }
+        return 0;
+    }
 
     /////////////////////////////////                 WAREHOUSE                   //////////////////////////////////////
    /* public void book_pieces(Connection con, String quantity, String type) throws SQLException{

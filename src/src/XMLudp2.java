@@ -4,6 +4,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 
 public class XMLudp2 implements Runnable {
     public byte[] xmlBytes;
@@ -44,7 +45,11 @@ public class XMLudp2 implements Runnable {
             } catch (SAXException e) {
                 throw new RuntimeException(e);
             }
-            treatment.treat(xmlData);
+            try {
+                treatment.treat(xmlData);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
     public String unload() throws IOException, ParserConfigurationException, SAXException {
