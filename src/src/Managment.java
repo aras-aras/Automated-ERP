@@ -45,15 +45,11 @@ public class Managment implements Runnable {
         * ordens que se encontra num estado não processado e atribuimos-lhe
         * todos os seus atributos.
         * */
-            System.out.println("ananas3");
 
             try {
                 if(data.order_not_processed(con)!=null) {
                     System.out.println("ananas4");
-
-
                     ord = new Order();
-
                     Account acc = new Account();
                     String[] atr = new String[7];
                     try {
@@ -78,13 +74,22 @@ public class Managment implements Runnable {
                      * problemas para depois
                      * */
                     today=data.today_day(con);
-                    calculus(Nd, N, Nc, Ne, duedate, today, ord.Work_Piece);
-                    System.out.println("(Nd)Numero de dias que tens para fazer a peça:" + Nd);
-                    System.out.println("(N)Numero de peças para fazeres:" + N);
-                    System.out.println("(Ne) numero de dias que tens no maximo para encomendar as peças" + Ne);
-                    System.out.println("date de entraga" + duedate);
-                    System.out.println("hoje" + today);
-                    System.out.println("tipo de peça" + ord.Work_Piece);
+                    int[] nr=new int[3];
+                    nr=calculus(N, Ne, duedate, today, ord.Work_Piece);
+                    //calculus(N, Ne, duedate, today, ord.Work_Piece);
+                    /*aux[0]->Nd
+                    aux[1]->Ne
+                    aux[2]->duedate*/
+                    Nd=nr[0];
+                    Ne=1;
+                    duedate=nr[2];
+                    System.out.println("(Nd)Numero de dias que tens para fazer a peça: " + Nd);
+                    System.out.println("(N)Numero de peças para fazeres: " + N);
+                    System.out.println("(Ne) numero de dias que tens no maximo para encomendar as peças: " + Ne);
+                    System.out.println("date de entrega: " + duedate);
+                    System.out.println("hoje: " + today);
+                    System.out.println("tipo de peça: " + ord.Work_Piece);
+                    material = verify_raw(ord.Work_Piece);
             /*Basicamente aqui tens de verificar se os dias que estao programados para fazer
             peças estao reservados, caso estejam começa a distribuir pelos dias livres
             * o Ne diz te o dia em que vais começar a cozinhar e prolonga se ate à duedate-1*/
@@ -134,34 +139,17 @@ public class Managment implements Runnable {
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
-                    int num = N;
-                    N = N - Na;
+                    if(Na!=-1) {
+                        System.out.println("estou aqui 1");
+                        int num = N;
+                        N = N - Na;
 
-                    if (N <= 0) { // CASO JÁ HAJA TODAS AS PEÇAS PRETENDIDAS JÁ TRANSFORMADAS E PRONTAS
-                        /*Also, reservar na tabela
-                         *  do armazem Na peças para aquele dia.
-                         * */
+                        if (N <= 0) { // CASO JÁ HAJA TODAS AS PEÇAS PRETENDIDAS JÁ TRANSFORMADAS E PRONTAS
+                            /*Also, reservar na tabela
+                             *  do armazem Na peças para aquele dia.
+                             * */
 
-                        int quantity = Integer.parseInt(ord.Quantity);//nr de peças já prontas q queremos
-                        int[] arr;
-                        try {
-                            arr = data.check_pieces(con, ord.Work_Piece, Ne);
-                        } catch (SQLException e) {
-                            throw new RuntimeException(e);
-                        }
-                        int existing = arr[0];//nr de peças existentes
-                        int reserved = arr[1];//nr de peças que estao reservadas
-                        int new_reserved = reserved + quantity; /*isto vai atualizar a tabela da warehouse e atualizar a coluna das peças reserdas*/
-                        try {
-                            data.reserving_pieces(con, ord.Work_Piece, Ne, new_reserved);//ja reservou adicionei as N peças necessarias para acabar a encomenda
-                        } catch (SQLException e) {
-                            throw new RuntimeException(e);
-                        }
-
-                    } else//caso nao haja peças já prontas suficientes (ja transformadas) verificar raw material
-                    {
-                        if (Na != 0) {
-                            //1º reservar as peças transformadas já existentes
+                            int quantity = Integer.parseInt(ord.Quantity);//nr de peças já prontas q queremos
                             int[] arr;
                             try {
                                 arr = data.check_pieces(con, ord.Work_Piece, Ne);
@@ -170,41 +158,62 @@ public class Managment implements Runnable {
                             }
                             int existing = arr[0];//nr de peças existentes
                             int reserved = arr[1];//nr de peças que estao reservadas
-                            int new_reserved = reserved + Na; /*isto vai atualizar a tabela da warehouse e atualizar a coluna das peças reservadas*/
+                            int new_reserved = reserved + quantity; /*isto vai atualizar a tabela da warehouse e atualizar a coluna das peças reserdas*/
                             try {
                                 data.reserving_pieces(con, ord.Work_Piece, Ne, new_reserved);//ja reservou adicionei as N peças necessarias para acabar a encomenda
                             } catch (SQLException e) {
                                 throw new RuntimeException(e);
                             }
-                        }
 
-                        material = verify_raw(ord.Work_Piece);
+                        } else//caso nao haja peças já prontas suficientes (ja transformadas) verificar raw material
+                        {
+                            if (Na != 0) {
+                                //1º reservar as peças transformadas já existentes
+                                int[] arr;
+                                try {
+                                    arr = data.check_pieces(con, ord.Work_Piece, Ne);
+                                } catch (SQLException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                int existing = arr[0];//nr de peças existentes
+                                int reserved = arr[1];//nr de peças que estao reservadas
+                                int new_reserved = reserved + Na; /*isto vai atualizar a tabela da warehouse e atualizar a coluna das peças reservadas*/
+                                try {
+                                    data.reserving_pieces(con, ord.Work_Piece, Ne, new_reserved);//ja reservou adicionei as N peças necessarias para acabar a encomenda
+                                } catch (SQLException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
 
-                        /* ----TABELA PIECES--------
-                         *
-                         * Neste caso, Na peças tem type_1=material
-                         *
-                         * no codigo a seguir, estou a escrever na tabela pieces_trans ja algumas linhas das peças
-                         * que têm que ser transformadas para enviar ao mes
-                         * */
-                        for (int i = 0; i < N; i++) {
+                            //material = verify_raw(ord.Work_Piece);
+
+                            /* ----TABELA PIECES--------
+                             *
+                             * Neste caso, Na peças tem type_1=material
+                             *
+                             * no codigo a seguir, estou a escrever na tabela pieces_trans ja algumas linhas das peças
+                             * que têm que ser transformadas para enviar ao mes
+                             * */
+                            for (int i = 0; i < N; i++) {
+                                try {
+                                    data.piece(con, atr[0], material, Integer.toString(Integer.parseInt(atr[4]) - 1));
+                                } catch (SQLException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+
+                            /* Verifica qual é o melhor material para fazer cada peça e verifica
+                             * se este está disponivel no armazem naquele dia*/
+
                             try {
-                                data.piece(con, atr[0], material, Integer.toString(Integer.parseInt(atr[4]) - 1));
+                                Nb = verify_material(material, Ne); //verificar se há raw material no dia Ne, guarda em Nb o nr de raw material existente
                             } catch (SQLException e) {
                                 throw new RuntimeException(e);
                             }
+                            N = N - Nb;
                         }
-
-                        /* Verifica qual é o melhor material para fazer cada peça e verifica
-                         * se este está disponivel no armazem naquele dia*/
-
-                        try {
-                            Nb = verify_material(material, Ne); //verificar se há raw material no dia Ne, guarda em Nb o nr de raw material existente
-                        } catch (SQLException e) {
-                            throw new RuntimeException(e);
-                        }
-                        N = N - Nb;
                     }
+                    System.out.println("estou aqui 2");
                     if (N <= 0)// se houver raw material suficiente para cobrir o que falta é so indicar as transformações a fazer
                     {
                         for (int n = Nd; n > 0; n--) {
@@ -234,6 +243,7 @@ public class Managment implements Runnable {
                     /*Nesta secção vai ser avaliado qual é o supplier que deverá ser
                      * escolhido conforme o número de dias que nos sobra para encomendar.
                      * */
+                    System.out.println("estou aqui 3");
                     if (Ne == 1) {
                         /*Caso apenas nos reste 1 dia para fazer a encomenda, apenas podemos encomendar
                          * do supplier C e o minimo de peças a encomendar é 4 e por isso podem sobrar e
@@ -312,7 +322,7 @@ public class Managment implements Runnable {
                                 String aux = "p1";
                                 try {
                                     today=data.today_day(con);
-                                    data.sup(con, String.valueOf(Ne + today), "sc_" + aux, String.valueOf(N));
+                                    data.sup(con, String.valueOf(Ne + today), "sc_p1" + aux, String.valueOf(N));
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -320,7 +330,7 @@ public class Managment implements Runnable {
                                 String aux = "p2";
                                 try {
                                     today=data.today_day(con);
-                                    data.sup(con, String.valueOf(Ne + today), "sc_" + aux, String.valueOf(N));
+                                    data.sup(con, String.valueOf(Ne + today), "sc_p2", String.valueOf(N));
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -355,19 +365,21 @@ public class Managment implements Runnable {
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
-                                int exit = aux[0];
-                                int res = aux[1];
-                                try {
-                                    today=data.today_day(con);
-                                    data.reserving_pieces(con, "p2", Ne + today, res + N);
-                                } catch (SQLException e) {
-                                    throw new RuntimeException(e);
-                                }
-                                try {
-                                    today=data.today_day(con);
-                                    data.arriving_new_pieces(con, "p2", Ne + today, N + exit);
-                                } catch (SQLException e) {
-                                    throw new RuntimeException(e);
+                                if(aux!=null) {
+                                    int exit = aux[0];
+                                    int res = aux[1];
+                                    try {
+                                        today = data.today_day(con);
+                                        data.reserving_pieces(con, "p2", Ne + today, res + N);
+                                    } catch (SQLException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                    try {
+                                        today = data.today_day(con);
+                                        data.arriving_new_pieces(con, "p2", Ne + today, N + exit);
+                                    } catch (SQLException e) {
+                                        throw new RuntimeException(e);
+                                    }
                                 }
                             }
                         }
@@ -888,12 +900,14 @@ public class Managment implements Runnable {
         }
 
 }
-public void calculus(int num, int num1,int num2, int num3, int duedate,int today, String Workpiece) {
+public int[] calculus(int num1, int num3, int duedate,int today, String Workpiece) {
+        //calculus(N, Ne, duedate, today, ord.Work_Piece);
+     int[] aux = new int[3];
     if ((Workpiece.equals("P3") && (num1 == 1 || num1 == 2 || num1 == 3)) ||
             (Workpiece.equals("P4") && (num1 == 1 || num1 == 2 || num1 == 3)) ||
             (Workpiece.equals("P6") && (num1 == 1)) ||
             (Workpiece.equals("P7") && (num1 == 1 || num1 == 2))) {
-        num = 1;
+        aux[0] = 1;
     } else if ((Workpiece.equals("P3") && (num1 == 4 || num1 == 5 || num1 == 6 || num1 == 7 || num1 == 8)) ||
             (Workpiece.equals("P4") && (num1 == 4 || num1 == 5 || num1 == 6 || num1 == 7 || num1 == 8)) ||
             (Workpiece.equals("P5") && (num1 == 1 || num1 == 2 || num1 == 3)) ||
@@ -901,34 +915,47 @@ public void calculus(int num, int num1,int num2, int num3, int duedate,int today
             (Workpiece.equals("P7") && (num1 == 3 || num1 == 4 || num1 == 5 || num1 == 6 || num1 == 7 || num1 == 8)) ||
             (Workpiece.equals("P8") && (num1 == 1)) ||
             (Workpiece.equals("P9") && (num1 == 4 || num1 == 1 || num1 == 2 || num1 == 3))) {
-        num = 2;
+        aux[0] = 2;
     } else if ((Workpiece.equals("P5") && (num1 == 4 || num1 == 5 || num1 == 6 || num1 == 7 || num1 == 8)) ||
             (Workpiece.equals("P6") && (num1 == 5 || num1 == 6 || num1 == 7)) ||
             (Workpiece.equals("P8") && (num1 == 4 || num1 == 2 || num1 == 3)) ||
             (Workpiece.equals("P9") && (num1 == 5 || num1 == 6 || num1 == 7 || num1 == 8))) {
-        num = 3;
+        System.out.println("tou aqui");
+        aux[0] = 3;
     } else if ((Workpiece.equals("P6") && (num1 == 8)) ||
             (Workpiece.equals("P8") && (num1 == 5 || num1 == 6 || num1 == 7))) {
-        num = 4;
+        aux[0] = 4;
     } else {
-        num = 5;
+        aux[0] = 5;
     }
-
-    num3 = duedate - today - num - 1;
-    while (num3 > duedate) {
-        duedate++;
+    aux[1] = duedate - today - aux[0] - 1;
+    if(num3>duedate) {
+        while (num3 > duedate) {
+            duedate++;
+            aux[2] = duedate;
+        }
     }
-
+    else{
+        aux[2]=duedate;
+    }
+    return aux;
 }
+
     public int verify_how_many(String X, int Ne) throws SQLException {
         //verificar quantas peças livres X há dia Ne
         DataBase data=new DataBase();
         Connection con=data.create_connection();
         int[] arr;
+        int n;
         arr=data.check_pieces(con,X, Ne);
-        int existing=arr[0];
-        int reserved=arr[1];
-        int n=existing-reserved;
+        if(arr==null){
+            n=-1;
+        }
+        else {
+            int existing = arr[0];
+            int reserved = arr[1];
+            n = existing - reserved;
+        }
         return n;
     }
     public String verify_raw( String piece)

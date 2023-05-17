@@ -1,6 +1,7 @@
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 public class DataBase {
@@ -65,12 +66,11 @@ public class DataBase {
     //public void updating_price(Connection con, String price)
     public int already_exists(Connection con,String id) throws SQLException {
         Statement stmt=con.createStatement();
-        String sql="se  lect today from infi.today where id='"+id+"'";
+        String sql="select today from infi.today where id='"+id+"'";
         ResultSet re=stmt.executeQuery(sql);
         while(re.next()){
             String[] str= new String[1];
             str[0]=re.getString("order_number");
-
             if(str[0].equals(id)==true)
             {
                 return 1;
@@ -86,25 +86,27 @@ public class DataBase {
     }*/
     public int[] check_pieces(Connection con, String p, int day) throws SQLException{
             Statement stmt=con.createStatement();
-            String sql="select '"+p+"'_existing, '"+p+"'_reserved from infi.warehouse where day='"+day+"'";
+            p=p.toLowerCase();
+            String sql="select "+p+"_existing, "+p+"_reserved from infi.warehouse where day='"+day+"'";
             ResultSet re=stmt.executeQuery(sql);
             while(re.next()){
                 int[] arr=new int[2];
-                arr[0]=re.getInt("'"+p+"'_existing");
-                arr[1]=re.getInt("'"+p+"'_reserved");
+                arr[0]=re.getInt(""+p+"_existing");
+                arr[1]=re.getInt(""+p+"_reserved");
                 return arr;
             }
             return null;
     }
     public void reserving_pieces(Connection con, String p, int day, int new_reserved) throws SQLException{
             Statement stmt=con.createStatement();
-            String sql="update infi.warehouse set '"+p+"'_reserved='"+new_reserved+"' where day='"+day+"'";
+            p=p.toLowerCase();
+            String sql="update infi.warehouse set "+p+"_reserved='"+new_reserved+"' where day='"+day+"'";
         stmt.executeUpdate(sql);
     }
 
     public void arriving_new_pieces(Connection con, String piece, int day, int quantity) throws SQLException{
             Statement stmt=con.createStatement();
-            String sql="update infi.warehouse set '"+piece+"'_existing='"+quantity+"' where day='"+day+"'";
+            String sql="update infi.warehouse set "+piece+"_existing='"+quantity+"' where day='"+day+"'";
             stmt.executeUpdate(sql);
     }
 
@@ -219,7 +221,7 @@ public class DataBase {
 
     public void sup(Connection con, String day, String sup, String quantity) throws SQLException{
             Statement stmt=con.createStatement();
-            String sql="insert into infi.suppliers(day,'"+sup+"') values ('"+day+"', '"+quantity+"')";
+            String sql="insert into infi.suppliers(day,"+sup+") values ('"+day+"', '"+quantity+"')";
             stmt.executeUpdate(sql);
     }
 
@@ -237,7 +239,7 @@ public class DataBase {
         int today=0;
         int id=1;
         Statement stmt=con.createStatement();
-        String sql="se  lect today from infi.today where id='"+id+"'";
+        String sql="select today from infi.today where id='"+id+"'";
         ResultSet re=stmt.executeQuery(sql);
         while(re.next()){
             String[] str= new String[1];
