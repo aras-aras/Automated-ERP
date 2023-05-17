@@ -21,6 +21,7 @@ public class Main {
         XMLudp2 receiver = new XMLudp2();
         TCP server = new TCP();
         Managment man = new Managment();
+        System.out.println("o commit esá me a meter nojo")
         int today= server.today;
 
 
