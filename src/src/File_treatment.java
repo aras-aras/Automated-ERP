@@ -32,7 +32,7 @@ public class File_treatment {
         //isto faz o parser da string;
 
 
-                System.out.println("test3 (th2)");
+                System.out.println("treating");
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 Document document = null;
                 try {

@@ -209,4 +209,29 @@ public class DataBase {
             String sql="insert into infi.suppliers(day,'"+sup+"') values ('"+day+"', '"+quantity+"')";
             stmt.executeUpdate(sql);
     }
+
+
+//////////////////////////////            DAY COUNTER                        ////////////////////////////////////////
+
+
+    public void day_counter( Connection con, int value) throws SQLException {
+        Statement stmt=con.createStatement();
+        int id=1;
+        String sql="update infi.today set today='"+value+"' where id='"+id+"'";
+        stmt.executeUpdate(sql);
+    }
+    public int today_day(Connection con) throws SQLException {
+        int today=0;
+        int id=1;
+        Statement stmt=con.createStatement();
+        String sql="se  lect today from infi.today where id='"+id+"'";
+        ResultSet re=stmt.executeQuery(sql);
+        while(re.next()){
+            String[] str= new String[1];
+            str[0]=re.getString("today");
+
+            return Integer.parseInt(str[0]);
+        }
+        return Integer.parseInt(null);
+    }
 }

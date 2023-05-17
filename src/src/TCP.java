@@ -16,11 +16,15 @@ public class TCP implements Runnable { //Server - this part is meant to receive 
     private static final String SERVER_IP = "localhost";
     Socket socket;
 
+    DataBase data;
+
     public TCP() throws IOException {
         // Set up the UDP socket and packet
         today = 0;
         socket = new Socket(SERVER_IP, SERVER_PORT);
         System.out.println("Connected");
+        data = new DataBase();
+
 
  //ola olha, n consigo compilar pq ele n esta a conseguir ligar ao tcp pq eu n tenho o mes a correr,
         //por isso vou cagar para o tcp para ja
@@ -31,6 +35,13 @@ public class TCP implements Runnable { //Server - this part is meant to receive 
     public void run() {
 
         while (true) {
+            Connection con = data.create_connection();
+            try {
+
+                data.day_counter(con,today);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
 
             try {
                 Thread.sleep(800);
@@ -63,6 +74,9 @@ public class TCP implements Runnable { //Server - this part is meant to receive 
                 throw new RuntimeException(e);
             }
             today++;
+
+
+
         }
     }
 
@@ -90,6 +104,7 @@ public class TCP implements Runnable { //Server - this part is meant to receive 
             }
             result.append(concatenated);
         }
+        System.out.println(message);
 
         return message;
     }

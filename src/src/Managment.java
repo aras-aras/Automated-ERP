@@ -20,7 +20,8 @@ public class Managment implements Runnable {
     public String material; // raw material da peça
     public int[] work_days; // vetor de dias em que estamos a cozinhar a peça
     public int deliver_day; // dia em que a peça esta a ser transportada para a plataforma
-    public TCP server;
+
+    public int today;
 
 
     public void run() {
@@ -32,7 +33,6 @@ public class Managment implements Runnable {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            System.out.println("ananas");
         /* A primeira coisa a ser feita é verificar a lista das ordens.
         * Essa lista contem colunas com todas as caracteristicas das ordens
         * incluindo uma coluna que indica se esta ordem já foi processada ou não.
@@ -40,7 +40,6 @@ public class Managment implements Runnable {
         * coisas a fazer aka cozinhar e ser transportada etc
         * */
         DataBase data=new DataBase();
-        System.out.println("ananas2");
         Connection con=data.create_connection();
         /* Com isto, verificamos a primeira ordem que está na lista de
         * ordens que se encontra num estado não processado e atribuimos-lhe
@@ -78,12 +77,13 @@ public class Managment implements Runnable {
                      * ESSES DILEMAS.(dentro da função calculus), basicamente
                      * problemas para depois
                      * */
-                    calculus(Nd, N, Nc, Ne, duedate, server.today, ord.Work_Piece);
+                    today=data.today_day(con);
+                    calculus(Nd, N, Nc, Ne, duedate, today, ord.Work_Piece);
                     System.out.println("(Nd)Numero de dias que tens para fazer a peça:" + Nd);
                     System.out.println("(N)Numero de peças para fazeres:" + N);
                     System.out.println("(Ne) numero de dias que tens no maximo para encomendar as peças" + Ne);
                     System.out.println("date de entraga" + duedate);
-                    System.out.println("hoje" + server.today);
+                    System.out.println("hoje" + today);
                     System.out.println("tipo de peça" + ord.Work_Piece);
             /*Basicamente aqui tens de verificar se os dias que estao programados para fazer
             peças estao reservados, caso estejam começa a distribuir pelos dias livres
@@ -224,7 +224,8 @@ public class Managment implements Runnable {
                         /*Sabendo que temos Nd dias para fazer as peças.
                          * */
                         try {
-                            data.piece_update(con, ord.Order_num, material, arr[1], arr[2], arr[3], arr[4], arr[5], arr[6], arr[7], arr[8], arr[9], arr[10], arr[11], arr[12], arr[13], arr[14], arr[15], arr[16], ord.DueDate, String.valueOf(Ne + server.today));
+                            today=data.today_day(con);
+                            data.piece_update(con, ord.Order_num, material, arr[1], arr[2], arr[3], arr[4], arr[5], arr[6], arr[7], arr[8], arr[9], arr[10], arr[11], arr[12], arr[13], arr[14], arr[15], arr[16], ord.DueDate, String.valueOf(Ne +today));
                         } catch (SQLException e) {
                             throw new RuntimeException(e);
                         }
@@ -244,14 +245,16 @@ public class Managment implements Runnable {
                             if (material.equals("P1")) {
                                 String aux = "p1";
                                 try {
-                                    data.sup(con, String.valueOf(Ne + server.today), "sc_" + aux, String.valueOf(4));
+                                    today=data.today_day(con);
+                                    data.sup(con, String.valueOf(Ne + today), "sc_" + aux, String.valueOf(4));
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                             } else {
                                 String aux = "p2";
                                 try {
-                                    data.sup(con, String.valueOf(Ne + server.today), "sc_" + aux, String.valueOf(4));
+                                    today=data.today_day(con);
+                                    data.sup(con, String.valueOf(Ne + today), "sc_" + aux, String.valueOf(4));
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -261,37 +264,43 @@ public class Managment implements Runnable {
                             int[] aux;
                             if (material.equals("P1")) {
                                 try {
-                                    aux = data.check_pieces(con, "p1", Ne + server.today);
+                                    today=data.today_day(con);
+                                    aux = data.check_pieces(con, "p1", Ne + today);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 int exit = aux[0];
                                 int res = aux[1];
                                 try {
-                                    data.reserving_pieces(con, "p1", Ne + server.today, res + N);
+                                    today=data.today_day(con);
+                                    data.reserving_pieces(con, "p1", Ne + today, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 try {
-                                    data.arriving_new_pieces(con, "p1", Ne + server.today, Nf + exit + N);
+                                    today=data.today_day(con);
+                                    data.arriving_new_pieces(con, "p1", Ne + today, Nf + exit + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                             } else {
                                 try {
-                                    aux = data.check_pieces(con, "p2", Ne + server.today);
+                                    today=data.today_day(con);
+                                    aux = data.check_pieces(con, "p2", Ne + today);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 int exit = aux[0];
                                 int res = aux[1];
                                 try {
-                                    data.reserving_pieces(con, "p2", Ne + server.today, res + N);
+                                    today=data.today_day(con);
+                                    data.reserving_pieces(con, "p2", Ne + today, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 try {
-                                    data.arriving_new_pieces(con, "p2", Ne + server.today, Nf + exit + N);
+                                    today=data.today_day(con);
+                                    data.arriving_new_pieces(con, "p2", Ne + today, Nf + exit + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -302,14 +311,16 @@ public class Managment implements Runnable {
                             if (material.equals("P1")) {
                                 String aux = "p1";
                                 try {
-                                    data.sup(con, String.valueOf(Ne + server.today), "sc_" + aux, String.valueOf(N));
+                                    today=data.today_day(con);
+                                    data.sup(con, String.valueOf(Ne + today), "sc_" + aux, String.valueOf(N));
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                             } else {
                                 String aux = "p2";
                                 try {
-                                    data.sup(con, String.valueOf(Ne + server.today), "sc_" + aux, String.valueOf(N));
+                                    today=data.today_day(con);
+                                    data.sup(con, String.valueOf(Ne + today), "sc_" + aux, String.valueOf(N));
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -318,37 +329,43 @@ public class Managment implements Runnable {
                             int[] aux;
                             if (material.equals("P1")) {
                                 try {
-                                    aux = data.check_pieces(con, "p1", Ne + server.today);
+                                    today=data.today_day(con);
+                                    aux = data.check_pieces(con, "p1", Ne + today);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 int exit = aux[0];
                                 int res = aux[1];
                                 try {
-                                    data.reserving_pieces(con, "p1", Ne + server.today, res + N);
+                                    today=data.today_day(con);
+                                    data.reserving_pieces(con, "p1", Ne + today, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 try {
-                                    data.arriving_new_pieces(con, "p1", Ne + server.today, N + exit);
+                                    today=data.today_day(con);
+                                    data.arriving_new_pieces(con, "p1", Ne + today, N + exit);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                             } else {
                                 try {
-                                    aux = data.check_pieces(con, "p2", Ne + server.today);
+                                    today=data.today_day(con);
+                                    aux = data.check_pieces(con, "p2", Ne + today);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 int exit = aux[0];
                                 int res = aux[1];
                                 try {
-                                    data.reserving_pieces(con, "p2", Ne + server.today, res + N);
+                                    today=data.today_day(con);
+                                    data.reserving_pieces(con, "p2", Ne + today, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 try {
-                                    data.arriving_new_pieces(con, "p2", Ne + server.today, N + exit);
+                                    today=data.today_day(con);
+                                    data.arriving_new_pieces(con, "p2", Ne + today, N + exit);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -358,14 +375,16 @@ public class Managment implements Runnable {
                         con = data.create_connection();
                         int[] arr;
                         try {
-                            arr = data.check_pieces(con, material, server.today);//???
+                            today=data.today_day(con);
+                            arr = data.check_pieces(con, material, today);//???
                         } catch (SQLException e) {
                             throw new RuntimeException(e);
                         }
                         int actual_existing = arr[0];
                         actual_existing = actual_existing + Nf;
                         try {
-                            data.arriving_new_pieces(con, material, server.today, actual_existing);
+                            today=data.today_day(con);
+                            data.arriving_new_pieces(con, material, today, actual_existing);
                         } catch (SQLException e) {
                             throw new RuntimeException(e);
                         }
@@ -383,14 +402,16 @@ public class Managment implements Runnable {
                                 if (material.equals("P1")) {
                                     String aux = "p1";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sb_" + aux, String.valueOf(N));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sb_" + aux, String.valueOf(N));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
                                 } else {
                                     String aux = "p2";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sb_" + aux, String.valueOf(N));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sb_" + aux, String.valueOf(N));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -401,14 +422,16 @@ public class Managment implements Runnable {
                                 if (material.equals("P1")) {
                                     String aux = "p1";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sc_" + aux, String.valueOf(4));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sc_" + aux, String.valueOf(4));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
                                 } else {
                                     String aux = "p2";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sc_" + aux, String.valueOf(4));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sc_" + aux, String.valueOf(4));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -420,37 +443,43 @@ public class Managment implements Runnable {
                             int[] aux;
                             if (material.equals("P1")) {
                                 try {
-                                    aux = data.check_pieces(con, "p1", server.today + 1);
+                                    today=data.today_day(con);
+                                    aux = data.check_pieces(con, "p1", today + 1);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 int exit = aux[0];
                                 int res = aux[1];
                                 try {
-                                    data.reserving_pieces(con, "p1", 1 + server.today, res + N);
+                                    today=data.today_day(con);
+                                    data.reserving_pieces(con, "p1", 1 + today, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 try {
-                                    data.arriving_new_pieces(con, "p1", 1 + server.today, Nf + exit + N);
+                                    today=data.today_day(con);
+                                    data.arriving_new_pieces(con, "p1", 1 + today, Nf + exit + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                             } else {
                                 try {
-                                    aux = data.check_pieces(con, "p2", 1 + server.today);
+                                    today=data.today_day(con);
+                                    aux = data.check_pieces(con, "p2", 1 + today);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 int exit = aux[0];
                                 int res = aux[1];
                                 try {
-                                    data.reserving_pieces(con, "p2", 1 + server.today, res + N);
+                                    today=data.today_day(con);
+                                    data.reserving_pieces(con, "p2", 1 + today, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 try {
-                                    data.arriving_new_pieces(con, "p2", 1 + server.today, Nf + exit + N);
+                                    today=data.today_day(con);
+                                    data.arriving_new_pieces(con, "p2", 1 + today, Nf + exit + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -461,14 +490,16 @@ public class Managment implements Runnable {
                             if (material.equals("P1")) {
                                 String aux = "p1";
                                 try {
-                                    data.sup(con, String.valueOf(Ne + server.today), "sb_" + aux, String.valueOf(N));
+                                    today=data.today_day(con);
+                                    data.sup(con, String.valueOf(Ne + today), "sb_" + aux, String.valueOf(N));
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                             } else {
                                 String aux = "p2";
                                 try {
-                                    data.sup(con, String.valueOf(Ne + server.today), "sb_" + aux, String.valueOf(N));
+                                    today=data.today_day(con);
+                                    data.sup(con, String.valueOf(Ne + today), "sb_" + aux, String.valueOf(N));
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -489,14 +520,16 @@ public class Managment implements Runnable {
                                 if (material.equals("P1")) {
                                     String aux = "p1";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sb_" + aux, String.valueOf(N));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sb_" + aux, String.valueOf(N));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
                                 } else {
                                     String aux = "p2";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sb_" + aux, String.valueOf(N));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sb_" + aux, String.valueOf(N));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -507,14 +540,16 @@ public class Managment implements Runnable {
                                 if (material.equals("P1")) {
                                     String aux = "p1";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sc_" + aux, String.valueOf(4));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sc_" + aux, String.valueOf(4));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
                                 } else {
                                     String aux = "p2";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sc_" + aux, String.valueOf(4));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sc_" + aux, String.valueOf(4));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -527,37 +562,43 @@ public class Managment implements Runnable {
                             int[] aux;
                             if (material.equals("P1")) {
                                 try {
-                                    aux = data.check_pieces(con, "p1", server.today + 1);
+                                    today=data.today_day(con);
+                                    aux = data.check_pieces(con, "p1", today + 1);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 int exit = aux[0];
                                 int res = aux[1];
                                 try {
-                                    data.reserving_pieces(con, "p1", 1 + server.today, res + N);
+                                    today=data.today_day(con);
+                                    data.reserving_pieces(con, "p1", 1 + today, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 try {
-                                    data.arriving_new_pieces(con, "p1", 1 + server.today, Nf + exit + N);
+                                    today=data.today_day(con);
+                                    data.arriving_new_pieces(con, "p1", 1 + today, Nf + exit + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                             } else {
                                 try {
-                                    aux = data.check_pieces(con, "p2", 1 + server.today);
+                                    today=data.today_day(con);
+                                    aux = data.check_pieces(con, "p2", 1 + today);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 int exit = aux[0];
                                 int res = aux[1];
                                 try {
-                                    data.reserving_pieces(con, "p2", 1 + server.today, res + N);
+                                    today=data.today_day(con);
+                                    data.reserving_pieces(con, "p2", 1 + today, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 try {
-                                    data.arriving_new_pieces(con, "p2", 1 + server.today, Nf + exit + N);
+                                    today=data.today_day(con);
+                                    data.arriving_new_pieces(con, "p2", 1 + today, Nf + exit + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -568,14 +609,16 @@ public class Managment implements Runnable {
                             if (material.equals("P1")) {
                                 String aux = "p1";
                                 try {
-                                    data.sup(con, String.valueOf(Ne + server.today), "sb_" + aux, String.valueOf(N));
+                                    today=data.today_day(con);
+                                    data.sup(con, String.valueOf(Ne + today), "sb_" + aux, String.valueOf(N));
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                             } else {
                                 String aux = "p2";
                                 try {
-                                    data.sup(con, String.valueOf(Ne + server.today), "sb_" + aux, String.valueOf(N));
+                                    today=data.today_day(con);
+                                    data.sup(con, String.valueOf(Ne + today), "sb_" + aux, String.valueOf(N));
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -597,14 +640,16 @@ public class Managment implements Runnable {
                                 if (material.equals("P1")) {
                                     String aux = "p1";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sb_" + aux, String.valueOf(N));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sb_" + aux, String.valueOf(N));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
                                 } else {
                                     String aux = "p2";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sb_" + aux, String.valueOf(N));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sb_" + aux, String.valueOf(N));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -615,14 +660,16 @@ public class Managment implements Runnable {
                                 if (material.equals("P1")) {
                                     String aux = "p1";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sc_" + aux, String.valueOf(4));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sc_" + aux, String.valueOf(4));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
                                 } else {
                                     String aux = "p2";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sc_" + aux, String.valueOf(4));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sc_" + aux, String.valueOf(4));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -634,37 +681,43 @@ public class Managment implements Runnable {
                             int[] aux;
                             if (material.equals("P1")) {
                                 try {
-                                    aux = data.check_pieces(con, "p1", server.today + 1);
+                                    today=data.today_day(con);
+                                    aux = data.check_pieces(con, "p1", today + 1);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 int exit = aux[0];
                                 int res = aux[1];
                                 try {
-                                    data.reserving_pieces(con, "p1", 1 + server.today, res + N);
+                                    today=data.today_day(con);
+                                    data.reserving_pieces(con, "p1", 1 + today, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 try {
-                                    data.arriving_new_pieces(con, "p1", 1 + server.today, Nf + exit + N);
+                                    today=data.today_day(con);
+                                    data.arriving_new_pieces(con, "p1", 1 + today, Nf + exit + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                             } else {
                                 try {
-                                    aux = data.check_pieces(con, "p2", 1 + server.today);
+                                    today=data.today_day(con);
+                                    aux = data.check_pieces(con, "p2", 1 + today);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 int exit = aux[0];
                                 int res = aux[1];
                                 try {
-                                    data.reserving_pieces(con, "p2", 1 + server.today, res + N);
+                                    today=data.today_day(con);
+                                    data.reserving_pieces(con, "p2", 1 + today, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 try {
-                                    data.arriving_new_pieces(con, "p2", 1 + server.today, Nf + exit + N);
+                                    today=data.today_day(con);
+                                    data.arriving_new_pieces(con, "p2", 1 + today, Nf + exit + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -676,14 +729,16 @@ public class Managment implements Runnable {
                                 if (material.equals("P1")) {
                                     String aux = "p1";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sb_" + aux, String.valueOf(N));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sb_" + aux, String.valueOf(N));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
                                 } else {
                                     String aux = "p2";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sb_" + aux, String.valueOf(N));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sb_" + aux, String.valueOf(N));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -694,14 +749,16 @@ public class Managment implements Runnable {
                                 if (material.equals("P1")) {
                                     String aux = "p1";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sa_" + aux, String.valueOf(N));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sa_" + aux, String.valueOf(N));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
                                 } else {
                                     String aux = "p2";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sa_" + aux, String.valueOf(N));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sa_" + aux, String.valueOf(N));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -725,14 +782,16 @@ public class Managment implements Runnable {
                                 if (material.equals("P1")) {
                                     String aux = "p1";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sa_" + aux, String.valueOf(N));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sa_" + aux, String.valueOf(N));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
                                 } else {
                                     String aux = "p2";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sa_" + aux, String.valueOf(N));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sa_" + aux, String.valueOf(N));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -744,14 +803,16 @@ public class Managment implements Runnable {
                                 if (material.equals("P1")) {
                                     String aux = "p1";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sc_" + aux, String.valueOf(4));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sc_" + aux, String.valueOf(4));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
                                 } else {
                                     String aux = "p2";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sc_" + aux, String.valueOf(4));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sc_" + aux, String.valueOf(4));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -769,14 +830,16 @@ public class Managment implements Runnable {
                                 if (material.equals("P1")) {
                                     String aux = "p1";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sb_" + aux, String.valueOf(N));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sb_" + aux, String.valueOf(N));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
                                 } else {
                                     String aux = "p2";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sb_" + aux, String.valueOf(N));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sb_" + aux, String.valueOf(N));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -787,14 +850,16 @@ public class Managment implements Runnable {
                                 if (material.equals("P1")) {
                                     String aux = "p1";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sa_" + aux, String.valueOf(N));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sa_" + aux, String.valueOf(N));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
                                 } else {
                                     String aux = "p2";
                                     try {
-                                        data.sup(con, String.valueOf(Ne + server.today), "sa_" + aux, String.valueOf(N));
+                                        today=data.today_day(con);
+                                        data.sup(con, String.valueOf(Ne + today), "sa_" + aux, String.valueOf(N));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
