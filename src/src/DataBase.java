@@ -84,9 +84,11 @@ public class DataBase {
             Statement stmt=con.createStatement();
             String sql="update infi.warehouse ";
     }*/
-    public int[] check_pieces(Connection con, String p, int day) throws SQLException{
+    public int[] check_pieces(Connection con, String p, String day) throws SQLException{
             Statement stmt=con.createStatement();
             p=p.toLowerCase();
+            System.out.println("today: "+ day);
+            System.out.println("p:"+p);
             String sql="select "+p+"_existing, "+p+"_reserved from infi.warehouse where day='"+day+"'";
             ResultSet re=stmt.executeQuery(sql);
             while(re.next()){
@@ -108,6 +110,15 @@ public class DataBase {
             Statement stmt=con.createStatement();
             String sql="update infi.warehouse set "+piece+"_existing='"+quantity+"' where day='"+day+"'";
             stmt.executeUpdate(sql);
+    }
+
+    public void just_arrived(Connection con, String piece, int day, int quantity) throws  SQLException{
+        Statement stmt=con.createStatement();
+        piece.toLowerCase();
+        String d=String.valueOf(day);
+        String q=String.valueOf(quantity);
+        String sql="insert into infi.warehouse(day, "+piece+"_existing, "+piece+"_reserved) values ('"+d+"', '"+q+"', '"+0+"')";
+        stmt.executeUpdate(sql);
     }
 
 
