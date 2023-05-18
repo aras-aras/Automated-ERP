@@ -12,6 +12,7 @@ public class TCP implements Runnable { //Server - this part is meant to receive 
 
     public int today;
     public Socket clientSocket;
+
     private static final int SERVER_PORT = 8181;
     private static final String SERVER_IP = "localhost";
     Socket socket;
