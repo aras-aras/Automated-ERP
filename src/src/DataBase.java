@@ -144,7 +144,7 @@ public class DataBase {
 
     public void piece(Connection con, String order, String type1, String deliver) throws SQLException{
             Statement stmt=con.createStatement();
-            String sql="insert into infi.pieces_trans(order, type_t, deliver) values ('"+order+"', '"+type1+"', '"+deliver+"')";
+            String sql="insert into infi.pieces_trans(\"order\", type_t, deliver) values ('"+order+"', '"+type1+"', '"+deliver+"')";
             stmt.executeUpdate(sql);
         }
 
@@ -158,7 +158,7 @@ public class DataBase {
                     "work_time2='"+work_time2+"', type_out2='"+type_out2+"', machine3='"+machine3+"', tool3='"+tool3+"', " +
                     "work_time3='"+work_time3+"', type_out3='"+type_out3+"', machine4='"+machine4+"', tool4='"+tool4+"'," +
                     " work_time4='"+work_time4+"', type_out4='"+type_out4+"', day='"+day+"'" +
-                    " where order='"+order+"'";
+                    " where \"order\"='"+order+"'";
             stmt.executeUpdate(sql);
         }
 
@@ -236,7 +236,7 @@ public class DataBase {
             String sql="insert into infi.suppliers(day,"+sup+") values ('"+day+"', '"+quantity+"')";
             stmt.executeUpdate(sql);
     }
-
+//aqui depois das peças chegarem do forncedor, falta retirar da bd as ordens
 
 //////////////////////////////            DAY COUNTER                        ////////////////////////////////////////
 
