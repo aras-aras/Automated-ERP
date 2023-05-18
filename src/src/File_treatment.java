@@ -80,7 +80,7 @@ public class File_treatment {
                 System.out.println("--------------------------------------");
                 ordens.print_list(list);
                 list.clear();
-                //System.out.println("banana");
+
 
 
         }

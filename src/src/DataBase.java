@@ -148,17 +148,17 @@ public class DataBase {
             stmt.executeUpdate(sql);
         }
 
-    public void piece_update(Connection con, String order, String type_t, String machine1, String tool1, String work_time1, String type_out1,
+    public void piece_update(Connection con, String order, String machine1, String tool1, String work_time1, String type_out1,
                              String machine2, String tool2, String work_time2, String type_out2, String machine3, String tool3,
                              String work_time3, String type_out3, String machine4, String tool4, String work_time4, String type_out4,
-                             String deliver, String day) throws SQLException{
+                              String day) throws SQLException{
             Statement stmt=con.createStatement();
             String sql="update infi.pieces_trans set machine1='"+machine1+"', tool1='"+tool1+"', work_time1='"+work_time1+"'," +
                     " type_out1='"+type_out1+"', machine2='"+machine2+"', tool2='"+tool2+"', " +
                     "work_time2='"+work_time2+"', type_out2='"+type_out2+"', machine3='"+machine3+"', tool3='"+tool3+"', " +
                     "work_time3='"+work_time3+"', type_out3='"+type_out3+"', machine4='"+machine4+"', tool4='"+tool4+"'," +
                     " work_time4='"+work_time4+"', type_out4='"+type_out4+"', day='"+day+"'" +
-                    " where order='"+order+"', type_t='"+type_t+"', deliver='"+deliver+"')";
+                    " where order='"+order+"'";
             stmt.executeUpdate(sql);
         }
 

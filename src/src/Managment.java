@@ -85,12 +85,6 @@ public class Managment implements Runnable {
                     Nd=nr[0];
                     Ne=nr[1];
                     duedate=nr[2];
-                    System.out.println("(Nd)Numero de dias que tens para fazer a peça: " + Nd);
-                    System.out.println("(N)Numero de peças para fazeres: " + N);
-                    System.out.println("(Ne) numero de dias que tens no maximo para encomendar as peças: " + Ne);
-                    System.out.println("date de entrega: " + duedate);
-                    System.out.println("hoje: " + today);
-                    System.out.println("tipo de peça: " + ord.Work_Piece);
                     material = verify_raw(ord.Work_Piece);
             /*Basicamente aqui tens de verificar se os dias que estao programados para fazer
             peças estao reservados, caso estejam começa a distribuir pelos dias livres
@@ -142,7 +136,6 @@ public class Managment implements Runnable {
                         throw new RuntimeException(e);
                     }
                     if(Na!=-1) {
-                        System.out.println("estou aqui 1");
                         int num = N;
                         N = N - Na;
 
@@ -170,6 +163,7 @@ public class Managment implements Runnable {
                         } else//caso nao haja peças já prontas suficientes (ja transformadas) verificar raw material
                         {
                             if (Na != 0) {
+                                System.out.println("bom dia");
                                 //1º reservar as peças transformadas já existentes
                                 int[] arr;
                                 try {
@@ -198,7 +192,9 @@ public class Managment implements Runnable {
                              * */
                             for (int i = 0; i < N; i++) {
                                 try {
-                                    data.piece(con, atr[0], material, Integer.toString(Integer.parseInt(atr[4]) - 1));
+                                    System.out.println("boa tarde");
+                                    data.piece(con, ord.Order_num, material, Integer.toString(today+Integer.parseInt(ord.DueDate) - 1));
+
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -215,7 +211,7 @@ public class Managment implements Runnable {
                             N = N - Nb;
                         }
                     }
-                    System.out.println("estou aqui 2");
+
                     if (N <= 0)// se houver raw material suficiente para cobrir o que falta é so indicar as transformações a fazer
                     {
                         for (int n = Nd; n > 0; n--) {
@@ -226,8 +222,13 @@ public class Managment implements Runnable {
                          * mandar para a base de dados organizada.
                          * */
                         String[] arr;
+                        System.out.println("loles");
                         try {
                             arr = data.info(con, material, ord.Work_Piece);
+                            for(int n=0;n<arr.length;n++)
+                            {
+                                System.out.println(arr[n]);
+                            }
                         } catch (SQLException e) {
                             throw new RuntimeException(e);
                         }
@@ -236,7 +237,7 @@ public class Managment implements Runnable {
                          * */
                         try {
                             today=data.today_day(con);
-                            data.piece_update(con, ord.Order_num, material, arr[1], arr[2], arr[3], arr[4], arr[5], arr[6], arr[7], arr[8], arr[9], arr[10], arr[11], arr[12], arr[13], arr[14], arr[15], arr[16], ord.DueDate, String.valueOf(Ne +today));
+                            data.piece_update(con, ord.Order_num, arr[1], arr[2], arr[3], arr[4], arr[5], arr[6], arr[7], arr[8], arr[9], arr[10], arr[11], arr[12], arr[13], arr[14], arr[15], arr[16], String.valueOf(Ne +today));
                         } catch (SQLException e) {
                             throw new RuntimeException(e);
                         }
@@ -776,7 +777,7 @@ public class Managment implements Runnable {
                         }
 
                     } else if(Ne>4){
-                        System.out.println("estou aqui 3");
+
                         /*Caso sobrem mais de 4 dias, há a possibilidade de encomendar do supplier A, B ou C.
                          * Dito isto é necessário avaliar qual será mais rentável.
                          * A primeira opçao é pedir do C e levar uma penalidade a outra é mandar
@@ -785,14 +786,14 @@ public class Managment implements Runnable {
                         Ng = acc.costSup(N, "C", material) + acc.Depre("C", material, Integer.parseInt(ord.DueDate), Ne);
                         Nh = acc.costSup(N, "B", material) + acc.Depre("B", material, Integer.parseInt(ord.DueDate), Ne);
                         Ni = acc.costSup(N, "A", material) + acc.Depre("A", material, Integer.parseInt(ord.DueDate), Ne);
-                        System.out.println("estou aqui 211");
+
                         if (N <= 4) {
-                            System.out.println("estou aqui 22");
+
                             if (Ng > Nh) {
-                                System.out.println("estou aqui 3");
+
                                 // mandar vir N peças do supplier B
                                 if (material.equals("P1")) {
-                                    System.out.println("estou aqui 4");
+
                                     String aux = "p1";
                                     try {
                                         today=data.today_day(con);
@@ -801,7 +802,7 @@ public class Managment implements Runnable {
                                         throw new RuntimeException(e);
                                     }
                                 } else {
-                                    System.out.println("estou aqui 5");
+
                                     String aux = "p2";
                                     try {
                                         today=data.today_day(con);
@@ -813,10 +814,10 @@ public class Managment implements Runnable {
                                 //custo do supplier = acc.costSup(N, "B",material)/N
                                 Nf = 8 - Nf;
                             } else {
-                                System.out.println("estou aqui 6");
+
                                 //mandar vir do supplier C
                                 if (material.equals("P1")) {
-                                    System.out.println("estou aqui 7");
+
                                     String aux = "p1";
                                     try {
                                         today=data.today_day(con);
@@ -825,7 +826,7 @@ public class Managment implements Runnable {
                                         throw new RuntimeException(e);
                                     }
                                 } else {
-                                    System.out.println("estou aqui 8");
+
                                     String aux = "p2";
                                     try {
                                         today=data.today_day(con);
@@ -841,13 +842,13 @@ public class Managment implements Runnable {
                             // sobram Nf peças do tipo material, é preciso acrescentar essas peças
                             //à base de dados no dia em q chegam, neste caso, chegam daui a um dia.
                         } else if (N > 4 && N <= 8) {
-                            System.out.println("estou aqui 9");
+
                             if (Ni > Nh) {
-                                System.out.println("estou aqui 10");
+
                                 // mandar vir N peças do supplier B
                                 Nf = 8 - Nf;
                                 if (material.equals("P1")) {
-                                    System.out.println("estou aqui 11");
+
                                     String aux = "p1";
                                     try {
                                         today=data.today_day(con);
@@ -856,7 +857,7 @@ public class Managment implements Runnable {
                                         throw new RuntimeException(e);
                                     }
                                 } else {
-                                    System.out.println("estou aqui 12");
+
                                     String aux = "p2";
                                     try {
                                         today=data.today_day(con);
@@ -866,11 +867,11 @@ public class Managment implements Runnable {
                                     }
                                 }
                             } else {
-                                System.out.println("estou aqui 13");
+
                                 //mandar vir do supplier A
                                 Nf = 16 - Nf;
                                 if (material.equals("P1")) {
-                                    System.out.println("estou aqui 14");
+
                                     String aux = "p1";
                                     try {
                                         today=data.today_day(con);
@@ -879,7 +880,7 @@ public class Managment implements Runnable {
                                         throw new RuntimeException(e);
                                     }
                                 } else {
-                                    System.out.println("estou aqui 15");
+
                                     String aux = "p2";
                                     try {
                                         today=data.today_day(con);
