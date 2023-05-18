@@ -154,6 +154,7 @@ public class Managment implements Runnable {
                             int new_reserved = reserved + quantity; /*isto vai atualizar a tabela da warehouse e atualizar a coluna das peças reserdas*/
                             try {
                                 data.reserving_pieces(con, ord.Work_Piece, Ne, new_reserved);//ja reservou adicionei as N peças necessarias para acabar a encomenda
+                                System.out.println("gabi");
                             } catch (SQLException e) {
                                 throw new RuntimeException(e);
                             }
@@ -273,13 +274,13 @@ public class Managment implements Runnable {
                                 int res = aux[1];
                                 try {
                                     today=data.today_day(con);
-                                    data.reserving_pieces(con, "p1", Ne + today, res + N);
+                                    data.arriving_new_pieces(con, "p1", Ne + today, Nf + exit + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 try {
                                     today=data.today_day(con);
-                                    data.arriving_new_pieces(con, "p1", Ne + today, Nf + exit + N);
+                                    data.reserving_pieces(con, "p1", Ne + today, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -294,13 +295,13 @@ public class Managment implements Runnable {
                                 int res = aux[1];
                                 try {
                                     today=data.today_day(con);
-                                    data.reserving_pieces(con, "p2", Ne + today, res + N);
+                                    data.arriving_new_pieces(con, "p2", Ne + today, Nf + exit + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 try {
                                     today=data.today_day(con);
-                                    data.arriving_new_pieces(con, "p2", Ne + today, Nf + exit + N);
+                                    data.reserving_pieces(con, "p2", Ne + today, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -341,13 +342,13 @@ public class Managment implements Runnable {
                                 int res = aux[1];
                                 try {
                                     today=data.today_day(con);
-                                    data.reserving_pieces(con, "p1", Ne + today, res + N);
+                                    data.arriving_new_pieces(con, "p1", Ne + today, N + exit);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 try {
                                     today=data.today_day(con);
-                                    data.arriving_new_pieces(con, "p1", Ne + today, N + exit);
+                                    data.reserving_pieces(con, "p1", Ne + today, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -363,17 +364,17 @@ public class Managment implements Runnable {
                                     int res = aux[1];
                                     try {
                                         today = data.today_day(con);
+                                        data.arriving_new_pieces(con, "p2", Ne + today, N + exit);
+                                    } catch (SQLException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                    try {
+                                        today = data.today_day(con);
                                         data.reserving_pieces(con, "p2", Ne + today, res + N);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
 
-                                    try {
-                                        today = data.today_day(con);
-                                        data.arriving_new_pieces(con, "p2", Ne + today, N + exit);
-                                    } catch (SQLException e) {
-                                        throw new RuntimeException(e);
-                                    }
                                 }
                             }
                         }
@@ -455,13 +456,13 @@ public class Managment implements Runnable {
                                 int res = aux[1];
                                 try {
                                     today=data.today_day(con);
-                                    data.reserving_pieces(con, "p1", 1 + today, res + N);
+                                    data.arriving_new_pieces(con, "p1", 1 + today, Nf + exit + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 try {
                                     today=data.today_day(con);
-                                    data.arriving_new_pieces(con, "p1", 1 + today, Nf + exit + N);
+                                    data.reserving_pieces(con, "p1", 1 + today, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -476,13 +477,13 @@ public class Managment implements Runnable {
                                 int res = aux[1];
                                 try {
                                     today=data.today_day(con);
-                                    data.reserving_pieces(con, "p2", 1 + today, res + N);
+                                    data.arriving_new_pieces(con, "p2", 1 + today, Nf + exit + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 try {
                                     today=data.today_day(con);
-                                    data.arriving_new_pieces(con, "p2", 1 + today, Nf + exit + N);
+                                    data.reserving_pieces(con, "p2", 1 + today, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -581,13 +582,13 @@ public class Managment implements Runnable {
                                 int res = aux[1];
                                 try {
                                     today=data.today_day(con);
-                                    data.reserving_pieces(con, "p1", 1 + today, res + N);
+                                    data.arriving_new_pieces(con, "p1", 1 + today, Nf + exit + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 try {
                                     today=data.today_day(con);
-                                    data.arriving_new_pieces(con, "p1", 1 + today, Nf + exit + N);
+                                    data.reserving_pieces(con, "p1", 1 + today, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -602,13 +603,13 @@ public class Managment implements Runnable {
                                 int res = aux[1];
                                 try {
                                     today=data.today_day(con);
-                                    data.reserving_pieces(con, "p2", 1 + today, res + N);
+                                    data.arriving_new_pieces(con, "p2", 1 + today, Nf + exit + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 try {
                                     today=data.today_day(con);
-                                    data.arriving_new_pieces(con, "p2", 1 + today, Nf + exit + N);
+                                    data.reserving_pieces(con, "p2", 1 + today, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -637,7 +638,7 @@ public class Managment implements Runnable {
                             }
                         }
                         work_days=writing_order(Nd, Ne, material, ord.Work_Piece, ord.Order_num);
-                    } else if (N == 4) {
+                    } else if (Ne == 4) {
                         /*Caso sobrem 4 dias, há a possibilidade de encomendar do supplier B ou C.
                          * Dito isto é necessário avaliar qual será mais rentável.
                          * A primeira opçao é pedir do C e levar uma penalidade a outra é mandar
@@ -707,13 +708,13 @@ public class Managment implements Runnable {
                                 int res = aux[1];
                                 try {
                                     today=data.today_day(con);
-                                    data.reserving_pieces(con, "p1", 1 + today, res + N);
+                                    data.arriving_new_pieces(con, "p1", 1 + today, Nf + exit + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 try {
                                     today=data.today_day(con);
-                                    data.arriving_new_pieces(con, "p1", 1 + today, Nf + exit + N);
+                                    data.reserving_pieces(con, "p1", 1 + today, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -728,13 +729,13 @@ public class Managment implements Runnable {
                                 int res = aux[1];
                                 try {
                                     today=data.today_day(con);
-                                    data.reserving_pieces(con, "p2", 1 + today, res + N);
+                                    data.arriving_new_pieces(con, "p2", 1 + today, Nf + exit + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 try {
                                     today=data.today_day(con);
-                                    data.arriving_new_pieces(con, "p2", 1 + today, Nf + exit + N);
+                                    data.reserving_pieces(con, "p2", 1 + today, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -952,7 +953,6 @@ public int[] calculus(int num1, int num3, int duedate,int today, String Workpiec
             (Workpiece.equals("P6") && (num1 == 5 || num1 == 6 || num1 == 7)) ||
             (Workpiece.equals("P8") && (num1 == 4 || num1 == 2 || num1 == 3)) ||
             (Workpiece.equals("P9") && (num1 == 5 || num1 == 6 || num1 == 7 || num1 == 8))) {
-
         aux[0] = 3;
     } else if ((Workpiece.equals("P6") && (num1 == 8)) ||
             (Workpiece.equals("P8") && (num1 == 5 || num1 == 6 || num1 == 7))) {

@@ -91,13 +91,15 @@ public class DataBase {
             System.out.println("p:"+p);
             String sql="select "+p+"_existing, "+p+"_reserved from infi.warehouse where day='"+day+"'";
             ResultSet re=stmt.executeQuery(sql);
+            int[] arr=new int[2];
             while(re.next()){
-                int[] arr=new int[2];
                 arr[0]=re.getInt(""+p+"_existing");
                 arr[1]=re.getInt(""+p+"_reserved");
                 return arr;
             }
-            return null;
+            arr[0]=0;
+            arr[1]=0;
+            return arr;
     }
     public void reserving_pieces(Connection con, String p, int day, int new_reserved) throws SQLException{
             Statement stmt=con.createStatement();
