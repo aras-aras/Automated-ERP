@@ -281,24 +281,22 @@ public class DataBase {
 
     /////////////////////////////////               SCHEDULING              ////////////////////////////////////////
 
-    public int calendar(Connection con,int today, float[]aux, String piece)
-    {
+    public int calendar(Connection con,int today, float[]aux, String piece) throws SQLException {
         //aqui vamos assumir que a linha de cada peça ja está criada, é apenas necessario
         int day;
         if(piece.equals("P6")==true )
         {
             for(int n=0;n<aux[0];n++) //estamos a verificar se cada dia está livre
             {
-                if (verify(2,(int)(aux[2]-2)) == false) {//é menos dois porque é o dia antes da entrega
+                if (verify(con,2,(int)(aux[2]-2)) == false) {//é menos dois porque é o dia antes da entrega
                     //está livre nesse dia
                 }
-                else if (verify(2,(int)(aux[2]-2)) == false)
+                else if (verify(con,2,(int)(aux[2]-2)) == false)
                 {
                    day=recursive((int)(aux[2]-1),2);
                 }
                 }
             }
-        }
         else if(piece.equals("P8")==true )
         {
             //verificar producing 1 e 2
@@ -307,12 +305,16 @@ public class DataBase {
         {
             //verificar producing 1
         }
-
         return aux[2];
     }
 
-    public boolean verify(int prod, int day) {
-
+    public boolean verify(Connection con, int prod, int day) throws SQLException {
+        Statement stmt=con.createStatement();
+        String sql="select producinc_"+prod+" from infi.scheduling where day='"+day+"'";
+        ResultSet re= stmt.executeQuery(sql);
+        while(re.next()){
+            return false;
+        }
         return true;
     }
     // Aqui estou a tentar fazer uma função recursiva que procura o dia
