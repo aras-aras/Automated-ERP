@@ -120,20 +120,7 @@ public class Managment implements Runnable {
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
-                    ////////CRIAR LINHAS COM TRANSFORMAÇOES///////////////////////////////////////////////
 
-                    if(ord.Work_Piece.equals("P3")==true ||ord.Work_Piece.equals("P4")==true
-                            ||ord.Work_Piece.equals("P6")==true ||ord.Work_Piece.equals("P7")==true )
-                    {
-                        /* Estes tipos de peças so precisam de uma linha por peça na
-                        * tabela piece_trans, basicamente aqui crias N linhas */
-
-                    }
-                    else
-                    {
-                        /*Neste caso estas peças precisam de 2 dias para serem acabadas, ou seja
-                        * crias, N*2 linhas*/
-                    }
 
                     /*Como ja fizemos o calculos as transformaçoes ja d«foram divididas pelos
                     * dias, ou seja, consegues sacar todos os dias dessa função. Dito isto, dentro de cada
@@ -179,7 +166,6 @@ public class Managment implements Runnable {
                         else//caso nao haja peças já prontas suficientes (ja transformadas) verificar raw material
                         {
                             if (Na != 0) {//numero de peças já feitas no armazem do tipo que nos queremos
-                                System.out.println("bom dia");
                                 //1º reservar as peças transformadas já existentes
                                 int[] arr;
                                 try {
@@ -196,15 +182,34 @@ public class Managment implements Runnable {
                                     throw new RuntimeException(e);
                                 }
                             }
-                            System.out.println("boa tarde");
-                            for (int i = 0; i < N; i++) {
-                                try {
-                                    data.piece(con, ord.Order_num, material, Integer.toString(today+Integer.parseInt(ord.DueDate) - 1));
+                            ////////CRIAR LINHAS COM TRANSFORMAÇOES//////////////
 
-                                } catch (SQLException e) {
-                                    throw new RuntimeException(e);
+                            if(ord.Work_Piece.equals("P3")==true ||ord.Work_Piece.equals("P4")==true
+                                    ||ord.Work_Piece.equals("P6")==true ||ord.Work_Piece.equals("P7")==true )
+                            {
+                                /* Estes tipos de peças so precisam de uma linha por peça na
+                                 * tabela piece_trans, basicamente aqui crias N linhas */
+                                for (int i = 0; i < N; i++) {
+                                    try {
+                                        data.piece(con, ord.Order_num, material, Integer.toString(today+Integer.parseInt(ord.DueDate) - 1));
+                                    } catch (SQLException e) {
+                                        throw new RuntimeException(e);
+                                    }
                                 }
                             }
+                            else
+                            {
+                                /*Neste caso estas peças precisam de 2 dias para serem acabadas, ou seja
+                                 * crias, N*2 linhas*/
+                                for (int i = 0; i < 2*N; i++) {
+                                    try {
+                                        data.piece(con, ord.Order_num, material, Integer.toString(today+Integer.parseInt(ord.DueDate) - 1));
+                                    } catch (SQLException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                }
+                            }
+
 
                             /* Verifica qual é o melhor material para fazer cada peça e verifica
                              * se este está disponivel no armazem naquele dia*/
@@ -218,17 +223,31 @@ public class Managment implements Runnable {
                         }
                     }
                     else{
-                                System.out.println("boa tarde");
-                        for (int i = 0; i < N; i++) {
-                            try {
-                                data.piece(con, ord.Order_num, material, Integer.toString(today+Integer.parseInt(ord.DueDate) - 1));
-
-                            } catch (SQLException e) {
-                                throw new RuntimeException(e);
+                        if(ord.Work_Piece.equals("P3")==true ||ord.Work_Piece.equals("P4")==true
+                                ||ord.Work_Piece.equals("P6")==true ||ord.Work_Piece.equals("P7")==true )
+                        {
+                            /* Estes tipos de peças so precisam de uma linha por peça na
+                             * tabela piece_trans, basicamente aqui crias N linhas */
+                            for (int i = 0; i < N; i++) {
+                                try {
+                                    data.piece(con, ord.Order_num, material, Integer.toString(today+Integer.parseInt(ord.DueDate) - 1));
+                                } catch (SQLException e) {
+                                    throw new RuntimeException(e);
+                                }
                             }
                         }
-
-                        System.out.println("boa tarde");
+                        else
+                        {
+                            /*Neste caso estas peças precisam de 2 dias para serem acabadas, ou seja
+                             * crias, N*2 linhas*/
+                            for (int i = 0; i < 2*N; i++) {
+                                try {
+                                    data.piece(con, ord.Order_num, material, Integer.toString(today+Integer.parseInt(ord.DueDate) - 1));
+                                } catch (SQLException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        }
                         try {
                             Nb = verify_material(material, Ne); //verificar se há raw material no dia Ne, guarda em Nb o nr de raw material existente
                         } catch (SQLException e) {
@@ -261,6 +280,20 @@ public class Managment implements Runnable {
                                 String aux = "p1";
                                 try {
                                     today=data.today_day(con);
+                                    int i= data.check_day(con, Ne + today-Tc);
+                                    if(i==0){//dia existe e o tapete está livre
+                                        data.sch_suplier(con, Ne + today-Tc);
+                                    }
+                                    else if(i==1){//dia existe e tapete está ocupado
+                                        int d=1;
+                                        while(data.check_day(con, Ne+today-Tc+d)==1){
+                                            d++;
+                                        }
+                                        data.sch_suplier(con, Ne + today-Tc+d);
+                                    }
+                                    else if(i==-1){// o dia nao existe
+                                        data.sch_new_suplier(con, Ne+today-Tc);
+                                    }
                                     data.sup(con, String.valueOf(Ne + today-Tc), "sc_" + aux, String.valueOf(4));
                                     data.just_arrived(con, aux, Ne+today, 4);
                                 } catch (SQLException e) {
@@ -270,6 +303,20 @@ public class Managment implements Runnable {
                                 String aux = "p2";
                                 try {
                                     today=data.today_day(con);
+                                    int i= data.check_day(con, Ne + today-Tc);
+                                    if(i==0){//dia existe e o tapete está livre
+                                        data.sch_suplier(con, Ne + today-Tc);
+                                    }
+                                    else if(i==1){//dia existe e tapete está ocupado
+                                        int d=1;
+                                        while(data.check_day(con, Ne+today-Tc+d)==1){
+                                            d++;
+                                        }
+                                        data.sch_suplier(con, Ne + today-Tc+d);
+                                    }
+                                    else if(i==-1){// o dia nao existe
+                                        data.sch_new_suplier(con, Ne+today-Tc);
+                                    }
                                     data.sup(con, String.valueOf(Ne + today-Tc), "sc_" + aux, String.valueOf(4));
                                     data.just_arrived(con, aux, Ne+today, 4);
                                 } catch (SQLException e) {
@@ -330,6 +377,20 @@ public class Managment implements Runnable {
                                 String aux = "p1";
                                 try {
                                     today=data.today_day(con);
+                                    int i= data.check_day(con, Ne + today-Tc);
+                                    if(i==0){//dia existe e o tapete está livre
+                                        data.sch_suplier(con, Ne + today-Tc);
+                                    }
+                                    else if(i==1){//dia existe e tapete está ocupado
+                                        int d=1;
+                                        while(data.check_day(con, Ne+today-Tc+d)==1){
+                                            d++;
+                                        }
+                                        data.sch_suplier(con, Ne + today-Tc+d);
+                                    }
+                                    else if(i==-1){// o dia nao existe
+                                        data.sch_new_suplier(con, Ne+today-Tc);
+                                    }
                                     data.sup(con, String.valueOf(Ne + today-Tc), "sc_p1" + aux, String.valueOf(N));
                                     data.just_arrived(con, aux, Ne+today, N);
                                 } catch (SQLException e) {
@@ -339,6 +400,20 @@ public class Managment implements Runnable {
                                 String aux = "p2";
                                 try {
                                     today=data.today_day(con);
+                                    int i= data.check_day(con, Ne + today-Tc);
+                                    if(i==0){//dia existe e o tapete está livre
+                                        data.sch_suplier(con, Ne + today-Tc);
+                                    }
+                                    else if(i==1){//dia existe e tapete está ocupado
+                                        int d=1;
+                                        while(data.check_day(con, Ne+today-Tc+d)==1){
+                                            d++;
+                                        }
+                                        data.sch_suplier(con, Ne + today-Tc+d);
+                                    }
+                                    else if(i==-1){// o dia nao existe
+                                        data.sch_new_suplier(con, Ne+today-Tc);
+                                    }
                                     data.sup(con, String.valueOf(Ne + today-Tc), "sc_p2", String.valueOf(N));
                                     data.just_arrived(con, aux, Ne+today, N);
                                 } catch (SQLException e) {
@@ -419,6 +494,20 @@ public class Managment implements Runnable {
                                     String aux = "p1";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Tb);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Tb);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Tb+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Tb+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Tb);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
                                         data.just_arrived(con, aux, Ne+today, N);
                                     } catch (SQLException e) {
@@ -428,6 +517,20 @@ public class Managment implements Runnable {
                                     String aux = "p2";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Tb);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Tb);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Tb+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Tb+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Tb);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
                                         data.just_arrived(con, aux, Ne+today, N);
                                     } catch (SQLException e) {
@@ -441,6 +544,20 @@ public class Managment implements Runnable {
                                     String aux = "p1";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Tc);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Tc);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Tc+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Tc+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Tc);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Tc), "sc_" + aux, String.valueOf(4));
                                         data.just_arrived(con, aux, Ne+today, 4);
                                     } catch (SQLException e) {
@@ -450,6 +567,20 @@ public class Managment implements Runnable {
                                     String aux = "p2";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Tc);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Tc);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Tc+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Tc+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Tc);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Tc), "sc_" + aux, String.valueOf(4));
                                         data.just_arrived(con, aux, Ne+today, 4);
                                     } catch (SQLException e) {
@@ -511,6 +642,20 @@ public class Managment implements Runnable {
                                 String aux = "p1";
                                 try {
                                     today=data.today_day(con);
+                                    int i= data.check_day(con, Ne + today-Tb);
+                                    if(i==0){//dia existe e o tapete está livre
+                                        data.sch_suplier(con, Ne + today-Tb);
+                                    }
+                                    else if(i==1){//dia existe e tapete está ocupado
+                                        int d=1;
+                                        while(data.check_day(con, Ne+today-Tb+d)==1){
+                                            d++;
+                                        }
+                                        data.sch_suplier(con, Ne + today-Tb+d);
+                                    }
+                                    else if(i==-1){// o dia nao existe
+                                        data.sch_new_suplier(con, Ne+today-Tb);
+                                    }
                                     data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
                                     data.just_arrived(con, aux, Ne+today, N);
                                 } catch (SQLException e) {
@@ -520,6 +665,20 @@ public class Managment implements Runnable {
                                 String aux = "p2";
                                 try {
                                     today=data.today_day(con);
+                                    int i= data.check_day(con, Ne + today-Tb);
+                                    if(i==0){//dia existe e o tapete está livre
+                                        data.sch_suplier(con, Ne + today-Tb);
+                                    }
+                                    else if(i==1){//dia existe e tapete está ocupado
+                                        int d=1;
+                                        while(data.check_day(con, Ne+today-Tb+d)==1){
+                                            d++;
+                                        }
+                                        data.sch_suplier(con, Ne + today-Tb+d);
+                                    }
+                                    else if(i==-1){// o dia nao existe
+                                        data.sch_new_suplier(con, Ne+today-Tb);
+                                    }
                                     data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
                                     data.just_arrived(con, aux, Ne+today, N);
                                 } catch (SQLException e) {
@@ -544,6 +703,20 @@ public class Managment implements Runnable {
                                     String aux = "p1";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Tb);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Tb);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Tb+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Tb+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Tb);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
                                         data.just_arrived(con, aux, Ne+today, N);
                                     } catch (SQLException e) {
@@ -553,6 +726,20 @@ public class Managment implements Runnable {
                                     String aux = "p2";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Tb);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Tb);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Tb+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Tb+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Tb);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
                                         data.just_arrived(con, aux, Ne+today, N);
                                     } catch (SQLException e) {
@@ -566,6 +753,20 @@ public class Managment implements Runnable {
                                     String aux = "p1";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Tc);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Tc);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Tc+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Tc+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Tc);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Tc), "sc_" + aux, String.valueOf(4));
                                         data.just_arrived(con, aux, Ne+today, 4);
                                     } catch (SQLException e) {
@@ -575,6 +776,20 @@ public class Managment implements Runnable {
                                     String aux = "p2";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Tc);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Tc);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Tc+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Tc+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Tc);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Tc), "sc_" + aux, String.valueOf(4));
                                         data.just_arrived(con, aux, Ne+today, 4);
                                     } catch (SQLException e) {
@@ -637,6 +852,20 @@ public class Managment implements Runnable {
                                 String aux = "p1";
                                 try {
                                     today=data.today_day(con);
+                                    int i= data.check_day(con, Ne + today-Tb);
+                                    if(i==0){//dia existe e o tapete está livre
+                                        data.sch_suplier(con, Ne + today-Tb);
+                                    }
+                                    else if(i==1){//dia existe e tapete está ocupado
+                                        int d=1;
+                                        while(data.check_day(con, Ne+today-Tb+d)==1){
+                                            d++;
+                                        }
+                                        data.sch_suplier(con, Ne + today-Tb+d);
+                                    }
+                                    else if(i==-1){// o dia nao existe
+                                        data.sch_new_suplier(con, Ne+today-Tb);
+                                    }
                                     data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
                                     data.just_arrived(con, aux, Ne+today, N);
                                 } catch (SQLException e) {
@@ -646,6 +875,20 @@ public class Managment implements Runnable {
                                 String aux = "p2";
                                 try {
                                     today=data.today_day(con);
+                                    int i= data.check_day(con, Ne + today-Tb);
+                                    if(i==0){//dia existe e o tapete está livre
+                                        data.sch_suplier(con, Ne + today-Tb);
+                                    }
+                                    else if(i==1){//dia existe e tapete está ocupado
+                                        int d=1;
+                                        while(data.check_day(con, Ne+today-Tb+d)==1){
+                                            d++;
+                                        }
+                                        data.sch_suplier(con, Ne + today-Tb+d);
+                                    }
+                                    else if(i==-1){// o dia nao existe
+                                        data.sch_new_suplier(con, Ne+today-Tb);
+                                    }
                                     data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
                                     data.just_arrived(con, aux, Ne+today, N);
                                 } catch (SQLException e) {
@@ -671,6 +914,20 @@ public class Managment implements Runnable {
                                     String aux = "p1";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Tb);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Tb);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Tb+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Tb+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Tb);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
                                         data.just_arrived(con, aux, Ne+today, N);
                                     } catch (SQLException e) {
@@ -680,6 +937,20 @@ public class Managment implements Runnable {
                                     String aux = "p2";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Tb);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Tb);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Tb+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Tb+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Tb);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
                                         data.just_arrived(con, aux, Ne+today, N);
                                     } catch (SQLException e) {
@@ -693,6 +964,20 @@ public class Managment implements Runnable {
                                     String aux = "p1";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Tc);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Tc);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Tc+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Tc+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Tc);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Tc), "sc_" + aux, String.valueOf(4));
                                         data.just_arrived(con, aux, Ne+today, 4);
                                     } catch (SQLException e) {
@@ -702,6 +987,20 @@ public class Managment implements Runnable {
                                     String aux = "p2";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Tc);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Tc);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Tc+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Tc+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Tc);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Tc), "sc_" + aux, String.valueOf(4));
                                         data.just_arrived(con, aux, Ne+today, 4);
                                     } catch (SQLException e) {
@@ -764,6 +1063,20 @@ public class Managment implements Runnable {
                                     String aux = "p1";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Tb);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Tb);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Tb+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Tb+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Tb);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
                                         data.just_arrived(con, aux, Ne+today, N);
                                     } catch (SQLException e) {
@@ -773,6 +1086,20 @@ public class Managment implements Runnable {
                                     String aux = "p2";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Tb);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Tb);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Tb+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Tb+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Tb);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
                                         data.just_arrived(con, aux, Ne+today, N);
                                     } catch (SQLException e) {
@@ -786,6 +1113,20 @@ public class Managment implements Runnable {
                                     String aux = "p1";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Ta);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Ta);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Ta+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Ta+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Ta);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Ta), "sa_" + aux, String.valueOf(N));
                                         data.just_arrived(con, aux, Ne+today, N);
                                     } catch (SQLException e) {
@@ -795,6 +1136,20 @@ public class Managment implements Runnable {
                                     String aux = "p2";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Ta);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Ta);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Ta+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Ta+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Ta);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Ta), "sa_" + aux, String.valueOf(N));
                                         data.just_arrived(con, aux, Ne+today, N);
                                     } catch (SQLException e) {
@@ -826,6 +1181,20 @@ public class Managment implements Runnable {
                                     String aux = "p1";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Ta);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Ta);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Ta+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Ta+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Ta);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Ta), "sa_" + aux, String.valueOf(N));
                                         data.just_arrived(con, aux, Ne+today, N);
                                     } catch (SQLException e) {
@@ -836,6 +1205,20 @@ public class Managment implements Runnable {
                                     String aux = "p2";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Ta);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Ta);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Ta+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Ta+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Ta);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Ta), "sa_" + aux, String.valueOf(N));
                                         data.just_arrived(con, aux, Ne+today, N);
                                     } catch (SQLException e) {
@@ -852,6 +1235,20 @@ public class Managment implements Runnable {
                                     String aux = "p1";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Tc);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Tc);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Tc+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Tc+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Tc);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Tc), "sc_" + aux, String.valueOf(4));
                                         data.just_arrived(con, aux, Ne+today, 4);
                                     } catch (SQLException e) {
@@ -862,6 +1259,20 @@ public class Managment implements Runnable {
                                     String aux = "p2";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Tc);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Tc);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Tc+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Tc+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Tc);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Tc), "sc_" + aux, String.valueOf(4));
                                         data.just_arrived(con, aux, Ne+today, 4);
                                     } catch (SQLException e) {
@@ -885,6 +1296,20 @@ public class Managment implements Runnable {
                                     String aux = "p1";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Tb);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Tb);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Tb+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Tb+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Tb);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
                                         data.just_arrived(con, aux, Ne+today, N);
                                     } catch (SQLException e) {
@@ -895,6 +1320,20 @@ public class Managment implements Runnable {
                                     String aux = "p2";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Tb);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Tb);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Tb+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Tb+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Tb);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
                                         data.just_arrived(con, aux, Ne+today, N);
                                     } catch (SQLException e) {
@@ -910,6 +1349,20 @@ public class Managment implements Runnable {
                                     String aux = "p1";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Ta);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Ta);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Ta+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Ta+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Ta);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Ta), "sa_" + aux, String.valueOf(N));
                                         data.just_arrived(con, aux, Ne+today, N);
                                     } catch (SQLException e) {
@@ -920,6 +1373,20 @@ public class Managment implements Runnable {
                                     String aux = "p2";
                                     try {
                                         today=data.today_day(con);
+                                        int i= data.check_day(con, Ne + today-Ta);
+                                        if(i==0){//dia existe e o tapete está livre
+                                            data.sch_suplier(con, Ne + today-Ta);
+                                        }
+                                        else if(i==1){//dia existe e tapete está ocupado
+                                            int d=1;
+                                            while(data.check_day(con, Ne+today-Ta+d)==1){
+                                                d++;
+                                            }
+                                            data.sch_suplier(con, Ne + today-Ta+d);
+                                        }
+                                        else if(i==-1){// o dia nao existe
+                                            data.sch_new_suplier(con, Ne+today-Ta);
+                                        }
                                         data.sup(con, String.valueOf(Ne + today-Ta), "sa_" + aux, String.valueOf(N));
                                         data.just_arrived(con, aux, Ne+today, N);
                                     } catch (SQLException e) {
@@ -992,7 +1459,7 @@ public class Managment implements Runnable {
         }
             return p;
     }
-public int[] calculus(int num1, int num3, int duedate,int today, String Workpiece, String material, String sub, int quantity) {
+public int[] calculus(int num1, int num3, int duedate,int today, String Workpiece, String material, String sub, int quantity)  {
         //calculus(N, Ne, duedate, today, ord.Work_Piece);
     /*aux[0]->Nd  // numero de dias que tens para fazer a peça
     aux[1]->Ne // numero que dias que tens no maximo para encomendar peças, aka quando tenho de começar a produzir
@@ -1026,7 +1493,11 @@ public int[] calculus(int num1, int num3, int duedate,int today, String Workpiec
     //chamar função
     DataBase data=new DataBase();
     Connection con=data.create_connection();
-    aux[2]=data.calendar(con,today, aux, Workpiece);
+    try {
+        aux[2] = data.calendar(con, today, aux, Workpiece);
+    }catch (SQLException e) {
+        throw new RuntimeException(e);
+    }
 
     return aux;
 }

@@ -429,9 +429,35 @@ public class DataBase {
         else if(prod==2){
             aux=1;
         }
-        String sql="insert into infi.scheduling(day, producing_"+prod+", delivering, arriving, producing_"+aux+") values('"+day+"', '"+value+"', '"+0+"', '"+0+"', '"+0+"', '"+0+"')";
+        String sql="insert into infi.scheduling(day, producing_"+prod+", delivering, arriving, producing_"+aux+") values('"+day+"', '"+value+"', '"+0+"', '"+0+"', '"+0+"')";
         stmt.executeUpdate(sql);
         return 0;
+    }
+    public void sch_suplier(Connection con, int day) throws SQLException{
+        Statement stmt=con.createStatement();
+        String sql="update infi.scheduling set arriving='"+1+"' where day='"+day+"'";
+        stmt.executeUpdate(sql);
+    }
+
+    public int check_day(Connection con, int day) throws SQLException{
+        Statement stmt=con.createStatement();
+        String sql="select arriving from infi.scheduling where day='"+day+"'";
+        ResultSet re= stmt.executeQuery(sql);
+        while(re.next()){
+            int i=re.getInt("arriving");
+            if(i==0){
+                return 0;
+            }
+            else if(i==1){
+                return 1;
+            }
+        }
+        return -1;
+    }
+    public void sch_new_suplier(Connection con, int day) throws SQLException{
+        Statement stmt=con.createStatement();
+        String sql="insert into infi.scheduling(day, producing_1, delivering, arriving, producing_2) values('"+day+"', '"+0+"', '"+0+"', '"+1+"', '"+0+"')";
+        stmt.executeUpdate(sql);
     }
 }
 
