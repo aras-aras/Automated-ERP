@@ -1090,7 +1090,6 @@ public int[] calculus(int num1, int num3, int duedate,int today, String Workpiec
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
         /*Sabendo que temos Nd dias para fazer as peças.
          * */
         try {

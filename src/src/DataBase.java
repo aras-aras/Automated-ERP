@@ -283,7 +283,7 @@ public class DataBase {
         //aux[1] = duedate - today - aux[0]-1;
         if(piece.equals("P6")==true )
         {
-            for(int n=0;n<aux[0];n++) //estamos a verificar se cada dia está livre
+            for(int n=today;n<aux[0]+today;n++) //estamos a verificar se cada dia está livre
             {
                 if (verify(con,2,(int)(aux[2]+today-2)) == 1) {//é menos dois porque é o dia antes da entrega
                     //está livre nesse dia ou nao encontra o dia
@@ -300,11 +300,58 @@ public class DataBase {
                     aux[2]+=day;
 
                 }
+                else if(verify(con,2,(int)(aux[2]+today-2)) == 2){
+                    int i=insert_day(con, 2, (int)(aux[2]+today-2), 1);
+                }
                 }
             }
         else if(piece.equals("P8")==true )
         {
             //verificar producing 1 e 2
+            for(int n=today;n<aux[0]/2+today;n++) //estamos a verificar se cada dia está livre
+            {
+                if (verify(con,2,(int)(aux[1])) == 1) {//é menos dois porque é o dia antes da entrega
+                    //está livre nesse dia ou nao encontra o dia
+                    //no caso de nao encontrar, cria
+                    //marcar esse dia no calendario
+                    //NÃO ESTÁ OCUPADO
+
+                    int i=update_line(con, 2, (int)(aux[1]+1), 1);
+                }
+                else if (verify(con,2,(int)(aux[1]+1)) == 0)
+                {
+                    day=recursive(con,aux[1]+2,2);
+                    //marcar o aux[2]+today-2+day
+                    aux[2]+=day;
+
+                }
+                else if(verify(con,2,(int)(aux[1])) == 2){
+                    int i=insert_day(con, 2, (int)(aux[1]+1), 1);
+                }
+            }
+            for(int n=today;n<aux[0]/2+today;n++) //estamos a verificar se cada dia está livre
+            {
+                if (verify(con,1,(int)(aux[1]+aux[0]/2)) == 1) {//é menos dois porque é o dia antes da entrega
+                    //está livre nesse dia ou nao encontra o dia
+                    //no caso de nao encontrar, cria
+                    //marcar esse dia no calendario
+                    //NÃO ESTÁ OCUPADO
+
+                    int i=update_line(con, 1, (int)(aux[1]+1), 1);
+                }
+                else if (verify(con,1,(int)(aux[1]+1)) == 0)
+                {
+                    day=recursive(con,aux[1]+1,2);
+                    //marcar o aux[2]+today-2+day
+                    aux[2]+=day;
+
+                }
+                else if(verify(con,1,(int)(aux[1]+1)) == 2){
+                    int i=insert_day(con, 1, (int)(aux[1]+1), 1);
+                }
+            }
+
+
         }
         else
         {
@@ -334,15 +381,25 @@ public class DataBase {
         return aux[2];
     }
 
-    public boolean verify(Connection con, int prod, int day) throws SQLException {
+    public int verify(Connection con, int prod, int day) throws SQLException {
         Statement stmt=con.createStatement();
-        String sql="select producinc_"+prod+" from infi.scheduling where day='"+day+"'";
+        String sql="select producing_"+prod+" from infi.scheduling where day='"+day+"'";
         ResultSet re= stmt.executeQuery(sql);
         while(re.next()){
-            return false;
+            String str;
+            str=re.getString("producing_"+prod+"");
+            if(str.equals(String.valueOf(0))) {
+                //atualizo o valor para reservado
+                return 1;
+            }
+            else if(str.equals(String.valueOf(1))){//aqui já está ocupado
+                return 0;
+            }
         }
-        return true;
+        //se o dia não existir, crio já o dia e reservo já
+        return 2;
     }
+
     // Aqui estou a tentar fazer uma função recursiva que procura o dia
     //mais proximo que esteja livre, ainda é um prototipo
     public int recursive(Connection con,int day, int type) throws SQLException {
