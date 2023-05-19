@@ -76,15 +76,16 @@ public class Managment implements Runnable {
                      * */
                     today=data.today_day(con);
                     int[] nr=new int[3];
-                    nr=calculus(N, Ne, duedate, today, ord.Work_Piece);
+                    material = verify_raw(ord.Work_Piece);
+                    String sub=data.sub_trans(con, material, ord.Work_Piece);
+                    nr=calculus(N, Ne, duedate, today, ord.Work_Piece, material, sub, ord.Quantity);
                     //calculus(N, Ne, duedate, today, ord.Work_Piece);
-                    /*aux[0]->Nd
-                    aux[1]->Ne
+                    /*aux[0]->Nd // numero de dias que tens para fazer a peça
+                    aux[1]->Ne // numero que dias que tens no maximo para encomendar peças
                     aux[2]->duedate*/
                     Nd=nr[0];
                     Ne=nr[1];
                     duedate=nr[2];
-                    material = verify_raw(ord.Work_Piece);
             /*Basicamente aqui tens de verificar se os dias que estao programados para fazer
             peças estao reservados, caso estejam começa a distribuir pelos dias livres
             * o Ne diz te o dia em que vais começar a cozinhar e prolonga se ate à duedate-1*/
@@ -933,11 +934,72 @@ public class Managment implements Runnable {
         }
 
 }
-public int[] calculus(int num1, int num3, int duedate,int today, String Workpiece) {
+    public int[] piece_perday(String origin, String end, String sub) {/* Da te quantas peças faz por dia(desde q sai ate entrar no armazem), se for 0.5
+     * uma peça demora dois dias*/
+        //RETORNA O Nc-> nr de peças a fazer por dia
+        int[] p = new int[2];
+        if (origin.equals("P2") == true) {
+            if (end.equals("P3") == true) {
+                p[0] = 3;
+                p[1] = 0;
+                p[2]=
+            }
+            if (end.equals("P7") == true) {
+                p[0] = 2;
+                p[1] = 0;
+            }
+            if (sub.equals("P7") == true) {
+                if (end.equals("P9") == true) {
+                    p[0] = 2;
+                    p[1] = 3;
+                } else if (end.equals("P5") == true) {
+                    p[0] = 2;
+                    p[1] = 2;
+                }
+            }
+            if (end.equals("P4") == true) {
+                p[0] = 3;
+                p[1] = 0;
+            }
+        }
+        else if (origin.equals("P1") == true) {
+
+            if (end.equals("P6") == true) {
+                p[0] = 1;
+                p[1] = 0;
+            } else if (sub.equals("P6") == true) {
+                if (end.equals("P8") == true) {
+                    p[0] = 1;
+                    p[1] = 1;
+                }
+            }
+        } else {
+            return null;
+        }
+            return p;
+    }
+public float[] calculus(int num1, int num3, int duedate,int today, String Workpiece, String material, String sub, int quantity) {
         //calculus(N, Ne, duedate, today, ord.Work_Piece);
-     int[] aux = new int[3];
-    aux[0]= 0;
-    aux[1] = duedate - today - aux[0] - 1;
+    /*aux[0]->Nd  // numero de dias que tens para fazer a peça
+    aux[1]->Ne // numero que dias que tens no maximo para encomendar peças, aka quando tenho de começar a produzir
+    aux[2]->duedate
+    Nd=nr[0];
+    Ne=nr[1];
+    duedate=nr[2];*/
+    int[] f=piece_perday(material, Workpiece, sub);
+    int n1=f[0];//nr de peças que consigo fazer por dia na primeira transformação    1
+    int n2=f[1];//nr de peças que consigo fazer por dia na segunda transformação     1
+    int nr_days1=(int)((quantity/n1)+0.5);
+    int nr_days2;
+    if(n2==0){
+        nr_days2=0;
+    }
+    else {
+        nr_days2 = (int) ((quantity / n2) + 0.5);
+    }
+    float[] aux = new float[3];
+    aux[0]= nr_days2 + nr_days1;
+    aux[1] = duedate - today - aux[0]-1;
     if(num3>duedate) {
         while (num3 > duedate) {
             duedate++;
@@ -1023,77 +1085,5 @@ public int[] calculus(int num1, int num3, int duedate,int today, String Workpiec
         return work_days;
     }
 
-public float piece_perday(String origin, String end)
-{
-    /* Da te quantas peças faz por dia(desde q sai ate entrar no armazem), se for 0.5
-    * uma peça demora dois dias*/
-    float p=0;
-    if(origin.equals("P2")==true)
-    {
-        if(end.equals("P3")==true)
-        {
-            p=3;
-        }
-        if(end.equals("P4")==true)
-        {
-            p=3;
-        }
-        if(end.equals("P5")==true)
-        {
-            p=0.5F;
-        }
-        if(end.equals("P7")==true)
-        {
-            p=2;
-        }
-        if(end.equals("P9")==true)
-        {
-            p= 0.5F;
-        }
 
-    }
-    if(origin.equals("P4")==true) {
-
-        if (end.equals("P5") == true) {
-            p = 0.5F;
-        }
-        if (end.equals("P7") == true) {
-            p = 3;
-        }
-        if (end.equals("P9") == true) {
-            p = 0.5F;
-        }
-    }
-    if(origin.equals("P7")==true) {
-
-        if (end.equals("P5") == true) {
-            p = 2;
-        }
-        if (end.equals("P9") == true) {
-            p = 3;
-        }
-    }
-    if(origin.equals("P1")==true) {
-
-        if (end.equals("P6") == true) {
-            p = 1;
-        }
-        if (end.equals("P8") == true) {
-            p = 0.5F;
-        }
-    }
-    if(origin.equals("P6")==true) {
-
-        if (end.equals("P8") == true) {
-            p = 1;
-        }
-    }
-    else
-    {
-        return 0;
-    }
-
-    return p;
-
-}
 }

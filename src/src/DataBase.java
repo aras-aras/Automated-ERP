@@ -263,4 +263,24 @@ public class DataBase {
         }
         return Integer.parseInt(null);
     }
+
+
+
+
+    ////////////////////////////////            SUB_TRANSFORMATIONS                 ///////////////////////////
+    public String sub_trans(Connection con, String p_init, String p_final) throws  SQLException{
+        Statement stmt=con.createStatement();
+        String sql="select p_intermediate from infi.sub_transformations where p_initial='"+p_init+"' and p_final'"+p_final+"'";
+        ResultSet re= stmt.executeQuery(sql);
+        while(re.next()){
+            String str;
+            str=re.getString("p_intermediate");
+            return str;
+        }
+        return null;
+    }
+
+    /////////////////////////////////               SCHEDULING              ////////////////////////////////////////
+
+    public String
 }
