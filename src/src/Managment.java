@@ -936,30 +936,7 @@ public class Managment implements Runnable {
 public int[] calculus(int num1, int num3, int duedate,int today, String Workpiece) {
         //calculus(N, Ne, duedate, today, ord.Work_Piece);
      int[] aux = new int[3];
-    if ((Workpiece.equals("P3") && (num1 == 1 || num1 == 2 || num1 == 3)) ||
-            (Workpiece.equals("P4") && (num1 == 1 || num1 == 2 || num1 == 3)) ||
-            (Workpiece.equals("P6") && (num1 == 1)) ||
-            (Workpiece.equals("P7") && (num1 == 1 || num1 == 2))) {
-        aux[0] = 1;
-    } else if ((Workpiece.equals("P3") && (num1 == 4 || num1 == 5 || num1 == 6 || num1 == 7 || num1 == 8)) ||
-            (Workpiece.equals("P4") && (num1 == 4 || num1 == 5 || num1 == 6 || num1 == 7 || num1 == 8)) ||
-            (Workpiece.equals("P5") && (num1 == 1 || num1 == 2 || num1 == 3)) ||
-            (Workpiece.equals("P6") && (num1 == 4 || num1 == 2 || num1 == 3)) ||
-            (Workpiece.equals("P7") && (num1 == 3 || num1 == 4 || num1 == 5 || num1 == 6 || num1 == 7 || num1 == 8)) ||
-            (Workpiece.equals("P8") && (num1 == 1)) ||
-            (Workpiece.equals("P9") && (num1 == 4 || num1 == 1 || num1 == 2 || num1 == 3))) {
-        aux[0] = 2;
-    } else if ((Workpiece.equals("P5") && (num1 == 4 || num1 == 5 || num1 == 6 || num1 == 7 || num1 == 8)) ||
-            (Workpiece.equals("P6") && (num1 == 5 || num1 == 6 || num1 == 7)) ||
-            (Workpiece.equals("P8") && (num1 == 4 || num1 == 2 || num1 == 3)) ||
-            (Workpiece.equals("P9") && (num1 == 5 || num1 == 6 || num1 == 7 || num1 == 8))) {
-        aux[0] = 3;
-    } else if ((Workpiece.equals("P6") && (num1 == 8)) ||
-            (Workpiece.equals("P8") && (num1 == 5 || num1 == 6 || num1 == 7))) {
-        aux[0] = 4;
-    } else {
-        aux[0] = 5;
-    }
+    aux[0]= 0;
     aux[1] = duedate - today - aux[0] - 1;
     if(num3>duedate) {
         while (num3 > duedate) {
@@ -1045,5 +1022,78 @@ public int[] calculus(int num1, int num3, int duedate,int today, String Workpiec
         }
         return work_days;
     }
-}
 
+public float piece_perday(String origin, String end)
+{
+    /* Da te quantas peças faz por dia(desde q sai ate entrar no armazem), se for 0.5
+    * uma peça demora dois dias*/
+    float p=0;
+    if(origin.equals("P2")==true)
+    {
+        if(end.equals("P3")==true)
+        {
+            p=3;
+        }
+        if(end.equals("P4")==true)
+        {
+            p=3;
+        }
+        if(end.equals("P5")==true)
+        {
+            p=0.5F;
+        }
+        if(end.equals("P7")==true)
+        {
+            p=2;
+        }
+        if(end.equals("P9")==true)
+        {
+            p= 0.5F;
+        }
+
+    }
+    if(origin.equals("P4")==true) {
+
+        if (end.equals("P5") == true) {
+            p = 0.5F;
+        }
+        if (end.equals("P7") == true) {
+            p = 3;
+        }
+        if (end.equals("P9") == true) {
+            p = 0.5F;
+        }
+    }
+    if(origin.equals("P7")==true) {
+
+        if (end.equals("P5") == true) {
+            p = 2;
+        }
+        if (end.equals("P9") == true) {
+            p = 3;
+        }
+    }
+    if(origin.equals("P1")==true) {
+
+        if (end.equals("P6") == true) {
+            p = 1;
+        }
+        if (end.equals("P8") == true) {
+            p = 0.5F;
+        }
+    }
+    if(origin.equals("P6")==true) {
+
+        if (end.equals("P8") == true) {
+            p = 1;
+        }
+    }
+    else
+    {
+        return 0;
+    }
+
+    return p;
+
+}
+}
