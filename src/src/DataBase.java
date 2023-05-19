@@ -180,17 +180,9 @@ public class DataBase {
             str[7]=re.getString("tool2");
             str[8]=re.getString("work_time2");
             str[9]=re.getString("type_out2");
-            str[10]=re.getString("machine3");
-            str[11]=re.getString("tool3");
-            str[12]=re.getString("work_time3");
-            str[13]=re.getString("type_out3");
-            str[14]=re.getString("machine4");
-            str[15]=re.getString("tool4");
-            str[16]=re.getString("work_time4");
-            str[17]=re.getString("type_out4");
-            str[18]=re.getString("deliver");
-            str[19]=re.getString("day");
-            str[20]=re.getString("id");
+            str[10]=re.getString("deliver");
+            str[11]=re.getString("day");
+            str[12]=re.getString("id");
             rows.add(str);
         }
         return rows;
@@ -284,16 +276,29 @@ public class DataBase {
     public int calendar(Connection con,int today, int[]aux, String piece) throws SQLException {
         //aqui vamos assumir que a linha de cada peça ja está criada, é apenas necessario
         int day;
+        //aux[0]- numero total de dias em que as peças estao e produção
+        //aux[1]- a data em que começam a ser feitas
+        //aux[2]- duedate
+        //0_._._._.4.4.1.1.d
+        //aux[1] = duedate - today - aux[0]-1;
         if(piece.equals("P6")==true )
         {
             for(int n=0;n<aux[0];n++) //estamos a verificar se cada dia está livre
             {
-                if (verify(con,2,(int)(aux[2]-2)) == false) {//é menos dois porque é o dia antes da entrega
-                    //está livre nesse dia
+                if (verify(con,2,(int)(aux[2]+today-2)) == 1) {//é menos dois porque é o dia antes da entrega
+                    //está livre nesse dia ou nao encontra o dia
+                    //no caso de nao encontrar, cria
+                    //marcar esse dia no calendario
+                    //NÃO ESTÁ OCUPADO
+
+                    int i=update_line(con, 2, (int)(aux[2]+today-2), 1);
                 }
-                else if (verify(con,2,(int)(aux[2]-2)) == false)
+                else if (verify(con,2,(int)(aux[2]+today-2)) == 0)
                 {
-                   day=recursive((int)(con,aux[2]-1),2);
+                   day=recursive(con,aux[2]+today-1,2);
+                   //marcar o aux[2]+today-2+day
+                    aux[2]+=day;
+
                 }
                 }
             }
@@ -304,6 +309,27 @@ public class DataBase {
         else
         {
             //verificar producing 1
+            for(int n=today;n<aux[0]+today;n++) //estamos a verificar se cada dia está livre
+            {
+                if (verify(con,1,(int)(aux[2]+today-2)) == 1) {//é menos dois porque é o dia antes da entrega
+                    //está livre nesse dia ou nao encontra o dia
+                    //no caso de nao encontrar, cria
+                    //marcar esse dia no calendario
+                    //NÃO ESTÁ OCUPADO
+
+                    int i=update_line(con, 1, (int)(aux[2]+today-2), 1);
+                }
+                else if (verify(con,1,(int)(aux[2]+today-2)) == 0)
+                {
+                    day=recursive(con,aux[2]+today-1,2);
+                    //marcar o aux[2]+today-2+day
+                    aux[2]+=day;
+
+                }
+                else if(verify(con,1,(int)(aux[2]+today-2)) == 2){
+                    int i=insert_day(con, 1, (int)(aux[2]+today-2), 1);
+                }
+            }
         }
         return aux[2];
     }
@@ -319,15 +345,36 @@ public class DataBase {
     }
     // Aqui estou a tentar fazer uma função recursiva que procura o dia
     //mais proximo que esteja livre, ainda é um prototipo
-    public int recursive(Connection con,int day, int type)
-    {
-        if(verify(con,2,day) == true)
-        {
-            return day;
-
+    public int recursive(Connection con,int day, int type) throws SQLException {
+        if(verify(con,2,day) == 1 )
+        { //esta livre
+            return 1+update_line(con, type, day, 1);
         }
-        return recursive(con, day+1,type);
+        if(verify(con,2,day) == 2)
+        {
+            return 1+insert_day(con, type, day, 1);
+        }
+        return 1+recursive(con, day+1,type);
+    }
 
+    public int update_line(Connection con, int prod, int day, int value) throws SQLException{
+        Statement stmt=con.createStatement();
+        String sql="update infi.scheduling set producing_"+prod+" where day='"+day+"'";
+        stmt.executeUpdate(sql);
+        return 0;
+    }
+    public int insert_day(Connection con, int prod, int day, int value) throws SQLException{//acrescentar ordem à tabela
+        Statement stmt=con.createStatement();
+        int aux=0;
+        if(prod==1){
+            aux=2;
+        }
+        else if(prod==2){
+            aux=1;
+        }
+        String sql="insert into infi.scheduling(day, producing_"+prod+", delivering, arriving, producing_"+aux+") values('"+day+"', '"+value+"', '"+0+"', '"+0+"', '"+0+"', '"+0+"')";
+        stmt.executeUpdate(sql);
+        return 0;
     }
 }
 

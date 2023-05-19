@@ -105,6 +105,8 @@ public class TCP implements Runnable { //Server - this part is meant to receive 
             }
             result.append(concatenated);
         }
+       //falta acrescentar a parte da string que tm o transporte daquele dia
+        //podes v er no calendario
         System.out.println(message);
 
         return message;

@@ -113,16 +113,31 @@ public class Managment implements Runnable {
                         return;
                     }
 
-                    //if(verify_how_many(ord.Work_Piece, (duedate-1))>0) //verifica se ha já peças prontas (transformadas)
-                    // {
+
 
                     try {
                         data.processed_status(con, ord.Order_num);
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
-                    //aqui criar as linhas com as peças
+                    ////////CRIAR LINHAS COM TRANSFORMAÇOES///////////////////////////////////////////////
 
+                    if(ord.Work_Piece.equals("P3")==true ||ord.Work_Piece.equals("P4")==true
+                            ||ord.Work_Piece.equals("P6")==true ||ord.Work_Piece.equals("P7")==true )
+                    {
+                        /* Estes tipos de peças so precisam de uma linha por peça na
+                        * tabela piece_trans, basicamente aqui crias N linhas */
+
+                    }
+                    else
+                    {
+                        /*Neste caso estas peças precisam de 2 dias para serem acabadas, ou seja
+                        * crias, N*2 linhas*/
+                    }
+
+                    /*Como ja fizemos o calculos as transformaçoes ja d«foram divididas pelos
+                    * dias, ou seja, consegues sacar todos os dias dessa função. Dito isto, dentro de cada
+                    * ifs anteriores fazes um for e de cada vez que crias a linha preenches ja tudo*/
 
                     /* A segunda coisa a fazer é verificar se já há peças feitas
                      * do tipo que nos queremos no armazém, o mais provével é que
