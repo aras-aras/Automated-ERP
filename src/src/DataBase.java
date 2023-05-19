@@ -281,7 +281,7 @@ public class DataBase {
 
     /////////////////////////////////               SCHEDULING              ////////////////////////////////////////
 
-    public int calendar(Connection con,int today, float[]aux, String piece) throws SQLException {
+    public int calendar(Connection con,int today, int[]aux, String piece) throws SQLException {
         //aqui vamos assumir que a linha de cada peça ja está criada, é apenas necessario
         int day;
         if(piece.equals("P6")==true )
@@ -293,7 +293,7 @@ public class DataBase {
                 }
                 else if (verify(con,2,(int)(aux[2]-2)) == false)
                 {
-                   day=recursive((int)(aux[2]-1),2);
+                   day=recursive((int)(con,aux[2]-1),2);
                 }
                 }
             }
@@ -319,14 +319,14 @@ public class DataBase {
     }
     // Aqui estou a tentar fazer uma função recursiva que procura o dia
     //mais proximo que esteja livre, ainda é um prototipo
-    public int recursive(int day, int type)
+    public int recursive(Connection con,int day, int type)
     {
-        if(verify(2,day) == true)
+        if(verify(con,2,day) == true)
         {
             return day;
 
         }
-        return recursive(day+1,type);
+        return recursive(con, day+1,type);
 
     }
 }

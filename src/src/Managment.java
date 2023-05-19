@@ -78,7 +78,7 @@ public class Managment implements Runnable {
                     int[] nr=new int[3];
                     material = verify_raw(ord.Work_Piece);
                     String sub=data.sub_trans(con, material, ord.Work_Piece);
-                    nr=calculus(N, Ne, duedate, today, ord.Work_Piece, material, sub, ord.Quantity);
+                    nr=calculus(N, Ne, duedate, today, ord.Work_Piece, material, sub, Integer.parseInt(ord.Quantity));
                     //calculus(N, Ne, duedate, today, ord.Work_Piece);
                     /*aux[0]->Nd // numero de dias que tens para fazer a peça
                     aux[1]->Ne // numero que dias que tens no maximo para encomendar peças
@@ -977,7 +977,7 @@ public class Managment implements Runnable {
         }
             return p;
     }
-public float[] calculus(int num1, int num3, int duedate,int today, String Workpiece, String material, String sub, int quantity) {
+public int[] calculus(int num1, int num3, int duedate,int today, String Workpiece, String material, String sub, int quantity) {
         //calculus(N, Ne, duedate, today, ord.Work_Piece);
     /*aux[0]->Nd  // numero de dias que tens para fazer a peça
     aux[1]->Ne // numero que dias que tens no maximo para encomendar peças, aka quando tenho de começar a produzir
@@ -996,7 +996,7 @@ public float[] calculus(int num1, int num3, int duedate,int today, String Workpi
     else {
         nr_days2 = (int) ((quantity / n2) + 0.5);
     }
-    float[] aux = new float[3];
+    int[] aux = new int[3];
     aux[0]= nr_days2 + nr_days1;
     aux[1] = duedate - today - aux[0]-1;
     if(num3>duedate) {
