@@ -942,7 +942,6 @@ public class Managment implements Runnable {
             if (end.equals("P3") == true) {
                 p[0] = 3;
                 p[1] = 0;
-                p[2]=
             }
             if (end.equals("P7") == true) {
                 p[0] = 2;
@@ -1009,6 +1008,11 @@ public float[] calculus(int num1, int num3, int duedate,int today, String Workpi
     else{
         aux[2]=duedate;
     }
+    //chamar função
+    DataBase data=new DataBase();
+    Connection con=data.create_connection();
+    aux[2]=data.calendar(con,today, aux, Workpiece);
+
     return aux;
 }
 

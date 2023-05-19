@@ -1,7 +1,6 @@
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 
 public class DataBase {
@@ -282,5 +281,51 @@ public class DataBase {
 
     /////////////////////////////////               SCHEDULING              ////////////////////////////////////////
 
-    public String
+    public int calendar(Connection con,int today, float[]aux, String piece)
+    {
+        //aqui vamos assumir que a linha de cada peça ja está criada, é apenas necessario
+        int day;
+        if(piece.equals("P6")==true )
+        {
+            for(int n=0;n<aux[0];n++) //estamos a verificar se cada dia está livre
+            {
+                if (verify(2,(int)(aux[2]-2)) == false) {//é menos dois porque é o dia antes da entrega
+                    //está livre nesse dia
+                }
+                else if (verify(2,(int)(aux[2]-2)) == false)
+                {
+                   day=recursive((int)(aux[2]-1),2);
+                }
+                }
+            }
+        }
+        else if(piece.equals("P8")==true )
+        {
+            //verificar producing 1 e 2
+        }
+        else
+        {
+            //verificar producing 1
+        }
+
+        return aux[2];
+    }
+
+    public boolean verify(int prod, int day) {
+
+        return true;
+    }
+    // Aqui estou a tentar fazer uma função recursiva que procura o dia
+    //mais proximo que esteja livre, ainda é um prototipo
+    public int recursive(int day, int type)
+    {
+        if(verify(2,day) == true)
+        {
+            return day;
+
+        }
+        return recursive(day+1,type);
+
+    }
 }
+
