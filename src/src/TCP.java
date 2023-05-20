@@ -27,10 +27,6 @@ public class TCP implements Runnable { //Server - this part is meant to receive 
         data = new DataBase();
 
 
- //ola olha, n consigo compilar pq ele n esta a conseguir ligar ao tcp pq eu n tenho o mes a correr,
-        //por isso vou cagar para o tcp para ja
-        // mal acabemos isto vamos, tenho ideias
-        //temos de ajudar o gabi, ele está completamente perdido no mes, okok
     }
 
     public void run() {
@@ -105,8 +101,14 @@ public class TCP implements Runnable { //Server - this part is meant to receive 
             }
             result.append(concatenated);
         }
-       //falta acrescentar a parte da string que tm o transporte daquele dia
-        //podes v er no calendario
+
+       //falta acrescentar
+        012,109,202
+        // entar a parte da string que tm o transporte daquele dia
+        //vamos terv de ir ao calendario e verificar que ordem é para entregar no dia de hoje,
+        //but, o calendario n tem essa informação
+        //temos de meter
+        //função que va buscar
         System.out.println(message);
 
         return message;
