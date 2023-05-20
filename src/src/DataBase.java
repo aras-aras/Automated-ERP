@@ -1,3 +1,5 @@
+import javax.swing.plaf.nimbus.State;
+import javax.xml.crypto.Data;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -113,6 +115,18 @@ public class DataBase {
             Statement stmt=con.createStatement();
             String sql="update infi.warehouse set "+piece+"_existing='"+quantity+"' where day='"+day+"'";
             stmt.executeUpdate(sql);
+            int i=check_day(con, day);
+            if(i==0)//está livre
+            {
+                sql="update infi.scheduling set arriving='"+order+"' where day='"+day+"'";
+                stmt.executeUpdate(sql);
+            }
+            else if(i==-1){//dia n existe, inserir dia
+                sql="insert into infi.scheduling(day, producing_1, delivering, arriving, producing_2) values('"+day+"', '"+0+"', '"+0+"', '"+order+"', '"+0+"')";
+                stmt.executeUpdate(sql);
+            }
+            else if
+
     }
 
     public void just_arrived(Connection con, String piece, int day, int quantity) throws  SQLException{
@@ -296,14 +310,15 @@ public class DataBase {
                     days[n]=aux[2]+today-1-x;
                     int i=update_line(con, 2, (int)(aux[2]+today-1-x),order);
                 }
-                else if (verify(con,2,(int)(aux[2]+today-2)) == 0)
+                else if (verify(con,2,(int)(aux[2]+today-1-x)) == 0)
                 {
                     day=recursive(con,aux[2]+today-1-x,2,order);
                     aux[2]+=day;
                     days[n]=today+aux[2]-x-1;
                 }
-                else if(verify(con,2,(int)(aux[2]+today-2)) == 2){
-                    int i=insert_day(con, 2, (int)(aux[2]+today-2), 1);
+                else if(verify(con,2,(int)(aux[2]+today-1-x)) == 2){
+                    int i=insert_day(con, 2, (int)(aux[2]+today-1-x), order);
+                    days[n]=today+aux[2]-x-1;
                 }
                 }
             }
@@ -360,8 +375,6 @@ public class DataBase {
                     days[n]=today+aux[1]+aux[0]/2+x;
                 }
             }
-
-
         }
         else
         {
@@ -402,7 +415,7 @@ public class DataBase {
                 //atualizo o valor para reservado
                 return 1;
             }
-            else if(str.equals(String.valueOf(1))){//aqui já está ocupado
+            else{//aqui já está ocupado
                 return 0;
             }
         }
@@ -412,25 +425,25 @@ public class DataBase {
 
     // Aqui estou a tentar fazer uma função recursiva que procura o dia
     //mais proximo que esteja livre, ainda é um prototipo
-    public int recursive(Connection con,int day, int type) throws SQLException {
+    public int recursive(Connection con,int day, int type, String order) throws SQLException {
         if(verify(con,2,day) == 1 )
         { //esta livre
             return 1+update_line(con, type, day, order);
         }
         if(verify(con,2,day) == 2)
         {
-            return 1+insert_day(con, type, day, 1);
+            return 1+insert_day(con, type, day, order);
         }
         return 1+recursive(con, day+1,type, order);
     }
 
-    public int update_line(Connection con, int prod, int day, int value) throws SQLException{
+    public int update_line(Connection con, int prod, int day, String order) throws SQLException{
         Statement stmt=con.createStatement();
-        String sql="update infi.scheduling set producing_"+prod+" where day='"+day+"'";
+        String sql="update infi.scheduling set producing_"+prod+"='"+order+"' where day='"+day+"'";
         stmt.executeUpdate(sql);
         return 0;
     }
-    public int insert_day(Connection con, int prod, int day, int value) throws SQLException{//acrescentar ordem à tabela
+    public int insert_day(Connection con, int prod, int day, String order) throws SQLException{//acrescentar ordem à tabela
         Statement stmt=con.createStatement();
         int aux=0;
         if(prod==1){
@@ -439,7 +452,7 @@ public class DataBase {
         else if(prod==2){
             aux=1;
         }
-        String sql="insert into infi.scheduling(day, producing_"+prod+", delivering, arriving, producing_"+aux+") values('"+day+"', '"+value+"', '"+0+"', '"+0+"', '"+0+"')";
+        String sql="insert into infi.scheduling(day, producing_"+prod+", delivering, arriving, producing_"+aux+") values('"+day+"', '"+order+"', '"+0+"', '"+0+"', '"+0+"')";
         stmt.executeUpdate(sql);
         return 0;
     }
@@ -458,7 +471,7 @@ public class DataBase {
             if(i==0){
                 return 0;
             }
-            else if(i==1){
+            else if(i!=0){
                 return 1;
             }
         }

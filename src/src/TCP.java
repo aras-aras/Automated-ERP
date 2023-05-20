@@ -110,7 +110,6 @@ public class TCP implements Runnable { //Server - this part is meant to receive 
         //temos de meter
         //função que va buscar
         System.out.println(message);
-
         return message;
     }
 
