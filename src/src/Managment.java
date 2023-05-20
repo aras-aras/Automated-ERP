@@ -284,7 +284,7 @@ public class Managment implements Runnable {
                                 try {
                                     today=data.today_day(con);
                                     data.sup(con, String.valueOf(Ne + today-Tc), "sc_" + aux, String.valueOf(4));
-                                    data.just_arrived(con, aux, Ne+today, 4);
+                                    data.just_arrived(con, aux, Ne+today, 4, ord.Order_num);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -293,7 +293,7 @@ public class Managment implements Runnable {
                                 try {
                                     today=data.today_day(con);
                                     data.sup(con, String.valueOf(Ne + today-Tc), "sc_" + aux, String.valueOf(4));
-                                    data.just_arrived(con, aux, Ne+today, 4);
+                                    data.just_arrived(con, aux, Ne+today, 4, ord.Order_num);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -353,7 +353,7 @@ public class Managment implements Runnable {
                                 try {
                                     today=data.today_day(con);
                                     data.sup(con, String.valueOf(Ne + today-Tc), "sc_p1" + aux, String.valueOf(N));
-                                    data.just_arrived(con, aux, Ne+today, N);
+                                    data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -362,7 +362,7 @@ public class Managment implements Runnable {
                                 try {
                                     today=data.today_day(con);
                                     data.sup(con, String.valueOf(Ne + today-Tc), "sc_p2", String.valueOf(N));
-                                    data.just_arrived(con, aux, Ne+today, N);
+                                    data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -442,7 +442,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
-                                        data.just_arrived(con, aux, Ne+today, N);
+                                        data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -451,7 +451,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
-                                        data.just_arrived(con, aux, Ne+today, N);
+                                        data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -464,7 +464,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Tc), "sc_" + aux, String.valueOf(4));
-                                        data.just_arrived(con, aux, Ne+today, 4);
+                                        data.just_arrived(con, aux, Ne+today, 4, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -473,7 +473,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Tc), "sc_" + aux, String.valueOf(4));
-                                        data.just_arrived(con, aux, Ne+today, 4);
+                                        data.just_arrived(con, aux, Ne+today, 4, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -534,7 +534,7 @@ public class Managment implements Runnable {
                                 try {
                                     today=data.today_day(con);
                                     data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
-                                    data.just_arrived(con, aux, Ne+today, N);
+                                    data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -543,7 +543,7 @@ public class Managment implements Runnable {
                                 try {
                                     today=data.today_day(con);
                                     data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
-                                    data.just_arrived(con, aux, Ne+today, N);
+                                    data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -567,7 +567,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
-                                        data.just_arrived(con, aux, Ne+today, N);
+                                        data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -576,7 +576,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
-                                        data.just_arrived(con, aux, Ne+today, N);
+                                        data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -589,7 +589,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Tc), "sc_" + aux, String.valueOf(4));
-                                        data.just_arrived(con, aux, Ne+today, 4);
+                                        data.just_arrived(con, aux, Ne+today, 4, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -598,7 +598,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Tc), "sc_" + aux, String.valueOf(4));
-                                        data.just_arrived(con, aux, Ne+today, 4);
+                                        data.just_arrived(con, aux, Ne+today, 4, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -660,7 +660,7 @@ public class Managment implements Runnable {
                                 try {
                                     today=data.today_day(con);
                                     data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
-                                    data.just_arrived(con, aux, Ne+today, N);
+                                    data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -669,7 +669,7 @@ public class Managment implements Runnable {
                                 try {
                                     today=data.today_day(con);
                                     data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
-                                    data.just_arrived(con, aux, Ne+today, N);
+                                    data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -694,7 +694,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
-                                        data.just_arrived(con, aux, Ne+today, N);
+                                        data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -703,7 +703,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
-                                        data.just_arrived(con, aux, Ne+today, N);
+                                        data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -716,7 +716,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Tc), "sc_" + aux, String.valueOf(4));
-                                        data.just_arrived(con, aux, Ne+today, 4);
+                                        data.just_arrived(con, aux, Ne+today, 4, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -725,7 +725,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Tc), "sc_" + aux, String.valueOf(4));
-                                        data.just_arrived(con, aux, Ne+today, 4);
+                                        data.just_arrived(con, aux, Ne+today, 4, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -787,7 +787,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
-                                        data.just_arrived(con, aux, Ne+today, N);
+                                        data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -796,7 +796,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
-                                        data.just_arrived(con, aux, Ne+today, N);
+                                        data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -809,7 +809,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Ta), "sa_" + aux, String.valueOf(N));
-                                        data.just_arrived(con, aux, Ne+today, N);
+                                        data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -818,7 +818,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Ta), "sa_" + aux, String.valueOf(N));
-                                        data.just_arrived(con, aux, Ne+today, N);
+                                        data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -849,7 +849,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Ta), "sa_" + aux, String.valueOf(N));
-                                        data.just_arrived(con, aux, Ne+today, N);
+                                        data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -859,7 +859,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Ta), "sa_" + aux, String.valueOf(N));
-                                        data.just_arrived(con, aux, Ne+today, N);
+                                        data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -875,7 +875,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Tc), "sc_" + aux, String.valueOf(4));
-                                        data.just_arrived(con, aux, Ne+today, 4);
+                                        data.just_arrived(con, aux, Ne+today, 4, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -885,7 +885,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Tc), "sc_" + aux, String.valueOf(4));
-                                        data.just_arrived(con, aux, Ne+today, 4);
+                                        data.just_arrived(con, aux, Ne+today, 4, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -908,7 +908,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
-                                        data.just_arrived(con, aux, Ne+today, N);
+                                        data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -918,7 +918,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
-                                        data.just_arrived(con, aux, Ne+today, N);
+                                        data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -933,7 +933,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Ta), "sa_" + aux, String.valueOf(N));
-                                        data.just_arrived(con, aux, Ne+today, N);
+                                        data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -943,7 +943,7 @@ public class Managment implements Runnable {
                                     try {
                                         today=data.today_day(con);
                                         data.sup(con, String.valueOf(Ne + today-Ta), "sa_" + aux, String.valueOf(N));
-                                        data.just_arrived(con, aux, Ne+today, N);
+                                        data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }

@@ -109,8 +109,6 @@ public class DataBase {
         stmt.executeUpdate(sql);
     }
 
-            //para o deliver é duedate-1
-
     public void arriving_new_pieces(Connection con, String piece, int day, int quantity, String order) throws SQLException{
             Statement stmt=con.createStatement();
             String sql="update infi.warehouse set "+piece+"_existing='"+quantity+"' where day='"+day+"'";
@@ -125,19 +123,40 @@ public class DataBase {
                 sql="insert into infi.scheduling(day, producing_1, delivering, arriving, producing_2) values('"+day+"', '"+0+"', '"+0+"', '"+order+"', '"+0+"')";
                 stmt.executeUpdate(sql);
             }
-            else if
+            else if(i!=-1 && i!=0){// o dia já existe e está ocupado, que alteração faço no dia?
 
+            }
     }
 
-    public void just_arrived(Connection con, String piece, int day, int quantity) throws  SQLException{
+    public void just_arrived(Connection con, String piece, int day, int quantity, String order) throws  SQLException{
         Statement stmt=con.createStatement();
         piece.toLowerCase();
         String d=String.valueOf(day);
         String q=String.valueOf(quantity);
         String sql="insert into infi.warehouse(day, "+piece+"_existing, "+piece+"_reserved) values ('"+d+"', '"+q+"', '"+0+"')";
         stmt.executeUpdate(sql);
+        int i=check_day(con, day);
+        if(i==0)//está livre
+        {
+            sql="update infi.scheduling set arriving='"+order+"' where day='"+day+"'";
+            stmt.executeUpdate(sql);
+        }
+        else if(i==-1){//dia n existe, inserir dia
+            sql="insert into infi.scheduling(day, producing_1, delivering, arriving, producing_2) values('"+day+"', '"+0+"', '"+0+"', '"+order+"', '"+0+"')";
+            stmt.executeUpdate(sql);
+        }
+        else if(i!=-1 && i!=0){// o dia já existe e está ocupado, que alteração faço no dia?
+
+        }
+
     }
 
+
+//na função a seguir, basicamente estamos a eliminar as peças do armazem quand for o dia de entrega
+    public void leaving(Connection con, String final_piece, int day, int quantity, String order) throws SQLException{
+        Statement stmt=con.createStatement();
+        String sql=""
+    }
 
 
 
