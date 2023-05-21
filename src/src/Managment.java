@@ -1,6 +1,7 @@
 import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 
 public class Managment implements Runnable {
     public int N;// numero de peças a fazer
@@ -47,7 +48,7 @@ public class Managment implements Runnable {
 
             try {
                 if(data.order_not_processed(con)!=null) {
-                    System.out.println("ananas4");
+                    System.out.println("Starting processing");
                     ord = new Order();
                     Account acc = new Account();
                     String[] atr = new String[7];
@@ -72,15 +73,24 @@ public class Managment implements Runnable {
                      * ESSES DILEMAS.(dentro da função calculus), basicamente
                      * problemas para depois
                      * */
+
                     today=data.today_day(con);
                     int[] nr;
                     material = verify_raw(ord.Work_Piece);
+                    System.out.println("material: "+material+" peça final: "+ord.Work_Piece);
                     String sub=data.sub_trans(con, material, ord.Work_Piece);
+
                     nr=calculus(N, Ne, duedate, today, ord.Work_Piece, material, sub, Integer.parseInt(ord.Quantity));
+                    System.out.println("banana");
+
                     //aux[0]- numero total de dias em que as peças estao e produção
                     //aux[1]- a data em que começam a ser feitas
                     //aux[2]- duedate
                     //0_._._._.4.4.1.1.d
+                    System.out.println("Result from calculating dates for order "+ord.Order_num);
+                    System.out.println("number of days needed to produce:"+nr[0]);
+                    System.out.println("day you need to start working"+(nr[1]+today));
+                    System.out.println("day the material arrives"+(nr[1]+today-1));
                     Nd=nr[0];
                     Ne=nr[1];
                     Ne=Ne-1;
@@ -136,7 +146,6 @@ public class Managment implements Runnable {
                      * */
                     try {
                         Na = verify_how_many(ord.Work_Piece, (duedate - 1));//verifica se ha já peças prontas (transformadas)
-                        System.out.println("Na: "+Na);
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
@@ -266,7 +275,7 @@ public class Managment implements Runnable {
                     if (N <= 0)// se houver raw material suficiente para cobrir o que falta é so indicar as transformações a fazer
                     {
                         work_days=writing_order(Nd, Ne, material, ord.Work_Piece, ord.Order_num, duedate, days_work);
-
+                        System.out.println("dias de trabalho:"+work_days);
                     }
                     /*Nesta secção vai ser avaliado qual é o supplier que deverá ser
                      * escolhido conforme o número de dias que nos sobra para encomendar.
@@ -347,7 +356,6 @@ public class Managment implements Runnable {
 
                         } else {
                             Nf = 0; //endomendas N
-                            System.out.println("tou aqui 10");
                             if (material.equals("P1")) {
                                 String aux = "p1";
                                 try {
@@ -426,6 +434,7 @@ public class Managment implements Runnable {
                             throw new RuntimeException(e);
                         }
                         work_days=writing_order(Nd, Ne, material, ord.Work_Piece, ord.Order_num, duedate, days_work);
+                        System.out.println("dias de trabalho:"+work_days);
                     } else if (Ne == 2) {
                         /*Caso sobrem 2 dias, há a possibilidade de encomendar do supplier B ou C.
                          * Dito isto é necessário avaliar qual será mais rentável.
@@ -550,6 +559,7 @@ public class Managment implements Runnable {
                             }
                         }
                         work_days=writing_order(Nd, Ne, material, ord.Work_Piece, ord.Order_num,duedate, days_work);
+                        System.out.println("dias de trabalho:"+work_days);
                     } else if (Ne == 3) {
                         /*Caso sobrem 3 dias, há a possibilidade de encomendar do supplier B ou C.
                          * Dito isto é necessário avaliar qual será mais rentável.
@@ -676,6 +686,7 @@ public class Managment implements Runnable {
                             }
                         }
                         work_days=writing_order(Nd, Ne, material, ord.Work_Piece, ord.Order_num, duedate, days_work);
+                        System.out.println("dias de trabalho:"+work_days);
                     } else if (Ne == 4) {
                         /*Caso sobrem 4 dias, há a possibilidade de encomendar do supplier B ou C.
                          * Dito isto é necessário avaliar qual será mais rentável.
@@ -827,6 +838,7 @@ public class Managment implements Runnable {
 
                         }
                         work_days=writing_order(Nd, Ne, material, ord.Work_Piece, ord.Order_num, duedate, days_work);
+                        System.out.println("dias de trabalho:"+work_days);
                     } else if(Ne>4){
 
                         /*Caso sobrem mais de 4 dias, há a possibilidade de encomendar do supplier A, B ou C.
@@ -953,24 +965,33 @@ public class Managment implements Runnable {
                         }
 
                     }
-                    work_days=writing_order(Nd, Ne, material, ord.Work_Piece, ord.Order_num, duedate, days_work);
+                    try {
+                        work_days=writing_order(Nd, Ne, material, ord.Work_Piece, ord.Order_num, duedate, days_work);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                    System.out.println("dias de trabalho:"+work_days);
                     try {
                         data.processed_status(con, ord.Order_num); // mudar o estado desta ordem para processada
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
+                    try {
+                        data.leaving(con,today+duedate-1,ord.Order_num);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                    System.out.println("dia de sair do armazem:"+(today+duedate-1));
                 }
-                else
-                {
 
-                }
+
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-
         }
+    }
 
-}
+
     public int[] piece_perday(String origin, String end, String sub) {/* Da te quantas peças faz por dia(desde q sai ate entrar no armazem), se for 0.5
      * uma peça demora dois dias*/
         //RETORNA O Nc-> nr de peças a fazer por dia
@@ -1023,42 +1044,61 @@ public int[] calculus(int num1, int num3, int duedate,int today, String Workpiec
     Ne=nr[1];
     duedate=nr[2];*/
     int[] f=piece_perday(material, Workpiece, sub);
-    int n1=f[0];//nr de peças que consigo fazer por dia na primeira transformação    1
-    int n2=f[1];//nr de peças que consigo fazer por dia na segunda transformação     1
-    int nr_days1=(int)((quantity/n1)+0.5);
-    int nr_days2;
+    System.out.println("numero de peças que conseguimos fazer " +
+            "na primeira iteração: "+f[0]+" e com a segunda "+f[1]);
+    int n1=f[0];//nr de peças que consigo fazer por dia na primeira transformação
+    int n2=f[1];//nr de peças que consigo fazer por dia na segunda transformação
+    int nr_days2,nr_days1;
+    if(n1==0){
+        nr_days1=0;
+    }
+    else if(n1% 2 != 0)
+    {
+        nr_days1 = (int) ((quantity / n1) + 0.5)+1;
+    }
+    else {
+        nr_days1 = (int) ((quantity / n1) + 0.5);
+    }
     if(n2==0){
         nr_days2=0;
+    }
+    else if(n2% 2 != 0)
+    {
+        nr_days2 = (int) ((quantity / n2) + 0.5)+1;
     }
     else {
         nr_days2 = (int) ((quantity / n2) + 0.5);
     }
+    System.out.println("old duedate: " +duedate);
     int[] aux = new int[3];
     aux[0]= nr_days2 + nr_days1;
-    aux[1] = duedate - today - aux[0]-1;
-    if(num3>duedate) {
-        while (num3 > duedate) {
+    System.out.println("dias necessarios para produzir: " +aux[0]);
+    if(aux[0]>=duedate) {
+        while (aux[0] > duedate) {
             duedate++;
-            aux[2] = duedate;
+
         }
+        duedate+=3;
     }
-    else{
-        aux[2]=duedate;
-    }
-    //chamar função
+    System.out.println("new duedate: " +duedate);
+    aux[1] = duedate - today - aux[0]-1;
+    aux[2]=duedate;
+
     DataBase data=new DataBase();
     Connection con=data.create_connection();
-
+    int[] work_daysnew = new int[aux[0]];
     try {
-        int[] work_days = data.calendar(con, today, aux, Workpiece, ord.Order_num);
+        work_days = data.calendar(con, today, aux, Workpiece, ord.Order_num);
     }catch (SQLException e) {
         throw new RuntimeException(e);
     }
+    System.out.println(Arrays.toString(work_days));
     int length1=3;
     int length2=work_days.length;
     int [] concate=new int[length2+length1];
     System.arraycopy(aux, 0, concate, 0, length1);
     System.arraycopy(work_days, 0, concate, length1, length2);
+    System.out.println("Vetor com calculos e dias de trabalho"+Arrays.toString(concate));
     return concate;
 }
 

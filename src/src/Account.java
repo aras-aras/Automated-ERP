@@ -1,3 +1,6 @@
+import java.sql.Connection;
+import java.sql.SQLException;
+
 public class Account {
     int cost; // custo por supplier
     int Price;
@@ -77,9 +80,11 @@ public class Account {
         return depreciation0;
     }
 
-    public void perceber_a_string(String coisa_grande)
-    {
-        /*Basicamente aqui estou a dividir a string recebida do mes*/
+    public void process_str(String coisa_grande) throws SQLException {
+        /*Basicamente aqui estou a dividir a string recebida do mes
+        * String do mes: ord,PC1,AD1,DD1,PC2,AD2,DD2...deliver_date*/
+        DataBase data=new DataBase();
+        Connection con=data.create_connection();
         int order_num=0, n=1;
         int total_unit_cost=0;
         String[] items = coisa_grande.split(",");
@@ -88,17 +93,17 @@ public class Account {
             numbers[i] = Integer.parseInt(items[i]);
         }
         order_num=numbers[0]; // basicamente a primeira posição é o numero d ordem
-        while(numbers.length > n)
+        while(numbers.length-1 > n)
         {
             total_unit_cost=total_unit_cost+unit_cost(numbers[0],numbers[n],numbers[n+1], numbers[n+2]);
-            /*Aqui eu estou a calcular o custo total de cada ordem
-             * por isso tens de criar uma coluna na tabela das ordens e
-             *  meter la este preço no final do while, da lhe este nome basicamente
-             *
-             * Eu aqui estou a assumir que a string  nas posiçoes seguintes traz as informaçoes
-             * necessarias para o calculo por ordem,assumindo que cada tres posiçoes sao o PC, O DD E O AD*/
             n=n+3;
         }
+        String[] dat=data.order_info(con, String.valueOf(numbers[0]));
+        int duedate= Integer.parseInt(dat[4]);
+        int Penalty= Integer.parseInt(dat[3]);
+        total_unit_cost=total_unit_cost-((numbers[numbers.length-1])*Penalty);
+        data.account_order(con,dat[0],total_unit_cost);
+
     }
 
     public int unit_cost(int ord_num, int PC, int DD, int AD)

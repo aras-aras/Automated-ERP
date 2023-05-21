@@ -2,6 +2,7 @@ import javax.swing.plaf.nimbus.State;
 import javax.xml.crypto.Data;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -63,6 +64,12 @@ public class DataBase {
             String sql="update infi.order set canceled='"+1+"' where order_number='"+order_num+"'";
             stmt.executeUpdate(sql);
     }
+    public void account_order(Connection con, String order_num, int cost) throws  SQLException{
+        Statement stmt=con.createStatement();
+        String cost0= String.valueOf(cost);
+        String sql="update infi.order set total_unit_cost='"+cost0+"' where order_number='"+order_num+"'";
+        stmt.executeUpdate(sql);
+    }
 
     //public void updating_price(Connection con, String price)
     public int already_exists(Connection con,String id) throws SQLException {
@@ -78,6 +85,22 @@ public class DataBase {
             }
         }
         return 0;
+    }
+    public String[] order_info(Connection con, String order) throws SQLException {
+        Statement stmt=con.createStatement();
+        String sql="select order_number, client_name, nr_pieces, type_piece, duedate, late_penalty, early_penalty from infi.order where order_number='"+0+"'";
+        ResultSet re=stmt.executeQuery(sql);
+
+        while(re.next()){
+            String[] atr= new String[4];
+            atr[0]=re.getString("order_number");
+            atr[1]=re.getString("nr_pieces");
+            atr[2]=re.getString("type_piece");
+            atr[3]=re.getString("late_penalty");
+            atr[4]=re.getString("duedate");
+            return atr;
+        }
+        return null;
     }
 
     /////////////////////////////////                 WAREHOUSE                   //////////////////////////////////////
@@ -124,7 +147,15 @@ public class DataBase {
                 stmt.executeUpdate(sql);
             }
             else if(i!=-1 && i!=0){// o dia já existe e está ocupado, que alteração faço no dia?
-
+                sql="select arriving from infi.scheduling where day='"+day+"'";
+                ResultSet re=stmt.executeQuery(sql);
+                String ord = null;
+                while(re.next()) {
+                    ord = re.getString("arriving");
+                }
+                order= ord +","+ order;
+                sql="update infi.scheduling set arriving='"+order+"' where day='"+day+"'";
+                stmt.executeUpdate(sql);
             }
     }
 
@@ -146,16 +177,66 @@ public class DataBase {
             stmt.executeUpdate(sql);
         }
         else if(i!=-1 && i!=0){// o dia já existe e está ocupado, que alteração faço no dia?
-
+            sql="select arriving from infi.scheduling where day='"+day+"'";
+            ResultSet re=stmt.executeQuery(sql);
+            String ord = null;
+            while(re.next()) {
+                ord = re.getString("arriving");
+            }
+            order= ord +","+ order;
+            sql="update infi.scheduling set arriving='"+order+"' where day='"+day+"'";
+            stmt.executeUpdate(sql);
         }
 
     }
 
 
 //na função a seguir, basicamente estamos a eliminar as peças do armazem quand for o dia de entrega
-    public void leaving(Connection con, String final_piece, int day, int quantity, String order) throws SQLException{
+    public void leaving(Connection con, int day, String order) throws SQLException{
         Statement stmt=con.createStatement();
-        String sql=""
+        //tem de ser o mes a eliminar a peça porque nos nao controlamos essas peças só o raw material
+        int i=check_day(con, day);
+        String sql;
+
+        if(i==0)//está livre
+        {
+            sql="update infi.scheduling set delivering='"+order+"' where day='"+day+"'";
+            stmt.executeUpdate(sql);
+        }
+        else if(i==-1){//dia n existe, inserir dia
+            sql="insert into infi.scheduling(day, producing_1, delivering, arriving, producing_2) values('"+day+"', '"+order+"', '"+0+"', '"+0+"', '"+0+"')";
+            stmt.executeUpdate(sql);
+        }
+        else if(i!=-1 && i!=0){// o dia já existe e está ocupado, que alteração faço no dia?
+            sql="select arriving from infi.scheduling where day='"+day+"'";
+            ResultSet re=stmt.executeQuery(sql);
+            String ord = null;
+            while(re.next()) {
+                ord = re.getString("arriving");
+            }
+            order= ord +","+ order;
+            sql="update infi.scheduling set arriving='"+order+"' where day='"+day+"'";
+            stmt.executeUpdate(sql);
+        }
+    }
+    public String get_deliver(Connection con, int day) throws SQLException {
+        Statement stmt=con.createStatement();
+        String sql;
+        String del = null;
+        sql="select delivering from infi.scheduling where day='"+day+"'";
+        ResultSet re=stmt.executeQuery(sql);
+        String ord = null;
+        while(re.next()) {
+            ord = re.getString("arriving");
+        }
+        String[] arr=order_info(con, ord);
+        if(arr==null)
+        {
+            return "0";
+        }
+        del= ord +","+arr[1]+","+arr[2];
+        return del;
+
     }
 
 
@@ -294,7 +375,7 @@ public class DataBase {
     ////////////////////////////////            SUB_TRANSFORMATIONS                 ///////////////////////////
     public String sub_trans(Connection con, String p_init, String p_final) throws  SQLException{
         Statement stmt=con.createStatement();
-        String sql="select p_intermediate from infi.sub_transformations where p_initial='"+p_init+"' and p_final'"+p_final+"'";
+        String sql="select p_intermediate from infi.sub_transformations where p_initial='"+p_init+"' and p_final='"+p_final+"'";
         ResultSet re= stmt.executeQuery(sql);
         while(re.next()){
             String str;
@@ -314,31 +395,31 @@ public class DataBase {
         //aux[2]- duedate
         //0_._._._.4.4.1.1.d
         //aux[1] = duedate - today - aux[0]-1;
-        int[] days = new int[0];
+        int[] days = new int[aux[0]];
         int x=1;
         if(piece.equals("P6")==true)
         {
             for(int n=today;n<aux[0]+today;n++) //estamos a verificar se cada dia está livre
             {
-                x++;
+
                 if (verify(con,2,(int)(aux[2]+today-1-x)) == 1) {//é menos dois porque é o dia antes da entrega
-                    //está livre nesse dia ou nao encontra o dia
-                    //no caso de nao encontrar, cria
-                    //marcar esse dia no calendario
-                    //NÃO ESTÁ OCUPADO
-                    days[n]=aux[2]+today-1-x;
+                    System.out.println("day is free");
+                    days[x-1]=aux[2]+today-1-x;
                     int i=update_line(con, 2, (int)(aux[2]+today-1-x),order);
                 }
                 else if (verify(con,2,(int)(aux[2]+today-1-x)) == 0)
                 {
+                    System.out.println("day is ocupied");
                     day=recursive(con,aux[2]+today-1-x,2,order);
                     aux[2]+=day;
-                    days[n]=today+aux[2]-x-1;
+                    days[x-1]=today+aux[2]-x-1;
                 }
                 else if(verify(con,2,(int)(aux[2]+today-1-x)) == 2){
+                    System.out.println("day doesnt exist");
                     int i=insert_day(con, 2, (int)(aux[2]+today-1-x), order);
-                    days[n]=today+aux[2]-x-1;
+                    days[x-1]=today+aux[2]-x-1;
                 }
+                x++;
                 }
             }
         else if(piece.equals("P8")==true )
@@ -347,77 +428,84 @@ public class DataBase {
             //verificar producing 1 e 2
             for(int n=today;n<aux[0]/2+today;n++) //estamos a verificar se cada dia está livre
             {
-                x++;
+
                 if (verify(con,2,(int)(aux[1])+x) == 1) {// _._.P.P.P.P._.D
-                    //está livre nesse dia ou nao encontra o dia
-                    //no caso de nao encontrar, cria
-                    //marcar esse dia no calendario
-                    //NÃO ESTÁ OCUPADO
+                    System.out.println("day is free");
 
                     int i=update_line(con, 2, (int)(aux[1]+x), order);
-                    days[n]=today+aux[1]+x;
+                    days[x]=today+aux[1]+x;
                 }
                 else if (verify(con,2,(int)(aux[1]+x)) == 0)
                 {
+                    System.out.println("day is ocupied");
                     day=recursive(con,aux[1]+x+1,2, order);
                     //marcar o aux[2]+today-2+day
                     aux[2]+=day;
-                    days[n]=today+aux[2]-aux[0]+x-1;
+                    days[x]=today+aux[2]-aux[0]+x-1;
 
                 }
                 else if(verify(con,2,(int)(aux[1])) == 2){
+                    System.out.println("day doesnt exist");
                     int i=insert_day(con, 2, (int)(aux[1]+x), order);
-                    days[n]=today+aux[1]+x;
+                    days[x]=today+aux[1]+x;
 
                 }
+                x++;
             }
+            x=0;
             for(int n=today;n<aux[0]/2+today;n++) //estamos a verificar se cada dia está livre
             {
-                x=0;
+
                 if (verify(con,1,(int)(aux[1]+aux[0]/2+x)) == 1) {//é menos dois porque é o dia antes da entrega
-                    //está livre nesse dia ou nao encontra o dia
-                    //no caso de nao encontrar, cria
-                    //marcar esse dia no calendario
-                    //NÃO ESTÁ OCUPADO
+                    System.out.println("day is free");
 
                     int i=update_line(con, 1, (int)(aux[1]+aux[0]/2+x), order);
-                    days[n]=today+aux[1]+aux[0]/2+x;
+                    days[x]=today+aux[1]+aux[0]/2+x;
                 }
                 else if (verify(con,1,(int)(aux[1]+aux[0]/2+x)) == 0)
                 {
+                    System.out.println("day is ocupied");
                     day=recursive(con,aux[1]+aux[0]/2+x,2, order);
                     aux[2]+=day;
-                    days[n]=today+aux[2]-1-aux[0]/2+x;
+                    days[x]=today+aux[2]-1-aux[0]/2+x;
                 }
                 else if(verify(con,1,(int)(aux[1]+aux[0]/2+x)) == 2){
+                    System.out.println("day doesnt exist");
                     int i=insert_day(con, 1, (int)(aux[1]+aux[0]/2+x), order);
-                    days[n]=today+aux[1]+aux[0]/2+x;
+                    days[x]=today+aux[1]+aux[0]/2+x;
                 }
+                x++;
             }
         }
         else
         {
             //verificar producing 1
+            x=0;
             for(int n=today;n<aux[0]+today;n++) //estamos a verificar se cada dia está livre
             {
-                if (verify(con,1,(int)(aux[2]+today-1-x)) == 1) {//é menos dois porque é o dia antes da entrega
-                    //está livre nesse dia
-                    //NÃO ESTÁ OCUPADO
-                    days[n]=aux[2]+today-1-x;
-                    int i=update_line(con, 1, (int)(aux[2]+today-1-x), order);
+
+                if (verify(con,1,(int)(aux[1]+x)) == 1) {//é menos dois porque é o dia antes da entrega
+                   System.out.println("day is free");
+                    days[x]=aux[1]+x;
+                    int i=update_line(con, 1, (int)(aux[1]+x), order);
                 }
-                else if (verify(con,1,(int)(aux[2]+today-1-x)) == 0)
+                else if (verify(con,1,(int)(aux[1]+x)) == 0)
                 {
-                    day=recursive(con,aux[2]+today-1-x,2, order);
-                    //marcar o aux[2]+today-2+day
+                    System.out.println("day is ocupied");
+                    System.out.println(aux[1]+x+1);
+                    day=recursive(con,aux[1]+x+1,1, order);
                     aux[2]+=day;
-                    days[n]=today+aux[2]-x-1;
+                    days[x]=aux[1]+x+day;
 
                 }
-                else if(verify(con,1,(int)(aux[2]+today-2)) == 2){
-                    int i=insert_day(con, 1, (int)(aux[2]+today-1-x), order);
-                    days[n]=today+aux[2]-x-1;
+                else if(verify(con,1,(int)(aux[1]+x)) == 2){
+                    System.out.println("day doesnt exist");
+                    int i=insert_day(con, 1, (int)(aux[1]+x), order);
+                    System.out.println(aux[1]+x);
+                    days[x]=aux[1]+x;
+
                 }
+                x++;
             }
         }
         return days;
@@ -445,14 +533,21 @@ public class DataBase {
     // Aqui estou a tentar fazer uma função recursiva que procura o dia
     //mais proximo que esteja livre, ainda é um prototipo
     public int recursive(Connection con,int day, int type, String order) throws SQLException {
-        if(verify(con,2,day) == 1 )
+
+        if(verify(con,type,day) == 1 )
         { //esta livre
-            return 1+update_line(con, type, day, order);
+            System.out.println(day+" esta livre");
+            int i=update_line(con, type, day, order);
+            return 1;
         }
-        if(verify(con,2,day) == 2)
+        if(verify(con,type,day) == 2)
         {
-            return 1+insert_day(con, type, day, order);
+            System.out.println(day+" nao existe");
+            int i=insert_day(con, type, day, order);
+            i=update_line(con, type, day, order);
+            return 1;
         }
+        System.out.println(day+" esta ocupado");
         return 1+recursive(con, day+1,type, order);
     }
 

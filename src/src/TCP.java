@@ -50,7 +50,13 @@ public class TCP implements Runnable { //Server - this part is meant to receive 
                 // Create input and output streams
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                String message= create_str(today);
+                String message= null;
+                try {
+                    today=data.today_day(con);
+                    message = create_str(today);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
                 // Send a message to the server
                 out.println("Today variable: " + message);
 
@@ -65,26 +71,26 @@ public class TCP implements Runnable { //Server - this part is meant to receive 
             }
             //sleep de 60 segundos
             try {
-                System.out.println("test4");
                 Thread.sleep(59200);
+                System.out.println("new today:");
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
             today++;
+            System.out.println(today);
 
 
 
         }
     }
 
-    public void process_str(String received)
-    {
+    public void process_str(String received) throws SQLException {
          Account acc= new Account();
-         acc.perceber_a_string(received);
+         acc.process_str(received);
     }
 
-    public String create_str(int today) {
-        String message = "";
+    public String create_str(int today) throws SQLException {
+        String message = null;
         DataBase data = new DataBase();
         Connection con = data.create_connection();
         List<String[]> rows;
@@ -101,14 +107,8 @@ public class TCP implements Runnable { //Server - this part is meant to receive 
             }
             result.append(concatenated);
         }
-
-       //falta acrescentar
-        012,109,202
-        // entar a parte da string que tm o transporte daquele dia
-        //vamos terv de ir ao calendario e verificar que ordem é para entregar no dia de hoje,
-        //but, o calendario n tem essa informação
-        //temos de meter
-        //função que va buscar
+        String deliver=data.get_deliver(con,today);
+        message=result+"."+deliver;
         System.out.println(message);
         return message;
     }
