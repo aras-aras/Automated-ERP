@@ -1,4 +1,5 @@
 import javax.xml.crypto.Data;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -64,14 +65,11 @@ public class Managment implements Runnable {
                     ord.DueDate = atr[4];
                     ord.Late_Pen = atr[5];
                     ord.Early_Pen = atr[6];
-                    //acabar atributos// tavares
                     N = Integer.parseInt(ord.Quantity);
                     duedate = Integer.parseInt(ord.DueDate);
+
                     /*Aqui calculamos quantos dias vamos levar para fazer a encomenda e em que
                      * dia temos de encomendar as peças.
-                     * FALTA VERIFICAR SE OS DIAS ESTÃO OCUPADOS E AS SOLUÇOES PARA
-                     * ESSES DILEMAS.(dentro da função calculus), basicamente
-                     * problemas para depois
                      * */
 
                     today=data.today_day(con);
@@ -81,16 +79,11 @@ public class Managment implements Runnable {
                     String sub=data.sub_trans(con, material, ord.Work_Piece);
 
                     nr=calculus(N, Ne, duedate, today, ord.Work_Piece, material, sub, Integer.parseInt(ord.Quantity));
-                    System.out.println("banana");
 
-                    //aux[0]- numero total de dias em que as peças estao e produção
-                    //aux[1]- a data em que começam a ser feitas
-                    //aux[2]- duedate
-                    //0_._._._.4.4.1.1.d
-                    System.out.println("Result from calculating dates for order "+ord.Order_num);
-                    System.out.println("number of days needed to produce:"+nr[0]);
-                    System.out.println("day you need to start working"+(nr[1]+today));
-                    System.out.println("day the material arrives"+(nr[1]+today-1));
+                    System.out.println("Result from calculating dates for order: "+ord.Order_num);
+                    System.out.println("number of days needed to produce: "+nr[0]);
+                    System.out.println("day you need to start working: "+(nr[1]+today));
+                    System.out.println("day the material arrives: "+(nr[1]+today-1));
                     Nd=nr[0];
                     Ne=nr[1];
                     Ne=Ne-1;
@@ -100,32 +93,6 @@ public class Managment implements Runnable {
                     for(int i=0; i<size; i++){
                         days_work[i]=nr[3+i];
                     }
-            /*Basicamente aqui tens de verificar se os dias que estao programados para fazer
-            peças estao reservados, caso estejam começa a distribuir pelos dias livres
-            * o Ne diz te o dia em que vais começar a cozinhar e prolonga se ate à duedate-1*/
-                    /*Also, acho que vamos cagar no caso de conseguir várias encomendas
-                     *ao mesmo tempo por isso mete so uma por dia para ja
-                     * */
-                /*Depois disto, verificas se está a ocorrer algum transporte nesse dia, se sim adias a duedate ate
-                teres um dia livre, podes fazer um while em que dentro verificas e fazes duedate++;
-                * */
-
-                    if (Ne == 0) {
-                        /* Aqui verificamos se temos 0 dias para mandar vir o raw
-                         * Neste caso verificamos se só temos 0 dias, nesse caso
-                         * cancelamos a encomenda
-                         * apaga-se A ENCOMENDA DA DATABASE OU INDICAR DE ALGUMA FORMA
-                         * QUE ELA FOI CANCELADA (ordens canceladas têm a coluna canceled a 1)
-                         * */
-                        try {
-                            data.cancelling_order(con, ord.Order_num);
-                        } catch (SQLException e) {
-                            throw new RuntimeException(e);
-                        }
-                        return;
-                    }
-
-
 
                     try {
                         data.processed_status(con, ord.Order_num);
@@ -134,7 +101,7 @@ public class Managment implements Runnable {
                     }
 
 
-                    /*Como ja fizemos o calculos as transformaçoes ja d«foram divididas pelos
+                    /*Como ja fizemos o calculos as transformaçoes ja foram divididas pelos
                     * dias, ou seja, consegues sacar todos os dias dessa função. Dito isto, dentro de cada
                     * ifs anteriores fazes um for e de cada vez que crias a linha preenches ja tudo*/
 
@@ -150,12 +117,9 @@ public class Managment implements Runnable {
                         throw new RuntimeException(e);
                     }
                     if(Na!=-1) {
-                        int num = N;
                         N = N - Na;
                         if (N <= 0) { // CASO JÁ HAJA TODAS AS PEÇAS PRETENDIDAS JÁ TRANSFORMADAS E PRONTAS
-                            /*Also, reservar na tabela
-                             *  do armazem Na peças para aquele dia.
-                             * */
+
                             int quantity = Integer.parseInt(ord.Quantity);//nr de peças já prontas q queremos
                             int[] arr;
                             try {
@@ -168,7 +132,6 @@ public class Managment implements Runnable {
                             int new_reserved = reserved + quantity; /*isto vai atualizar a tabela da warehouse e atualizar a coluna das peças reserdas*/
                             try {
                                 data.reserving_pieces(con, ord.Work_Piece, Ne, new_reserved);//ja reservou adicionei as N peças necessarias para acabar a encomenda
-                                System.out.println("gabi");
                             } catch (SQLException e) {
                                 throw new RuntimeException(e);
                             }
@@ -202,7 +165,7 @@ public class Managment implements Runnable {
                                  * tabela piece_trans, basicamente aqui crias N linhas */
                                 for (int i = 0; i < N; i++) {
                                     try {
-                                        data.piece(con, ord.Order_num, material, Integer.toString(today+Integer.parseInt(ord.DueDate) - 1));
+                                        data.piece(con, ord.Order_num, material, Integer.toString(duedate - 1));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -214,7 +177,7 @@ public class Managment implements Runnable {
                                  * crias, N*2 linhas*/
                                 for (int i = 0; i < 2*N; i++) {
                                     try {
-                                        data.piece(con, ord.Order_num, material, Integer.toString(today+Integer.parseInt(ord.DueDate) - 1));
+                                        data.piece(con, ord.Order_num, material, Integer.toString(today+duedate - 1));
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -241,7 +204,7 @@ public class Managment implements Runnable {
                              * tabela piece_trans, basicamente aqui crias N linhas */
                             for (int i = 0; i < N; i++) {
                                 try {
-                                    data.piece(con, ord.Order_num, material, Integer.toString(today+Integer.parseInt(ord.DueDate) - 1));
+                                    data.piece(con, ord.Order_num, material, Integer.toString(today+duedate - 1));
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -253,13 +216,12 @@ public class Managment implements Runnable {
                              * crias, N*2 linhas*/
                             for (int i = 0; i < 2*N; i++) {
                                 try {
-                                    data.piece(con, ord.Order_num, material, Integer.toString(today+Integer.parseInt(ord.DueDate) - 1));
+                                    data.piece(con, ord.Order_num, material, Integer.toString(today+duedate - 1));
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                             }
                         }
-
                         try {
                             Nb = verify_material(material, Ne); //verificar se há raw material no dia Ne, guarda em Nb o nr de raw material existente
                         } catch (SQLException e) {
@@ -272,10 +234,11 @@ public class Managment implements Runnable {
                             N = N - Nb;
                         }
                     }
+                    System.out.println("aqui");
                     if (N <= 0)// se houver raw material suficiente para cobrir o que falta é so indicar as transformações a fazer
                     {
                         work_days=writing_order(Nd, Ne, material, ord.Work_Piece, ord.Order_num, duedate, days_work);
-                        System.out.println("dias de trabalho:"+work_days);
+                        System.out.println("dias de trabalho:"+Arrays.toString(work_days));
                     }
                     /*Nesta secção vai ser avaliado qual é o supplier que deverá ser
                      * escolhido conforme o número de dias que nos sobra para encomendar.
@@ -286,14 +249,15 @@ public class Managment implements Runnable {
                          * é necessario dizer na base de dados que naquele dia vao chegar 4 peças e que
                          * NF peças estao livres.
                          * */
+                        System.out.println("aqui2");
                         if (N < 4) {
                             Nf = 4 - N; //encomendas 4 peças ao supplier C do tipo raw material X
                             if (material.equals("P1")) {
                                 String aux = "p1";
                                 try {
                                     today=data.today_day(con);
-                                    data.sup(con, String.valueOf(Ne + today-Tc), "sc_" + aux, String.valueOf(4));
-                                    data.just_arrived(con, aux, Ne+today, 4, ord.Order_num);
+                                    data.sup(con, String.valueOf(Ne + today-Tc-1), "sc_" + aux, String.valueOf(4));
+                                    data.just_arrived(con, aux, Ne+today-1, 4, ord.Order_num);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -301,8 +265,8 @@ public class Managment implements Runnable {
                                 String aux = "p2";
                                 try {
                                     today=data.today_day(con);
-                                    data.sup(con, String.valueOf(Ne + today-Tc), "sc_" + aux, String.valueOf(4));
-                                    data.just_arrived(con, aux, Ne+today, 4, ord.Order_num);
+                                    data.sup(con, String.valueOf(Ne + today-Tc-1), "sc_" + aux, String.valueOf(4));
+                                    data.just_arrived(con, aux, Ne+today-1, 4, ord.Order_num);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -321,20 +285,20 @@ public class Managment implements Runnable {
                                 int res = aux[1];
                                 try {
                                     today=data.today_day(con);
-                                    data.arriving_new_pieces(con, "p1", Ne + today, Nf + exit + N, ord.Order_num);
+                                    data.arriving_new_pieces(con, "p1", Ne + today-1, Nf + exit + N, ord.Order_num);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 try {
                                     today=data.today_day(con);
-                                    data.reserving_pieces(con, "p1", Ne + today, res + N);
+                                    data.reserving_pieces(con, "p1", Ne + today-1, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                             } else {
                                 try {
                                     today=data.today_day(con);
-                                    aux = data.check_pieces(con, "p2", String.valueOf(Ne + today));
+                                    aux = data.check_pieces(con, "p2", String.valueOf(Ne + today-1));
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -342,13 +306,13 @@ public class Managment implements Runnable {
                                 int res = aux[1];
                                 try {
                                     today=data.today_day(con);
-                                    data.arriving_new_pieces(con, "p2", Ne + today, Nf + exit + N, ord.Order_num);
+                                    data.arriving_new_pieces(con, "p2", Ne + today-1, Nf + exit + N, ord.Order_num);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 try {
                                     today=data.today_day(con);
-                                    data.reserving_pieces(con, "p2", Ne + today, res + N);
+                                    data.reserving_pieces(con, "p2", Ne + today-1, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -360,17 +324,18 @@ public class Managment implements Runnable {
                                 String aux = "p1";
                                 try {
                                     today=data.today_day(con);
-                                    data.sup(con, String.valueOf(Ne + today-Tc), "sc_p1" + aux, String.valueOf(N));
-                                    data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
+                                    data.sup(con, String.valueOf(Ne + today-Tc-1), "sc_p1" + aux, String.valueOf(N));
+                                    data.just_arrived(con, aux, Ne+today-1, N, ord.Order_num);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                             } else {
                                 String aux = "p2";
                                 try {
+                                    System.out.println("aqui3");
                                     today=data.today_day(con);
-                                    data.sup(con, String.valueOf(Ne + today-Tc), "sc_p2", String.valueOf(N));
-                                    data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
+                                    data.sup(con, String.valueOf(Ne + today-Tc-1), "sc_p2", String.valueOf(N));
+                                    data.just_arrived(con, aux, Ne+today-1, N, ord.Order_num);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -380,7 +345,7 @@ public class Managment implements Runnable {
                             if (material.equals("P1")) {
                                 try {
                                     today=data.today_day(con);
-                                    aux = data.check_pieces(con, "p1", String.valueOf(Ne + today));
+                                    aux = data.check_pieces(con, "p1", String.valueOf(Ne + today-1));
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -388,20 +353,20 @@ public class Managment implements Runnable {
                                 int res = aux[1];
                                 try {
                                     today=data.today_day(con);
-                                    data.arriving_new_pieces(con, "p1", Ne + today, N + exit, ord.Order_num);
+                                    data.arriving_new_pieces(con, "p1", Ne + today-1, N + exit, ord.Order_num);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                                 try {
                                     today=data.today_day(con);
-                                    data.reserving_pieces(con, "p1", Ne + today, res + N);
+                                    data.reserving_pieces(con, "p1", Ne + today-1, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
                             } else {
                                 try {
                                     today=data.today_day(con);
-                                    aux = data.check_pieces(con, "p2", String.valueOf(Ne + today));
+                                    aux = data.check_pieces(con, "p2", String.valueOf(Ne + today-1));
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -410,13 +375,13 @@ public class Managment implements Runnable {
                                     int res = aux[1];
                                     try {
                                         today = data.today_day(con);
-                                        data.arriving_new_pieces(con, "p2", Ne + today, N + exit, ord.Order_num);
+                                        data.arriving_new_pieces(con, "p2", Ne + today-1, N + exit, ord.Order_num);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
                                     try {
                                         today = data.today_day(con);
-                                        data.reserving_pieces(con, "p2", Ne + today, res + N);
+                                        data.reserving_pieces(con, "p2", Ne + today-1, res + N);
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -434,13 +399,13 @@ public class Managment implements Runnable {
                             throw new RuntimeException(e);
                         }
                         work_days=writing_order(Nd, Ne, material, ord.Work_Piece, ord.Order_num, duedate, days_work);
-                        System.out.println("dias de trabalho:"+work_days);
+                        System.out.println("dias de trabalho:"+ Arrays.toString(work_days));
                     } else if (Ne == 2) {
                         /*Caso sobrem 2 dias, há a possibilidade de encomendar do supplier B ou C.
                          * Dito isto é necessário avaliar qual será mais rentável.
                          *  A primeira opçao é pedir do C e levar uma penalidade a outra é mandar
                          * vir do B*/
-                        Ng = acc.costSup(N, "C", material) + acc.Depre("C", material, Integer.parseInt(ord.DueDate), Ne);
+                        Ng = acc.costSup(N, "C", material) + acc.Depre("C", material, duedate, Ne);
                         Nh = acc.costSup(N, "B", material);
                         if (N <= 4) {
                             if (Ng > Nh) {
@@ -559,15 +524,15 @@ public class Managment implements Runnable {
                             }
                         }
                         work_days=writing_order(Nd, Ne, material, ord.Work_Piece, ord.Order_num,duedate, days_work);
-                        System.out.println("dias de trabalho:"+work_days);
+                        System.out.println("dias de trabalho:"+Arrays.toString(work_days));
                     } else if (Ne == 3) {
                         /*Caso sobrem 3 dias, há a possibilidade de encomendar do supplier B ou C.
                          * Dito isto é necessário avaliar qual será mais rentável.
                          * A primeira opçao é pedir do C e levar uma penalidade a outra é mandar
                          * vir do B e tambem levar uma penalidade*/
 
-                        Ng = acc.costSup(N, "C", material) + acc.Depre("C", material, Integer.parseInt(ord.DueDate), Ne);
-                        Nh = acc.costSup(N, "B", material) + acc.Depre("B", material, Integer.parseInt(ord.DueDate), Ne);
+                        Ng = acc.costSup(N, "C", material) + acc.Depre("C", material, duedate, Ne);
+                        Nh = acc.costSup(N, "B", material) + acc.Depre("B", material, duedate, Ne);
                         if (N <= 4) {
                             if (Ng > Nh) {
                                 // mandar vir N peças do supplier B
@@ -686,15 +651,15 @@ public class Managment implements Runnable {
                             }
                         }
                         work_days=writing_order(Nd, Ne, material, ord.Work_Piece, ord.Order_num, duedate, days_work);
-                        System.out.println("dias de trabalho:"+work_days);
+                        System.out.println("dias de trabalho:"+Arrays.toString(work_days));
                     } else if (Ne == 4) {
                         /*Caso sobrem 4 dias, há a possibilidade de encomendar do supplier B ou C.
                          * Dito isto é necessário avaliar qual será mais rentável.
                          * A primeira opçao é pedir do C e levar uma penalidade a outra é mandar
                          * vir do B e tambem levar uma penalidade e a ultima e do A*/
 
-                        Ng = acc.costSup(N, "C", material) + acc.Depre("C", material, Integer.parseInt(ord.DueDate), Ne);
-                        Nh = acc.costSup(N, "B", material) + acc.Depre("B", material, Integer.parseInt(ord.DueDate), Ne);
+                        Ng = acc.costSup(N, "C", material) + acc.Depre("C", material, duedate, Ne);
+                        Nh = acc.costSup(N, "B", material) + acc.Depre("B", material, duedate, Ne);
                         Ni = acc.costSup(N, "A", material);
                         if (N <= 4) {
                             if (Ng > Nh) {
@@ -838,7 +803,7 @@ public class Managment implements Runnable {
 
                         }
                         work_days=writing_order(Nd, Ne, material, ord.Work_Piece, ord.Order_num, duedate, days_work);
-                        System.out.println("dias de trabalho:"+work_days);
+                        System.out.println("dias de trabalho:"+Arrays.toString(work_days));
                     } else if(Ne>4){
 
                         /*Caso sobrem mais de 4 dias, há a possibilidade de encomendar do supplier A, B ou C.
@@ -846,9 +811,9 @@ public class Managment implements Runnable {
                          * A primeira opçao é pedir do C e levar uma penalidade a outra é mandar
                          * vir do B e tambem levar uma penalidade e a ultima e do A
                          * */
-                        Ng = acc.costSup(N, "C", material) + acc.Depre("C", material, Integer.parseInt(ord.DueDate), Ne);
-                        Nh = acc.costSup(N, "B", material) + acc.Depre("B", material, Integer.parseInt(ord.DueDate), Ne);
-                        Ni = acc.costSup(N, "A", material) + acc.Depre("A", material, Integer.parseInt(ord.DueDate), Ne);
+                        Ng = acc.costSup(N, "C", material) + acc.Depre("C", material, duedate, Ne);
+                        Nh = acc.costSup(N, "B", material) + acc.Depre("B", material, duedate, Ne);
+                        Ni = acc.costSup(N, "A", material) + acc.Depre("A", material, duedate, Ne);
 
                         if (N <= 4) {
 
@@ -970,7 +935,7 @@ public class Managment implements Runnable {
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
-                    System.out.println("dias de trabalho:"+work_days);
+                    System.out.println("dias de trabalho:"+Arrays.toString(work_days));
                     try {
                         data.processed_status(con, ord.Order_num); // mudar o estado desta ordem para processada
                     } catch (SQLException e) {
@@ -1052,9 +1017,13 @@ public int[] calculus(int num1, int num3, int duedate,int today, String Workpiec
     if(n1==0){
         nr_days1=0;
     }
-    else if(n1% 2 != 0)
+    else if(n1% 2 != 0 && n2 !=0)
     {
         nr_days1 = (int) ((quantity / n1) + 0.5)+1;
+    }
+    else if(n1% 2 != 0 && n2 ==0)
+    {
+        nr_days1 = (int) ((quantity / n1) + 0.5);
     }
     else {
         nr_days1 = (int) ((quantity / n1) + 0.5);
@@ -1117,6 +1086,10 @@ public int[] calculus(int num1, int num3, int duedate,int today, String Workpiec
             int reserved = arr[1];
             n = existing - reserved;
         }
+        if(n==0)
+        {
+            n=-1;
+        }
         return n;
     }
     public String verify_raw( String piece)
@@ -1148,9 +1121,13 @@ public int[] calculus(int num1, int num3, int duedate,int today, String Workpiec
          * tools, os dias em que estao a fazer as coisas e
          * mandar para a base de dados organizada.
          * */
-        String[] arr;
+        String[] arr= new String[9];
         try {
             arr = data.info(con, material, work_piece);
+            if(arr==null)
+            {
+                return work_days;
+            }
             for(int n=0;n<arr.length;n++)
             {
                 System.out.println(arr[n]);

@@ -319,15 +319,6 @@ public class DataBase {
                 str[6]=re.getString("tool2");
                 str[7]=re.getString("work_time2");
                 str[8]=re.getString("type_out2");
-                str[9]=re.getString("machine3");
-                str[10]=re.getString("tool3");
-                str[11]=re.getString("work_time3");
-                str[12]=re.getString("type_out3");
-                str[13]=re.getString("machine4");
-                str[14]=re.getString("tool4");
-                str[15]=re.getString("work_time4");
-                str[16]=re.getString("type_out4");
-                str[17]=re.getString("p_final");
                 return str;
             }
             return null;
