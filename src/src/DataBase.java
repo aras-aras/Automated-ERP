@@ -168,6 +168,7 @@ public class DataBase {
         stmt.executeUpdate(sql);
         int i=check_day(con, day);
         if(i==0)//está livre
+
         {
             sql="update infi.scheduling set arriving='"+order+"' where day='"+day+"'";
             stmt.executeUpdate(sql);

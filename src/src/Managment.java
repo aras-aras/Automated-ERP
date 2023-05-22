@@ -1076,6 +1076,7 @@ public int[] calculus(int num1, int num3, int duedate,int today, String Workpiec
     return concate;
 }
 
+
     public int verify_how_many(String X, int Ne) throws SQLException {
         //verificar quantas peças livres X há dia Ne
         DataBase data=new DataBase();
