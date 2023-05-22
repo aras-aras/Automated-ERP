@@ -957,10 +957,10 @@ public class Managment implements Runnable {
     }
 
 
-    public int[] piece_perday(String origin, String end, String sub) {/* Da te quantas peças faz por dia(desde q sai ate entrar no armazem), se for 0.5
+    public float[] piece_perday(String origin, String end, String sub) {/* Da te quantas peças faz por dia(desde q sai ate entrar no armazem), se for 0.5
      * uma peça demora dois dias*/
         //RETORNA O Nc-> nr de peças a fazer por dia
-        int[] p = new int[2];
+        float[] p = new float[2];
         if (origin.equals("P2") == true) {
             if (end.equals("P3") == true) {
                 p[0] = 3;
@@ -1008,35 +1008,39 @@ public int[] calculus(int num1, int num3, int duedate,int today, String Workpiec
     Nd=nr[0];
     Ne=nr[1];
     duedate=nr[2];*/
-    int[] f=piece_perday(material, Workpiece, sub);
+    float quant= (float) (quantity+0.0);
+    float[] f=piece_perday(material, Workpiece, sub);
     System.out.println("numero de peças que conseguimos fazer " +
             "na primeira iteração: "+f[0]+" e com a segunda "+f[1]);
-    int n1=f[0];//nr de peças que consigo fazer por dia na primeira transformação
-    int n2=f[1];//nr de peças que consigo fazer por dia na segunda transformação
+    float n1=f[0];//nr de peças que consigo fazer por dia na primeira transformação
+    float n2=f[1];//nr de peças que consigo fazer por dia na segunda transformação
     int nr_days2,nr_days1;
+    System.out.println("nr de dias para a 1ª transf: "+n1);
+    System.out.println("nr de dias para a 2ª transf: "+n2);
+    System.out.println("quantity: "+quant);
     if(n1==0){
         nr_days1=0;
     }
-    else if(n1% 2 != 0 && n2 !=0)
+    else if(n1%2 != 0 && n2 !=0)
     {
-        nr_days1 = (int) ((quantity / n1) + 0.5)+1;
+        nr_days1 = (int) ((quant / n1) + 0.5)+1;
     }
-    else if(n1% 2 != 0 && n2 ==0)
+    else if(n1%2 != 0 && n2 ==0)
     {
-        nr_days1 = (int) ((quantity / n1) + 0.5);
+        nr_days1 = (int) ((quant / n1) + 0.5);
     }
     else {
-        nr_days1 = (int) ((quantity / n1) + 0.5);
+        nr_days1 = (int) ((quant / n1) + 0.5);
     }
     if(n2==0){
         nr_days2=0;
     }
     else if(n2% 2 != 0)
     {
-        nr_days2 = (int) ((quantity / n2) + 0.5)+1;
+        nr_days2 = (int) ((quant / n2) + 0.5)+1;
     }
     else {
-        nr_days2 = (int) ((quantity / n2) + 0.5);
+        nr_days2 = (int) ((quant / n2) + 0.5);
     }
     System.out.println("old duedate: " +duedate);
     int[] aux = new int[3];
@@ -1051,6 +1055,7 @@ public int[] calculus(int num1, int num3, int duedate,int today, String Workpiec
     }
     System.out.println("new duedate: " +duedate);
     aux[1] = duedate - today - aux[0]-1;
+    System.out.println("Ne: "+aux[1]);
     aux[2]=duedate;
 
     DataBase data=new DataBase();
