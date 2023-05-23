@@ -150,6 +150,7 @@ public class Managment implements Runnable {
                                 int existing = arr[0];//nr de peças existentes
                                 int reserved = arr[1];//nr de peças que estao reservadas
                                 int new_reserved = reserved + Na; /*isto vai atualizar a tabela da warehouse e atualizar a coluna das peças reservadas*/
+                                System.out.println("atualizar o reserved: "+new_reserved);
                                 try {
                                     data.reserving_pieces(con, ord.Work_Piece, Ne, new_reserved);//ja reservou adicionei as N peças necessarias para acabar a encomenda
                                 } catch (SQLException e) {
@@ -193,6 +194,7 @@ public class Managment implements Runnable {
                             } catch (SQLException e) {
                                 throw new RuntimeException(e);
                             }
+                            System.out.println("valor do Nb:"+Nb+"valor do Ne: "+Ne+"material: "+material);
                             N = N - Nb;
                         }
                     }
@@ -223,12 +225,13 @@ public class Managment implements Runnable {
                             }
                         }
                         try {
-                            Nb = verify_material(material, Ne+1); //verificar se há raw material no dia Ne, guarda em Nb o nr de raw material existente
+                            Nb = verify_material(material, Ne); //verificar se há raw material no dia Ne, guarda em Nb o nr de raw material existente
                         } catch (SQLException e) {
                             throw new RuntimeException(e);
                         }
+                        System.out.println("valor do Nb:"+Nb+"valor do Ne: "+Ne+"material: "+material);
                         if(Nb==-1){
-                        N=N;
+                        N=N+0;
                         }
                         else {
                             N = N - Nb;
@@ -236,13 +239,14 @@ public class Managment implements Runnable {
                     }
                     if (N <= 0)// se houver raw material suficiente para cobrir o que falta é so indicar as transformações a fazer
                     {
+                        System.out.println("valor do N: "+ N);
                         work_days=writing_order(Nd, Ne, material, ord.Work_Piece, ord.Order_num, duedate, days_work);
                         System.out.println("dias de trabalho:"+Arrays.toString(work_days));
                     }
                     /*Nesta secção vai ser avaliado qual é o supplier que deverá ser
                      * escolhido conforme o número de dias que nos sobra para encomendar.
                      * */
-                    if (Ne == 1) {
+                    if (Ne == 1 && N>0) {
                         /*Caso apenas nos reste 1 dia para fazer a encomenda, apenas podemos encomendar
                          * do supplier C e o minimo de peças a encomendar é 4 e por isso podem sobrar e
                          * é necessario dizer na base de dados que naquele dia vao chegar 4 peças e que
@@ -399,7 +403,7 @@ public class Managment implements Runnable {
                         }
                         work_days=writing_order(Nd, Ne, material, ord.Work_Piece, ord.Order_num, duedate, days_work);
                         System.out.println("dias de trabalho:"+ Arrays.toString(work_days));
-                    } else if (Ne == 2) {
+                    } else if (Ne == 2 && N>0) {
                         /*Caso sobrem 2 dias, há a possibilidade de encomendar do supplier B ou C.
                          * Dito isto é necessário avaliar qual será mais rentável.
                          *  A primeira opçao é pedir do C e levar uma penalidade a outra é mandar
@@ -524,7 +528,8 @@ public class Managment implements Runnable {
                         }
                         work_days=writing_order(Nd, Ne, material, ord.Work_Piece, ord.Order_num,duedate, days_work);
                         System.out.println("dias de trabalho:"+Arrays.toString(work_days));
-                    } else if (Ne == 3) {
+                    } else if (Ne == 3 && N>0) {
+                        System.out.println("valor do Nn: "+N);
                         /*Caso sobrem 3 dias, há a possibilidade de encomendar do supplier B ou C.
                          * Dito isto é necessário avaliar qual será mais rentável.
                          * A primeira opçao é pedir do C e levar uma penalidade a outra é mandar
@@ -600,6 +605,7 @@ public class Managment implements Runnable {
                                 }
                                 try {
                                     today=data.today_day(con);
+                                    System.out.println("atualizar o reserved1: "+(N+res));
                                     data.reserving_pieces(con, "p1", 1 + today, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
@@ -621,6 +627,7 @@ public class Managment implements Runnable {
                                 }
                                 try {
                                     today=data.today_day(con);
+                                    System.out.println("atualizar o reserved2: "+(N+res));
                                     data.reserving_pieces(con, "p2", 1 + today, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
@@ -643,7 +650,53 @@ public class Managment implements Runnable {
                                 try {
                                     today=data.today_day(con);
                                     data.sup(con, String.valueOf(Ne + today-Tb), "sb_" + aux, String.valueOf(N));
-                                    data.just_arrived(con, aux, Ne+today, N, ord.Order_num);
+                                    data.just_arrived(con, aux, Ne+today, N, ord.Order_num); //ERRO AQUI
+                                } catch (SQLException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                            int[] aux;
+                            if (material.equals("P1")) {
+                                try {
+                                    today=data.today_day(con);
+                                    aux = data.check_pieces(con, "p1", String.valueOf(today + 1));
+                                } catch (SQLException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                int exit = aux[0];
+                                int res = aux[1];
+                                try {
+                                    today=data.today_day(con);
+                                    data.arriving_new_pieces(con, "p1", 1 + today, Nf + exit + N, ord.Order_num);
+                                } catch (SQLException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                try {
+                                    today=data.today_day(con);
+                                    System.out.println("atualizar o reserved111: "+(N+res));
+                                    data.reserving_pieces(con, "p1", 1 + today, res + N);
+                                } catch (SQLException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            } else {
+                                try {
+                                    today=data.today_day(con);
+                                    aux = data.check_pieces(con, "p2", String.valueOf(1 + today));
+                                } catch (SQLException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                int exit = aux[0];
+                                int res = aux[1];
+                                try {
+                                    today=data.today_day(con);
+                                    data.arriving_new_pieces(con, "p2", 1 + today, Nf + exit + N, ord.Order_num);
+                                } catch (SQLException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                try {
+                                    today=data.today_day(con);
+                                    System.out.println("atualizar o reserved2222: "+(N+res));
+                                    data.reserving_pieces(con, "p2", 1 + today, res + N);
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -651,7 +704,8 @@ public class Managment implements Runnable {
                         }
                         work_days=writing_order(Nd, Ne, material, ord.Work_Piece, ord.Order_num, duedate, days_work);
                         System.out.println("dias de trabalho:"+Arrays.toString(work_days));
-                    } else if (Ne == 4) {
+                    } else if (Ne == 4 && N>0) {
+                        System.out.println("valor do Nnmn: "+N);
                         /*Caso sobrem 4 dias, há a possibilidade de encomendar do supplier B ou C.
                          * Dito isto é necessário avaliar qual será mais rentável.
                          * A primeira opçao é pedir do C e levar uma penalidade a outra é mandar
@@ -803,7 +857,7 @@ public class Managment implements Runnable {
                         }
                         work_days=writing_order(Nd, Ne, material, ord.Work_Piece, ord.Order_num, duedate, days_work);
                         System.out.println("dias de trabalho:"+Arrays.toString(work_days));
-                    } else if(Ne>4){
+                    } else if(Ne>4 && N>4){
 
                         /*Caso sobrem mais de 4 dias, há a possibilidade de encomendar do supplier A, B ou C.
                          * Dito isto é necessário avaliar qual será mais rentável.
@@ -1091,10 +1145,12 @@ public int[] calculus(int num1, int num3, int duedate,int today, String Workpiec
     }
     public int verify_material(String X, int Ne) throws SQLException {
         // verificar se ha raw material para essa peça naquele dia
+        System.out.println("valor em int: "+Ne);
         DataBase data=new DataBase();
         Connection con=data.create_connection();
         int[] arr;
         arr=data.check_pieces(con,X, String.valueOf(Ne));
+        System.out.println("String value of Ne"+String.valueOf(Ne));
         if(arr!=null){
         int existing=arr[0];
         int reserved=arr[1];
