@@ -128,6 +128,7 @@ public class DataBase {
     public void reserving_pieces(Connection con, String p, int day, int new_reserved) throws SQLException{
             Statement stmt=con.createStatement();
             p=p.toLowerCase();
+            System.out.println("aii: "+p+" "+"day "+ day+" new "+new_reserved);
             String sql="update infi.warehouse set "+p+"_reserved='"+new_reserved+"' where day='"+day+"'";
         stmt.executeUpdate(sql);
     }
