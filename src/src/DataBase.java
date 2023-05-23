@@ -202,13 +202,16 @@ public class DataBase {
         if(i==0)//está livre
         {
             sql="update infi.scheduling set delivering='"+order+"' where day='"+day+"'";
+            System.out.println("teste11");
             stmt.executeUpdate(sql);
         }
         else if(i==-1){//dia n existe, inserir dia
-            sql="insert into infi.scheduling(day, producing_1, delivering, arriving, producing_2) values('"+day+"', '"+order+"', '"+0+"', '"+0+"', '"+0+"')";
+            System.out.println("teste12");
+            sql="insert into infi.scheduling(day, producing_1, delivering, arriving, producing_2) values('"+day+"', '"+0+"', '"+order+"', '"+0+"', '"+0+"')";
             stmt.executeUpdate(sql);
         }
         else if(i!=-1 && i!=0){// o dia já existe e está ocupado, que alteração faço no dia?
+            System.out.println("teste13");
             sql="select arriving from infi.scheduling where day='"+day+"'";
             ResultSet re=stmt.executeQuery(sql);
             String ord = null;
@@ -266,16 +269,27 @@ public class DataBase {
             String sql="insert into infi.pieces_trans(\"ord\", deliver) values ('"+order+"', '"+deliver+"') limit 1";
             stmt.executeUpdate(sql);
         }
+    public String[] id_pieces(Connection con, String order, int size) throws SQLException{
+        Statement stmt=con.createStatement();
+        String sql="select id from infi.pieces_trans where ord='"+order+"' order by id";
+        ResultSet re=stmt.executeQuery(sql);
+        List<String> idList=new ArrayList<>();
+        while(re.next()){
+            String id=re.getString("id");
+            idList.add(id);
+        }
+        String[] str = idList.toArray(new String[0]);
+        return str;
+    }
 
-    public void piece_update(Connection con, String order, String machine1, String tool1, String work_time1, String type_out1,
+    public void piece_update(Connection con, String o,String type ,String machine1, String tool1, String work_time1, String type_out1,
                              String machine2, String tool2, String work_time2, String type_out2, String deliver,
-                              String day) throws SQLException{
+                              String day, String id) throws SQLException{
             Statement stmt=con.createStatement();
-            String sql="update infi.pieces_trans set machine1='"+machine1+"', tool1='"+tool1+"', work_time1='"+work_time1+"'," +
-                    " type_out1='"+type_out1+"', machine2='"+machine2+"', tool2='"+tool2+"', " +
-                    "work_time2='"+work_time2+"', type_out2='"+type_out2+"',deliver='"+deliver+"' ,day='"+day+"'" +
-                    " where order='"+order+"' order by machine1 asc" +
-                    "Limit 1";
+        String sql = "UPDATE infi.pieces_trans SET type_t='"+ type+"', machine1='" + machine1 + "', tool1='" + tool1 + "', work_time1='" + work_time1 + "'," +
+                " type_out1='" + type_out1 + "', machine2='" + machine2 + "', tool2='" + tool2 + "', " +
+                "work_time2='" + work_time2 + "', type_out2='" + type_out2 + "', deliver='" + deliver + "', day='" + day + "'" +
+                " WHERE id='"+id+"'";
             stmt.executeUpdate(sql);
         }
 

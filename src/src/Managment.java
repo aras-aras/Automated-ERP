@@ -1240,6 +1240,7 @@ public int[] calculus(int num1, int num3, int duedate,int today, String Workpiec
         int aux=0;
         if (arr2[0].equals("0")==true)
         {
+
             for(int n=0; n<days.length; n++ )
             {
                 for(int a=0;a<f[0];a++)
@@ -1314,7 +1315,6 @@ public int[] calculus(int num1, int num3, int duedate,int today, String Workpiec
                     }
                 }
             }
-
         }
     }
     /*public void reserving_arriving(int day) throws SQLException{
