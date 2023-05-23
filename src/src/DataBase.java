@@ -88,11 +88,11 @@ public class DataBase {
     }
     public String[] order_info(Connection con, String order) throws SQLException {
         Statement stmt=con.createStatement();
-        String sql="select order_number, client_name, nr_pieces, type_piece, duedate, late_penalty, early_penalty from infi.order where order_number='"+0+"'";
+        String sql="select order_number, client_name, nr_pieces, type_piece, duedate, late_penalty, early_penalty from infi.order where order_number='"+order+"'";
         ResultSet re=stmt.executeQuery(sql);
 
         while(re.next()){
-            String[] atr= new String[4];
+            String[] atr= new String[5];
             atr[0]=re.getString("order_number");
             atr[1]=re.getString("nr_pieces");
             atr[2]=re.getString("type_piece");
@@ -263,7 +263,7 @@ public class DataBase {
 
     public void piece(Connection con, String order, String type1, String deliver) throws SQLException{
             Statement stmt=con.createStatement();
-            String sql="insert into infi.pieces_trans(\"order\", deliver) values ('"+order+"', '"+deliver+"') limit 1";
+            String sql="insert into infi.pieces_trans(\"ord\", deliver) values ('"+order+"', '"+deliver+"') limit 1";
             stmt.executeUpdate(sql);
         }
 
@@ -278,6 +278,7 @@ public class DataBase {
                     "Limit 1";
             stmt.executeUpdate(sql);
         }
+
 
     public List<String[]> information(Connection con, String day) throws SQLException{
         Statement stmt=con.createStatement();
@@ -307,6 +308,9 @@ public class DataBase {
 
     public String[] info(Connection con, String p_initial, String p_final) throws SQLException{
             Statement stmt=con.createStatement();
+            p_initial=p_initial.substring(1);
+            p_final=p_final.substring(1);
+            System.out.println("peça inicial: "+p_initial+" peça final: "+p_final);
             String sql="select * from infi.detailed_transf where p_initial='"+p_initial+"' and p_final='"+p_final+"'";
             ResultSet re=stmt.executeQuery(sql);
             while(re.next()){
@@ -320,6 +324,16 @@ public class DataBase {
                 str[6]=re.getString("tool2");
                 str[7]=re.getString("work_time2");
                 str[8]=re.getString("type_out2");
+                str[9]=re.getString("machine3");
+                str[10]=re.getString("tool3");
+                str[11]=re.getString("work_time3");
+                str[12]=re.getString("type_out3");
+                str[13]=re.getString("machine4");
+                str[14]=re.getString("tool4");
+                str[15]=re.getString("work_time4");
+                str[16]=re.getString("type_out4");
+
+
                 return str;
             }
             return null;

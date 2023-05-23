@@ -223,7 +223,7 @@ public class Managment implements Runnable {
                             }
                         }
                         try {
-                            Nb = verify_material(material, Ne); //verificar se há raw material no dia Ne, guarda em Nb o nr de raw material existente
+                            Nb = verify_material(material, Ne+1); //verificar se há raw material no dia Ne, guarda em Nb o nr de raw material existente
                         } catch (SQLException e) {
                             throw new RuntimeException(e);
                         }
@@ -234,7 +234,6 @@ public class Managment implements Runnable {
                             N = N - Nb;
                         }
                     }
-                    System.out.println("aqui");
                     if (N <= 0)// se houver raw material suficiente para cobrir o que falta é so indicar as transformações a fazer
                     {
                         work_days=writing_order(Nd, Ne, material, ord.Work_Piece, ord.Order_num, duedate, days_work);
@@ -1021,27 +1020,11 @@ public int[] calculus(int num1, int num3, int duedate,int today, String Workpiec
     if(n1==0){
         nr_days1=0;
     }
-    else if(n1%2 != 0 && n2 !=0)
-    {
-        nr_days1 = (int) ((quant / n1) + 0.5)+1;
-    }
-    else if(n1%2 != 0 && n2 ==0)
-    {
-        nr_days1 = (int) ((quant / n1) + 0.5);
-    }
-    else {
-        nr_days1 = (int) ((quant / n1) + 0.5);
-    }
     if(n2==0){
         nr_days2=0;
     }
-    else if(n2% 2 != 0)
-    {
-        nr_days2 = (int) ((quant / n2) + 0.5)+1;
-    }
-    else {
-        nr_days2 = (int) ((quant / n2) + 0.5);
-    }
+    nr_days1 = (int) Math.ceil(quant / n1);
+    nr_days2 = (int) Math.ceil(quant / n2);
     System.out.println("old duedate: " +duedate);
     int[] aux = new int[3];
     aux[0]= nr_days2 + nr_days1;
@@ -1127,16 +1110,14 @@ public int[] calculus(int num1, int num3, int duedate,int today, String Workpiec
          * tools, os dias em que estao a fazer as coisas e
          * mandar para a base de dados organizada.
          * */
-        String[] arr= new String[9];
+        System.out.println("chegou ao writing");
+        String[] arr= new String[17];
         try {
             arr = data.info(con, material, work_piece);
             if(arr==null)
             {
+                System.out.println("arr é null");
                 return work_days;
-            }
-            for(int n=0;n<arr.length;n++)
-            {
-                System.out.println(arr[n]);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -1147,10 +1128,11 @@ public int[] calculus(int num1, int num3, int duedate,int today, String Workpiec
         return work_days;
     }
     public String[]  prepare(String workpiece, String[] arr, int[]days, String order) throws SQLException {
-        String [] arr1 = new String[0];
-        String [] arr2    = new String[0];
+        String [] arr1 = new String[9];
+        String [] arr2    = new String[9];
         if(workpiece.equals("P8")==true || workpiece.equals("P6")==true ||workpiece.equals("P3")==true ||workpiece.equals("P4")==true )
         {
+            arr1[0]= arr[0];
             arr1[1]= arr[1];
             arr1[2]= arr[2];
             arr1[3]= arr[3];
@@ -1163,6 +1145,7 @@ public int[] calculus(int num1, int num3, int duedate,int today, String Workpiec
         }
         if(workpiece.equals("P7")==true || workpiece.equals("P5")==true ||workpiece.equals("P9")==true)
         {
+            arr1[0]= arr[0];
             arr1[1]= arr[1];
             arr1[2]= arr[2];
             arr1[3]= arr[3];
@@ -1174,10 +1157,19 @@ public int[] calculus(int num1, int num3, int duedate,int today, String Workpiec
         }
         if(workpiece.equals("P7")==true || workpiece.equals("P6")==true ||workpiece.equals("P3")==true ||workpiece.equals("P4")==true)
         {
+            arr2[0]= "0";
             arr2[1]= "0";
+            arr2[2]= "0";
+            arr2[3]= "0";
+            arr2[4]= "0";
+            arr2[5]= "0";
+            arr2[6]= "0";
+            arr2[7]= "0";
+            arr2[8]= "0";
         }
-        if(workpiece.equals("P8")==true || workpiece.equals("P9")==true)
+        if(workpiece.equals("P8")==true)
         {
+            arr2[0]= arr[4];
             arr2[1]= arr[5];
             arr2[2]= arr[6];
             arr2[3]= arr[7];
@@ -1188,48 +1180,139 @@ public int[] calculus(int num1, int num3, int duedate,int today, String Workpiec
             arr2[8]= "0";
 
         }
-        if(workpiece.equals("P5")==true)
+        if(workpiece.equals("P9")==true)
         {
-            arr2[1]= arr[5];
-            arr2[2]= arr[6];
-            arr2[3]= arr[7];
-            arr2[4]= arr[8];
-            arr2[5]= arr[9];
-            arr2[6]= arr[10];
-            arr2[7]= arr[11];
-            arr2[8]= arr[12];
+            arr2[0]= arr[8];
+            arr2[1]= arr[9];
+            arr2[2]= arr[10];
+            arr2[3]= arr[11];
+            arr2[4]= arr[12];
+            arr2[5]= "0";
+            arr2[6]= "0";
+            arr2[7]= "0";
+            arr2[8]= "0";
+
         }
 
-            update(arr1, arr2, days, order);
+        if(workpiece.equals("P5")==true)
+        {
+            arr2[0]= arr[8];
+            arr2[1]= arr[9];
+            arr2[2]= arr[10];
+            arr2[3]= arr[11];
+            arr2[4]= arr[12];
+            arr2[5]= arr[13];
+            arr2[6]= arr[14];
+            arr2[7]= arr[15];
+            arr2[8]= arr[16];
+        }
+        System.out.println("arr: "+Arrays.toString(arr));
+        System.out.println("arr1: "+Arrays.toString(arr1));
+        System.out.println("arr2: "+Arrays.toString(arr2));
+        update(arr1, arr2, days, order,workpiece);
 
         return arr;
     }
-    public void update(String[] arr1, String[] arr2, int[] days, String order) throws SQLException {
+    public void update(String[] arr1, String[] arr2, int[] days, String order, String piece) throws SQLException {
         DataBase data=new DataBase();
         Connection con= data.create_connection();
+        System.out.println("update");
+        String[] atr= new String[5];
+        atr=data.order_info(con,order);
+        int N= Integer.parseInt(atr[1]);
+        float[] f=piece_perday(material, piece, "P"+arr1[8]);
+        System.out.println("f1 "+f[0]+" f2 "+f[1]);
+        int t=N;
+        if(f[1]==0)
+        {
+            t=N;
+        }
+        else
+        {
+            t=2*N;
+        }
+        String[] vetor = new String[t];
+        vetor=data.id_pieces(con,order,days.length);
+        System.out.println(Arrays.toString(vetor));
+
+        System.out.println("N: "+N);
         int today = data.today_day(con);
-        if (arr2[1].equals("0")==true)
+        int aux=0;
+        if (arr2[0].equals("0")==true)
         {
             for(int n=0; n<days.length; n++ )
             {
-                data.piece_update(con, order, arr1[1], arr1[2]
-                        , arr1[3], arr1[4], arr1[5], arr1[6], arr1[7], arr1[8],
-                        String.valueOf(today+duedate-1), String.valueOf(days[n]));
+                for(int a=0;a<f[0];a++)
+                {
+                    if(aux<N) {
+                        data.piece_update(con, order, arr1[0], arr1[1], arr1[2]
+                                , arr1[3], arr1[4], arr1[5], arr1[6], arr1[7], arr1[8],
+                                String.valueOf(today + duedate - 1), String.valueOf(days[n]), vetor[aux]);
+                    }
+                }
             }
         }
         else
         {
-            for(int n=0; n<days.length/2; n++ )
+            if(piece.equals("P9"))
             {
-                data.piece_update(con, order, arr1[1], arr1[2]
-                        , arr1[3], arr1[4], arr1[5], arr1[6], arr1[7], arr1[8]
-                        ,String.valueOf(today+duedate-1), String.valueOf(days[n]));
+                aux=0;
+                float da= (float) (days.length/2.0+0.0);
+                for(int n=0; n<Math.ceil(da); n++ )
+                {
+
+                    for(int a=0;a<f[0];a++) {
+                        System.out.println("entrou");
+                        if (aux < N) {
+                            System.out.println("dia para a string1: " + days[n]);
+                            System.out.println("id "+ vetor[aux]+" iteração "+a);
+                            data.piece_update(con, order, arr1[0], arr1[1], arr1[2]
+                                    , arr1[3], arr1[4], arr1[5], arr1[6], arr1[7], arr1[8]
+                                    , String.valueOf(today + duedate - 1), String.valueOf(days[n]), vetor[aux]);
+                            aux++;
+                        }
+                    }
+                }
+                aux=0;
+                for(int n=0; n<Math.ceil(da)-1; n++ )
+                {
+                    for(int a=0;a<f[1];a++)
+                    {
+                        System.out.println("entrou2");
+                        if(aux<N) {
+                            System.out.println("dia para a string2: " + days[n + (int) (Math.ceil(da))]);
+                            System.out.println("id "+ vetor[aux]+" iteração "+a);
+                            data.piece_update(con, order, arr2[0], arr2[1], arr2[2]
+                                    , arr2[3], arr2[4], arr2[5], arr2[6], arr2[7], arr2[8]
+                                    , String.valueOf(today + duedate - 1), String.valueOf(days[(int) (n + Math.ceil(da))]), vetor[aux+N]);
+                        aux++;
+                        }
+                    }
+                }
             }
-            for(int n=0; n<days.length/2; n++ )
-            {
-                data.piece_update(con, order, arr1[1], arr1[2]
-                        , arr1[3], arr1[4], arr1[5], arr1[6], arr1[7], arr1[8]
-                        ,String.valueOf(today+duedate-1), String.valueOf(days[n+days.length/2]));
+            else {
+                aux=0;
+                for (int n = 0; n < days.length / 2; n++) {
+                    for(int a=0;a<f[0];a++) {
+                        if(aux<N) {
+                            data.piece_update(con, order, arr1[0], arr1[1], arr1[2]
+                                    , arr1[3], arr1[4], arr1[5], arr1[6], arr1[7], arr1[8]
+                                    , String.valueOf(today + duedate - 1), String.valueOf(days[n]), vetor[aux]);
+                        aux++;
+                        }
+                    }
+                }
+                aux=0;
+                for (int n = 0; n < days.length / 2; n++) {
+                    for (int a = 0; a < f[1]; a++) {
+                        if (aux < N) {
+                            data.piece_update(con, order, arr2[0], arr2[1], arr2[2]
+                                    , arr2[3], arr2[4], arr2[5], arr2[6], arr2[7], arr2[8]
+                                    , String.valueOf(today + duedate - 1), String.valueOf(days[n + days.length / 2]), vetor[aux+a]);
+                            aux++;
+                        }
+                    }
+                }
             }
 
         }
